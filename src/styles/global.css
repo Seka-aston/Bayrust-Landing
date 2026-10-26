@@ -1,0 +1,155 @@
+/* Bayrust brand tokens. Change a colour here and it updates everywhere. */
+:root {
+  /* Brand */
+  --navy: #13202E;        /* Bay Navy: primary text and dark surfaces */
+  --steel: #3C4A5A;       /* Steel: secondary text */
+  --rust: #C2511F;        /* Rust Signal: the one accent */
+  --rust-text: #A8441A;   /* Rust at text sizes (passes AA on light grounds) */
+  --paper: #F4F1EC;       /* Report Paper: neutral panels */
+  --ground: #FAF9F7;      /* Page background */
+  --white: #FFFFFF;
+
+  /* Supporting tints */
+  --rust-tint: #FBEFE8;   /* Figure backgrounds, highlighted rows */
+  --rust-soft: #EBC9B7;   /* Inactive carousel dots */
+  --stone: #E8E5DF;       /* Minor severity, image placeholders */
+  --pebble: #C9C4BA;      /* Muted markers */
+  --mist: #D5DAE0;        /* Body text on navy */
+  --fog: #B8C0C9;         /* Placeholder text on navy */
+
+  /* Lines and shadows */
+  --line: rgba(19, 32, 46, 0.08);
+  --line-strong: rgba(19, 32, 46, 0.14);
+  --shadow-card: 0 20px 50px rgba(19, 32, 46, 0.06);
+
+  /* Type */
+  --font-sans: 'Open Sans', Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Layout */
+  --content: 1180px;
+  --content-wide: 1240px;
+  --gutter: 24px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 110px; /* keeps anchored sections clear of the sticky header */
+}
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--navy);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+a { color: var(--rust-text); }
+a:hover { color: var(--navy); }
+
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--rust);
+  outline-offset: 3px;
+}
+
+button { font: inherit; }
+
+/* Shared building blocks */
+
+.container {
+  max-width: var(--content);
+  margin: 0 auto;
+}
+
+.container--wide {
+  max-width: var(--content-wide);
+  margin: 0 auto;
+}
+
+.section {
+  padding: 0 var(--gutter) 120px;
+}
+
+.display-1 {
+  margin: 0;
+  font-size: clamp(44px, 6vw, 80px);
+  line-height: 1.03;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.display-2 {
+  margin: 0;
+  font-size: clamp(36px, 4.4vw, 56px);
+  line-height: 1.08;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+
+.accent { color: var(--rust); }
+
+.lead {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--steel);
+}
+
+.mono { font-family: var(--font-mono); }
+
+.btn {
+  display: inline-block;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 14px 22px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+}
+
+.btn--primary {
+  color: var(--white);
+  background: var(--rust);
+  font-weight: 700;
+  padding: 15px 24px;
+  border: 0;
+}
+
+.btn--primary:hover { color: var(--white); background: var(--rust-text); }
+
+.btn--secondary {
+  color: var(--navy);
+  background: var(--white);
+  border-color: var(--line-strong);
+}
+
+.btn--ghost {
+  color: var(--white);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.btn--ghost:hover { color: var(--white); border-color: var(--white); }
+
+.btn--sm {
+  font-size: 15px;
+  padding: 12px 18px;
+  border-radius: 11px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

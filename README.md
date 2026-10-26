@@ -4,9 +4,31 @@ Find the rust before your users do.
 
 Design source for the Bayrust marketing website: independent software quality audits from Kigali, Rwanda.
 
-## Status
+## Running the site
 
-Design stage. The files in `design/` are artboards from the Claude Design canvas (`.dc.html` format). They are the visual and content reference for the site, not yet a deployable build: they need the canvas runtime to render.
+The website is built with [Astro](https://astro.build). You need Node.js 22.12 or newer.
+
+```sh
+npm install      # first time only
+npm run dev      # preview at http://localhost:4321
+npm run build    # production build in ./dist
+npm run check    # check for errors
+```
+
+## Where things live
+
+| Path | What it is |
+|---|---|
+| `src/pages/` | One file per page: `index` (Home), `lenses`, `process`, `work` |
+| `src/components/` | Shared pieces: header, footer, contact banner, lens illustrations |
+| `src/layouts/Layout.astro` | The page frame every page uses |
+| `src/data/site.ts` | Company details and the `[PLACEHOLDERS]` still to fill in |
+| `src/data/` | Editable content: lenses, FAQs, process steps, case studies |
+| `src/styles/global.css` | Brand colour tokens and shared styles |
+| `public/` | Files served as-is, such as the favicon |
+| `design/` | The original Claude Design artboards, kept as reference |
+
+The files in `design/` are artboards from the Claude Design canvas (`.dc.html` format). They need the canvas runtime to render, so use the Astro site to preview.
 
 ## Pages
 
@@ -43,4 +65,4 @@ Logomark: `brand/bayrust-logomark.svg`.
 
 1. Build the inspection bay hero figure.
 2. Add Contact and About pages.
-3. Turn the designs into a production build.
+3. Deploy the site.

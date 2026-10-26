@@ -1,0 +1,671 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import { stages, findingParts, severities, reportContents, scopeFactors } from '../data/process';
+import { site } from '../data/site';
+---
+
+<Layout title="How it works" current="process">
+  <section class="intro">
+    <div class="intro-inner">
+      <Eyebrow>How it works</Eyebrow>
+      <h1 class="display-1">How an audit<br /><span class="accent">works, step by step.</span></h1>
+      <p>
+        Five stages, from the first conversation to the re-check that confirms the rust is gone. You always know what we need
+        from you and what you’ll get next.
+      </p>
+      <div class="facts">
+        <span>{site.auditDuration}, typically</span>
+        <span>Fixed price, agreed upfront</span>
+        <span>Re-check included</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline -->
+  <section aria-label="Audit stages" class="stages">
+    <ol>
+      {
+        stages.map((stage, i) => (
+          <li>
+            <div class="rail">
+              <span class:list={['num', 'mono', stage.style && `num--${stage.style}`]}>{i + 1}</span>
+              <span class="line" aria-hidden="true" />
+            </div>
+            <div class:list={['stage', stage.style === 'client' && 'stage--client']}>
+              <div class="stage-head">
+                <h2>{stage.name}</h2>
+                <span>{stage.when}</span>
+              </div>
+              <p class="stage-body">{stage.body}</p>
+              <div class="stage-boxes">
+                <div>
+                  <p>What we need from you</p>
+                  <p>{stage.need}</p>
+                </div>
+                <div>
+                  <p>What you get</p>
+                  <p>{stage.get}</p>
+                </div>
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <!-- Anatomy of a finding -->
+  <section aria-labelledby="anat-h" class="section">
+    <div class="container--wide anatomy">
+      <div class="anatomy-sample">
+        <article aria-label="Sample finding" class="finding">
+          <span class="finding-hole" aria-hidden="true"></span>
+          <div class="finding-top">
+            <span class="mono">AUD-014 · System logic</span>
+            <span class="mono finding-sev">Major</span>
+          </div>
+          <h3>Payment marked successful before the mobile-money callback returns</h3>
+          <div class="finding-part">
+            <p>Evidence</p>
+            <p>Recording on a throttled connection: success screen shown, callback fails, customer charged with no order.</p>
+          </div>
+          <div class="finding-part">
+            <p>Steps to reproduce</p>
+            <p>Android 10, 3G profile with 2 s latency. Pay any bill, then lose the network for 5 seconds.</p>
+          </div>
+          <div class="finding-part">
+            <p>Recommended fix</p>
+            <p>Show a pending state with a reference number until the callback confirms.</p>
+          </div>
+          <span class="finding-status">Re-check: open</span>
+        </article>
+      </div>
+      <div class="anatomy-copy">
+        <Eyebrow>Anatomy of a finding</Eyebrow>
+        <h2 id="anat-h">Every finding has the same six parts</h2>
+        <div class="parts">
+          {
+            findingParts.map((part) => (
+              <div class="part">
+                <span aria-hidden="true" />
+                <div>
+                  <h3>{part.name}</h3>
+                  <p>{part.body}</p>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Severity -->
+  <section aria-labelledby="sev-h" class="section">
+    <div class="container centered">
+      <Eyebrow>Severity</Eyebrow>
+      <h2 id="sev-h" class="display-2">A severity that sets the order of work</h2>
+      <div class="sev-grid">
+        {
+          severities.map((s) => (
+            <div class="card">
+              <span class="mono sev" style={`background: ${s.bg}; color: ${s.fg}`}>
+                {s.name}
+              </span>
+              <p>{s.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Report contents -->
+  <section aria-labelledby="rep-h" class="section">
+    <div class="container report">
+      <div class="report-intro">
+        <Eyebrow>The report</Eyebrow>
+        <h2 id="rep-h" class="display-2">What’s in your report</h2>
+        <p class="lead">Written for two readers: the team that fixes the problems, and the leaders who decide what to fund first.</p>
+      </div>
+      <div class="report-grid">
+        {
+          reportContents.map((item) => (
+            <div class="card">
+              <h3>{item.name}</h3>
+              <p>{item.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section aria-labelledby="price-h" class="section">
+    <div class="container--wide pricing">
+      <div class="pricing-copy">
+        <h2 id="price-h">One fixed price, agreed before we start</h2>
+        <p>
+          No hourly billing and no surprises. The price depends on the size of the inspection, and it includes the re-check.
+          {site.pricingDetails}
+        </p>
+      </div>
+      <div class="scope">
+        <p>What shapes the scope</p>
+        <ul>
+          {
+            scopeFactors.map((factor) => (
+              <li>
+                <span aria-hidden="true" />
+                {factor}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .intro {
+    padding: 96px var(--gutter) 72px;
+  }
+
+  .intro-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 24px;
+  }
+
+  .intro-inner > p {
+    margin: 0;
+    max-width: 38em;
+    font-size: 19px;
+    line-height: 1.65;
+    color: var(--steel);
+  }
+
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 6px;
+  }
+
+  .facts span {
+    font-size: 15px;
+    font-weight: 600;
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: var(--white);
+    border: 1px solid rgba(19, 32, 46, 0.1);
+  }
+
+  /* Timeline */
+  .stages {
+    padding: 0 var(--gutter) 96px;
+  }
+
+  .stages ol {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0;
+    list-style: none;
+  }
+
+  .stages li {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 28px;
+  }
+
+  .rail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .num {
+    flex: none;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    font-weight: 500;
+  }
+
+  .num--client {
+    border: 2px dashed var(--steel);
+    color: var(--steel);
+    background: var(--ground);
+  }
+
+  .num--final {
+    background: var(--rust);
+  }
+
+  .line {
+    flex: 1;
+    width: 2px;
+    background: rgba(19, 32, 46, 0.12);
+    margin-top: 8px;
+  }
+
+  .stage {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 32px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .stage--client {
+    background: var(--ground);
+    border: 1px dashed rgba(19, 32, 46, 0.25);
+  }
+
+  .stage-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px 20px;
+  }
+
+  .stage-head h2 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
+  .stage-head span {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--rust-text);
+  }
+
+  .stage-body {
+    margin: 0;
+    max-width: 44em;
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--steel);
+  }
+
+  .stage-boxes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    gap: 14px;
+  }
+
+  .stage-boxes > div {
+    background: var(--paper);
+    border-radius: 14px;
+    padding: 16px 18px;
+  }
+
+  .stage-boxes p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .stage-boxes p:first-child {
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--steel);
+  }
+
+  @media (max-width: 640px) {
+    .stages li {
+      grid-template-columns: 40px minmax(0, 1fr);
+      gap: 14px;
+    }
+
+    .num {
+      width: 40px;
+      height: 40px;
+      font-size: 15px;
+    }
+
+    .stage {
+      padding: 22px 20px;
+    }
+  }
+
+  /* Anatomy */
+  .anatomy {
+    background: var(--white);
+    border: 1px solid rgba(19, 32, 46, 0.07);
+    border-radius: 30px;
+    padding: 64px 56px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
+    gap: 56px;
+    align-items: center;
+  }
+
+  .anatomy-sample {
+    background: var(--navy);
+    border-radius: 24px;
+    padding: 44px 36px;
+  }
+
+  .finding {
+    position: relative;
+    background: var(--paper);
+    border-radius: 18px;
+    padding: 30px 30px 30px 62px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transform: rotate(-1.5deg);
+  }
+
+  .finding-hole {
+    position: absolute;
+    left: 24px;
+    top: 34px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--navy);
+    box-shadow: inset 0 0 0 4px var(--rust);
+  }
+
+  .finding-top {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--steel);
+  }
+
+  .finding-sev {
+    font-size: 13px;
+    background: var(--steel);
+    color: var(--white);
+    padding: 4px 10px;
+    border-radius: 7px;
+  }
+
+  .finding h3 {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.3;
+    font-weight: 700;
+  }
+
+  .finding-part p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .finding-part p:first-child {
+    margin-bottom: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--steel);
+  }
+
+  .finding-status {
+    align-self: flex-start;
+    font-size: 13px;
+    font-weight: 700;
+    background: var(--white);
+    border: 1px solid rgba(19, 32, 46, 0.15);
+    padding: 5px 11px;
+    border-radius: 999px;
+  }
+
+  .anatomy-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .anatomy-copy h2 {
+    margin: 0;
+    font-size: clamp(34px, 4vw, 52px);
+    line-height: 1.06;
+    font-weight: 700;
+    letter-spacing: -0.035em;
+  }
+
+  .parts {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .part {
+    display: flex;
+    gap: 16px;
+    padding: 18px 0;
+    border-top: 1px solid rgba(19, 32, 46, 0.1);
+  }
+
+  .part > span {
+    flex: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--rust);
+    margin-top: 7px;
+  }
+
+  .part h3 {
+    margin: 0 0 4px;
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  .part p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--steel);
+  }
+
+  @media (max-width: 640px) {
+    .anatomy {
+      padding: 40px 20px;
+    }
+
+    .anatomy-sample {
+      padding: 28px 16px;
+    }
+
+    .finding {
+      padding: 24px 20px 24px 52px;
+    }
+
+    .finding-hole {
+      left: 20px;
+      top: 28px;
+    }
+  }
+
+  /* Severity and report cards */
+  .centered {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+  }
+
+  .centered > h2 {
+    text-align: center;
+  }
+
+  .card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 26px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--steel);
+  }
+
+  .sev-grid {
+    width: 100%;
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+    gap: 18px;
+  }
+
+  .sev-grid .card {
+    gap: 14px;
+  }
+
+  .sev {
+    align-self: flex-start;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid rgba(19, 32, 46, 0.15);
+    padding: 6px 12px;
+    border-radius: 8px;
+  }
+
+  .report {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+  }
+
+  .report-intro {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+    max-width: 720px;
+  }
+
+  .report-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+    gap: 18px;
+  }
+
+  .report-grid .card {
+    gap: 8px;
+  }
+
+  .report-grid h3 {
+    margin: 0;
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  /* Pricing */
+  .pricing {
+    background: var(--navy);
+    border-radius: 30px;
+    padding: 64px 56px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+    gap: 48px;
+    align-items: center;
+  }
+
+  .pricing-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .pricing-copy h2 {
+    margin: 0;
+    font-size: clamp(34px, 4vw, 52px);
+    line-height: 1.06;
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    color: var(--white);
+  }
+
+  .pricing-copy p {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--mist);
+  }
+
+  .scope {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 22px;
+    padding: 32px;
+  }
+
+  .scope > p {
+    margin: 0 0 16px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .scope ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .scope li {
+    display: flex;
+    gap: 12px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--white);
+  }
+
+  .scope li span {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    background: var(--rust);
+    margin-top: 8px;
+  }
+
+  @media (max-width: 640px) {
+    .pricing {
+      padding: 40px 20px;
+    }
+
+    .scope {
+      padding: 24px 20px;
+    }
+  }
+</style>

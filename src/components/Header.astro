@@ -1,0 +1,133 @@
+---
+import Logomark from './Logomark.astro';
+import { nav, site, type NavKey } from '../data/site';
+
+interface Props {
+  current?: NavKey;
+}
+
+const { current } = Astro.props;
+---
+
+<div class="bar">
+  <header>
+    <div class="left">
+      <a href="/" class="brand" aria-label={`${site.name} home`}>
+        <Logomark size={26} />
+        <span>{site.name}</span>
+      </a>
+      <nav aria-label="Main">
+        {
+          nav.map((item) => (
+            <a href={item.href} aria-current={item.key === current ? 'page' : undefined}>
+              {item.label}
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+    <div class="actions">
+      <a href="/process" class="sample">See a sample report</a>
+      <a href="#contact" class="request">Request an audit</a>
+    </div>
+  </header>
+</div>
+
+<style>
+  .bar {
+    position: sticky;
+    top: 16px;
+    z-index: 10;
+    padding: 16px var(--gutter) 0;
+  }
+
+  header {
+    max-width: var(--content);
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(19, 32, 46, 0.07);
+    border-radius: 18px;
+    box-shadow: 0 1px 2px rgba(19, 32, 46, 0.04), 0 10px 30px rgba(19, 32, 46, 0.06);
+    padding: 12px 14px 12px 22px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 24px;
+  }
+
+  .left {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 36px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--navy);
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 26px;
+  }
+
+  nav a {
+    color: var(--steel);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 8px 0;
+  }
+
+  nav a:hover,
+  nav a[aria-current='page'] {
+    color: var(--navy);
+  }
+
+  nav a[aria-current='page'] {
+    font-weight: 700;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .actions a {
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 11px;
+  }
+
+  .sample {
+    color: var(--navy);
+    font-weight: 600;
+    padding: 11px 16px;
+    border: 1px solid var(--line-strong);
+    background: var(--white);
+  }
+
+  .request {
+    color: var(--white);
+    font-weight: 700;
+    padding: 12px 18px;
+    background: var(--rust);
+    box-shadow: 0 6px 16px rgba(194, 81, 31, 0.28);
+  }
+
+  .request:hover {
+    color: var(--white);
+    background: var(--rust-text);
+  }
+</style>

@@ -1,0 +1,82 @@
+---
+import Logomark from './Logomark.astro';
+import { site } from '../data/site';
+---
+
+<section id="contact" aria-labelledby="cta-h" class="wrap">
+  <div class="panel">
+    <Logomark size={620} class="watermark" />
+    <h2 id="cta-h">Where’s the rust in your product?</h2>
+    <p>
+      Tell us what you’ve built and who uses it. We’ll reply within {site.responseTime} with a proposed scope and
+      price.
+    </p>
+    <div class="actions">
+      <a href={`mailto:${site.email}`} class="btn btn--primary">Request an audit</a>
+      <a href="/process" class="btn btn--ghost">How an audit works</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .wrap {
+    padding: 0 var(--gutter) 64px;
+  }
+
+  .panel {
+    position: relative;
+    max-width: var(--content-wide);
+    margin: 0 auto;
+    background: var(--navy);
+    border-radius: 30px;
+    overflow: hidden;
+    padding: 96px 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 24px;
+  }
+
+  .panel :global(.watermark) {
+    position: absolute;
+    right: -160px;
+    bottom: -220px;
+    opacity: 0.12;
+  }
+
+  h2 {
+    position: relative;
+    margin: 0;
+    max-width: 12em;
+    font-size: clamp(40px, 5.4vw, 72px);
+    line-height: 1.03;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: var(--white);
+  }
+
+  p {
+    position: relative;
+    margin: 0;
+    max-width: 32em;
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--mist);
+  }
+
+  .actions {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  @media (max-width: 600px) {
+    .panel {
+      padding: 64px 24px;
+    }
+  }
+</style>

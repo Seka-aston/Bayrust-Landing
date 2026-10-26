@@ -1,0 +1,1329 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import CheckList from '../components/CheckList.astro';
+import LensFigure from '../components/LensFigure.astro';
+import { lenses } from '../data/lenses';
+import { faqs } from '../data/faqs';
+import { site } from '../data/site';
+
+const reportLenses = [
+  { name: 'Usability', count: 4 },
+  { name: 'Accessibility', count: 6 },
+  { name: 'System logic', count: 3 },
+  { name: 'User habits', count: 2 },
+  { name: 'Operational', count: 5 },
+];
+
+const reportFindings = [
+  { id: 'AUD-009', title: 'Transfer form can’t be completed with a screen reader', lens: 'Accessibility', urgent: true },
+  { id: 'AUD-014', title: 'Payment marked successful before the callback returns', lens: 'System logic', urgent: true },
+  { id: 'AUD-017', title: 'Draft transfer lost when the network drops', lens: 'Operational', urgent: true },
+  { id: 'AUD-021', title: 'Transfer fee shown only after the PIN step', lens: 'Usability', urgent: false },
+];
+
+const sectors = ['Banks', 'Fintechs', 'Public digital services', 'NGOs and programs', 'Software agencies'];
+
+const reasons = [
+  {
+    title: 'Tested where your users are',
+    body: 'Low-cost Android phones, slow and dropping networks, shared devices and the languages your customers read.',
+  },
+  {
+    title: 'Written for two readers',
+    body: 'Engineers get the steps to reproduce. Leaders get a one-page summary of what to fund first.',
+  },
+  {
+    title: 'Independent by design',
+    body: 'We don’t build the product we inspect, so the report says what’s true, not what’s convenient.',
+  },
+  {
+    title: 'The re-check is included',
+    body: 'Once your team ships the fixes, we inspect again and confirm the rust is gone.',
+  },
+];
+
+const caseTeasers = [
+  { sector: 'Banking', bg: 'var(--navy)', fg: 'var(--fog)', result: '[ONE-LINE RESULT, e.g. what was found and what changed]' },
+  { sector: 'Public services', bg: 'var(--rust-tint)', fg: 'var(--steel)', result: '[ONE-LINE RESULT]' },
+  { sector: 'Fintech', bg: 'var(--stone)', fg: 'var(--steel)', result: '[ONE-LINE RESULT]' },
+];
+---
+
+<Layout title="Home">
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-stripes" aria-hidden="true"></div>
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-copy">
+      <span class="badge">Independent software quality audits, from Kigali<span>New</span></span>
+      <h1>Find the rust<br /><span class="accent">before your users do.</span></h1>
+      <p>
+        Bayrust inspects your app, website or platform across five lenses: usability, accessibility, system logic, user
+        habits and operational fit. You get every finding with proof, a severity, and the fix.
+      </p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn btn--primary hero-primary">Request an audit</a>
+        <a href="/process" class="btn btn--secondary">How an audit works</a>
+      </div>
+    </div>
+
+    <!-- Sample report window -->
+    <div class="report">
+      <div class="report-bar">
+        <div class="report-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="report-title"><span>Sample audit report: mobile banking app</span></div>
+        <span class="report-spacer" aria-hidden="true"></span>
+      </div>
+      <div class="report-body">
+        <aside class="report-side">
+          <p class="side-label">Audit</p>
+          <p class="side-name">Mobile banking app</p>
+          <div class="side-row side-row--active"><span>All findings</span><span class="mono">20</span></div>
+          {
+            reportLenses.map((l) => (
+              <div class="side-row">
+                <span>{l.name}</span>
+                <span class="mono">{l.count}</span>
+              </div>
+            ))
+          }
+          <div class="side-note">Inspected on 12 devices and 3 network profiles</div>
+        </aside>
+        <div class="report-main">
+          <div class="report-head">
+            <div>
+              <p class="report-h">Findings</p>
+              <p class="report-sub">Sorted by severity, highest first</p>
+            </div>
+            <div class="sev-counts">
+              <span class="sev sev--critical">2 Critical</span>
+              <span class="sev sev--major">7 Major</span>
+              <span class="sev sev--minor">11 Minor</span>
+            </div>
+          </div>
+          <div class="findings">
+            {
+              reportFindings.map((f, i) => (
+                <div class:list={['finding', { 'finding--first': i === 0 }]}>
+                  <span class:list={['finding-dot', { 'finding-dot--muted': !f.urgent }]} />
+                  <span class="mono finding-id">{f.id}</span>
+                  <span class="finding-title">{f.title}</span>
+                  <span class="finding-lens">{f.lens}</span>
+                </div>
+              ))
+            }
+          </div>
+          <div class="finding-detail">
+            <div>
+              <p>Evidence</p>
+              <p>Screen-reader recording: the amount field has no label, so the form can’t be submitted.</p>
+            </div>
+            <div>
+              <p>Recommended fix</p>
+              <p>Add a visible label tied to the field, and announce validation errors as they appear.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sectors -->
+  <section aria-label="Who we work with" class="sectors">
+    <div class="container sectors-inner">
+      <p class="sectors-lead">Built for products people <span>can’t afford to see fail.</span></p>
+      <span class="sectors-rule" aria-hidden="true"></span>
+      <div class="sectors-list">{sectors.map((s) => <span>{s}</span>)}</div>
+    </div>
+  </section>
+
+  <!-- Five lenses tabs -->
+  <section aria-labelledby="lens-h" class="lenses">
+    <div class="container centered">
+      <Eyebrow>What we inspect</Eyebrow>
+      <h2 id="lens-h" class="display-2">Five lenses, one inspection</h2>
+      <p class="lead narrow">
+        Most audits stop at what’s visible on screen. We also check whether the logic holds, whether the product fits how
+        people behave, and whether it survives the conditions it really runs in.
+      </p>
+      <div role="tablist" aria-label="Inspection lenses" class="tablist" data-tabs>
+        {
+          lenses.map((lens, i) => (
+            <button
+              role="tab"
+              id={`tab-${lens.id}`}
+              aria-controls={`panel-${lens.id}`}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              tabindex={i === 0 ? 0 : -1}
+            >
+              {lens.name}
+            </button>
+          ))
+        }
+      </div>
+      {
+        lenses.map((lens, i) => (
+          <div role="tabpanel" id={`panel-${lens.id}`} aria-labelledby={`tab-${lens.id}`} class="tabpanel" hidden={i !== 0}>
+            <div class="tabpanel-copy">
+              <h3>{lens.question}</h3>
+              <p>{lens.summary}</p>
+              <CheckList items={lens.highlights} />
+              <a href={`/lenses#${lens.id}`} class="more">
+                Read more about {lens.lower}
+              </a>
+            </div>
+            <div class="figure-card">
+              <div class="figure-ground">
+                <LensFigure lens={lens.id} />
+              </div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Inspection bay -->
+  <section aria-labelledby="bay-h" class="section">
+    <div class="container--wide bay">
+      <div class="bay-head">
+        <h2 id="bay-h" class="display-2">Inside the<br />inspection bay</h2>
+        <div class="bay-aside">
+          <p>Your product goes up on the lift. Each lens has its own instrument, and every reading feeds the same report.</p>
+          <a href="/process" class="btn btn--primary btn--sm">See the full process</a>
+        </div>
+      </div>
+      <figure aria-label="Placeholder for the interactive inspection bay figure" class="bay-figure">
+        <span class="mono corner corner--tl">Fig. 1</span>
+        <span class="corner corner--tr">The inspection bay</span>
+        <span class="corner corner--bl">Hover an instrument to inspect</span>
+        <span class="mono corner corner--br">0 findings</span>
+        <p class="bay-title">Interactive isometric figure</p>
+        <p class="bay-note">
+          Built with the Anatomy skill in the next step: a product on a service lift, with one instrument for each of the five
+          lenses.
+        </p>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Why Bayrust -->
+  <section aria-labelledby="why-h" class="section">
+    <div class="container centered">
+      <Eyebrow>Why Bayrust</Eyebrow>
+      <h2 id="why-h" class="display-2">Proof, not opinions</h2>
+      <p class="lead narrow">The details that make a Bayrust report something your team can act on the same week.</p>
+      <div class="why-grid">
+        <div class="why-feature">
+          <div class="tag-card" aria-hidden="true">
+            <span class="tag-hole"></span>
+            <div class="tag-top"><span class="mono">AUD-014</span><span class="mono tag-sev">Major</span></div>
+            <span class="tag-title">Payment marked successful before the callback returns</span>
+            <span class="tag-lens">System logic</span>
+          </div>
+          <div class="why-feature-copy">
+            <h3>Every finding is a tagged part</h3>
+            <p>An ID, a lens, a severity, replayable evidence and a specific fix. Nothing vague, nothing to argue about.</p>
+          </div>
+        </div>
+        {
+          reasons.map((r) => (
+            <div class="why-card">
+              <h3>{r.title}</h3>
+              <p>{r.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Our work teaser -->
+  <section aria-labelledby="work-h" class="section">
+    <div class="container work">
+      <div class="work-head">
+        <div class="work-title">
+          <Eyebrow>Our work</Eyebrow>
+          <h2 id="work-h" class="display-2">Rust we’ve found</h2>
+        </div>
+        <a href="/work" class="btn btn--secondary btn--sm">View all case studies</a>
+      </div>
+      <div class="case-grid">
+        {
+          caseTeasers.map((c) => (
+            <a href="/work" class="case-card">
+              <div class="case-image" style={`background: ${c.bg}; color: ${c.fg}`}>
+                [CASE STUDY IMAGE]
+              </div>
+              <div class="case-copy">
+                <span class="case-sector">{c.sector}</span>
+                <h3>[CASE STUDY TITLE]</h3>
+                <p>{c.result}</p>
+              </div>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section aria-labelledby="quote-h" class="section">
+    <div class="container centered">
+      <Eyebrow>Testimonials</Eyebrow>
+      <h2 id="quote-h" class="display-2">What teams say after the re-check</h2>
+      <div class="quote">
+        <div class="quote-copy">
+          <div>
+            <p class="quote-name">[CLIENT NAME]</p>
+            <p class="quote-role">[ROLE, ORGANISATION]</p>
+          </div>
+          <blockquote>“[CLIENT QUOTE about what the audit revealed and what changed afterwards.]”</blockquote>
+          <div class="quote-stats">
+            <div><p>[RESULT]</p><p>[WHAT IT MEASURES]</p></div>
+            <div><p>[RESULT]</p><p>[WHAT IT MEASURES]</p></div>
+          </div>
+        </div>
+        <div class="quote-photo">[CLIENT PHOTO]</div>
+      </div>
+      <div class="carousel">
+        <button aria-label="Previous testimonial">
+          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M11 4L6 9l5 5" fill="none" stroke="#13202E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </button>
+        <div class="carousel-dots" aria-hidden="true"><span class="on"></span><span></span><span></span></div>
+        <button aria-label="Next testimonial">
+          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M7 4l5 5-5 5" fill="none" stroke="#13202E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" aria-labelledby="faq-h" class="section">
+    <div class="container faq">
+      <div class="faq-intro">
+        <Eyebrow>FAQ</Eyebrow>
+        <h2 id="faq-h">Questions teams ask before an audit</h2>
+        <p>Can’t find yours? Ask us at {site.email}.</p>
+      </div>
+      <div class="faq-list" data-faq>
+        {
+          faqs.map((f, i) => (
+            <div class="faq-item">
+              <button aria-expanded={i === 0 ? 'true' : 'false'} aria-controls={`faq-${i}`} id={`faq-q-${i}`}>
+                {f.q}
+                <span class="faq-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 12 12">
+                    <path d="M3 6h6" stroke-width="1.8" stroke-linecap="round" />
+                    <path class="faq-plus" d="M6 3v6" stroke-width="1.8" stroke-linecap="round" />
+                  </svg>
+                </span>
+              </button>
+              <div id={`faq-${i}`} role="region" aria-labelledby={`faq-q-${i}`} hidden={i !== 0}>
+                <p>{f.a}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  // Lens tabs: click or use the arrow keys to switch.
+  const tablist = document.querySelector<HTMLElement>('[data-tabs]');
+  if (tablist) {
+    const tabs = [...tablist.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const select = (index: number) => {
+      tabs.forEach((tab, i) => {
+        const on = i === index;
+        tab.setAttribute('aria-selected', String(on));
+        tab.tabIndex = on ? 0 : -1;
+        document.getElementById(tab.getAttribute('aria-controls')!)!.hidden = !on;
+      });
+    };
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => select(i));
+      tab.addEventListener('keydown', (e) => {
+        const keys: Record<string, number> = {
+          ArrowRight: (i + 1) % tabs.length,
+          ArrowLeft: (i - 1 + tabs.length) % tabs.length,
+          Home: 0,
+          End: tabs.length - 1,
+        };
+        if (e.key in keys) {
+          e.preventDefault();
+          select(keys[e.key]);
+          tabs[keys[e.key]].focus();
+        }
+      });
+    });
+  }
+
+  // FAQ accordion: one answer open at a time.
+  const faq = document.querySelector<HTMLElement>('[data-faq]');
+  if (faq) {
+    const buttons = [...faq.querySelectorAll<HTMLButtonElement>('button[aria-expanded]')];
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const opening = button.getAttribute('aria-expanded') !== 'true';
+        buttons.forEach((b) => {
+          const open = b === button && opening;
+          b.setAttribute('aria-expanded', String(open));
+          document.getElementById(b.getAttribute('aria-controls')!)!.hidden = !open;
+        });
+      });
+    });
+  }
+</script>
+
+<style>
+  /* Hero */
+  .hero {
+    position: relative;
+    padding: 88px var(--gutter) 0;
+  }
+
+  .hero-stripes {
+    position: absolute;
+    inset: -80px 0 auto 0;
+    height: 760px;
+    background: repeating-linear-gradient(
+      90deg,
+      rgba(194, 81, 31, 0) 0px,
+      rgba(194, 81, 31, 0) 70px,
+      rgba(194, 81, 31, 0.1) 70px,
+      rgba(194, 81, 31, 0.02) 112px
+    );
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.35) 55%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.35) 55%, transparent 100%);
+  }
+
+  .hero-glow {
+    position: absolute;
+    left: 50%;
+    top: -40px;
+    width: 900px;
+    max-width: 100%;
+    height: 600px;
+    transform: translateX(-50%);
+    background: radial-gradient(closest-side, var(--ground) 55%, rgba(250, 249, 247, 0));
+  }
+
+  .hero-copy {
+    position: relative;
+    max-width: 880px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 26px;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--white);
+    border: 1px solid rgba(19, 32, 46, 0.09);
+    border-radius: 999px;
+    padding: 7px 8px 7px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--steel);
+  }
+
+  .badge span {
+    background: var(--rust);
+    color: var(--white);
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(48px, 6.6vw, 88px);
+    line-height: 1.02;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+  }
+
+  .hero-copy > p {
+    margin: 0;
+    max-width: 40em;
+    font-size: 19px;
+    line-height: 1.65;
+    color: var(--steel);
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .hero-primary {
+    box-shadow: 0 8px 20px rgba(194, 81, 31, 0.3);
+  }
+
+  /* Sample report */
+  .report {
+    position: relative;
+    max-width: var(--content);
+    margin: 72px auto 0;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    box-shadow: 0 2px 4px rgba(19, 32, 46, 0.04), 0 40px 80px rgba(19, 32, 46, 0.1);
+    padding: 10px;
+  }
+
+  .report-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 6px 10px 12px;
+  }
+
+  .report-dots {
+    display: flex;
+    gap: 7px;
+  }
+
+  .report-dots span {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #E3E1DC;
+  }
+
+  .report-title {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+
+  .report-title span {
+    background: var(--paper);
+    border-radius: 8px;
+    padding: 5px 18px;
+    font-size: 13px;
+    color: var(--steel);
+  }
+
+  .report-spacer {
+    width: 47px;
+  }
+
+  .report-body {
+    border: 1px solid rgba(19, 32, 46, 0.07);
+    border-radius: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    min-height: 500px;
+    overflow: hidden;
+  }
+
+  .report-side {
+    flex: 1 1 240px;
+    max-width: 280px;
+    background: var(--ground);
+    border-right: 1px solid rgba(19, 32, 46, 0.07);
+    padding: 22px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .side-label {
+    margin: 0 8px 4px;
+    font-size: 13px;
+    color: var(--steel);
+  }
+
+  .side-name {
+    margin: 0 8px 16px;
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  .side-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: var(--steel);
+  }
+
+  .side-row--active {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+
+  .side-note {
+    margin-top: auto;
+    padding: 14px 12px 0;
+    border-top: 1px solid rgba(19, 32, 46, 0.07);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--steel);
+  }
+
+  .report-main {
+    flex: 999 1 520px;
+    min-width: 0;
+    padding: 26px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .report-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+  }
+
+  .report-h {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .report-sub {
+    margin: 4px 0 0;
+    font-size: 14px;
+    color: var(--steel);
+  }
+
+  .sev-counts {
+    display: flex;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .sev {
+    border-radius: 8px;
+    padding: 6px 10px;
+  }
+
+  .sev--critical { background: var(--navy); color: var(--white); }
+  .sev--major { background: var(--steel); color: var(--white); }
+  .sev--minor { background: var(--stone); color: var(--navy); }
+
+  .findings {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .finding {
+    display: grid;
+    grid-template-columns: 16px 92px minmax(0, 1fr) 120px;
+    gap: 14px;
+    align-items: center;
+    padding: 15px 18px;
+    border-top: 1px solid rgba(19, 32, 46, 0.07);
+    font-size: 15px;
+  }
+
+  .finding--first {
+    background: var(--rust-tint);
+    border-top: 0;
+  }
+
+  .finding-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--rust);
+  }
+
+  .finding-dot--muted { background: var(--pebble); }
+
+  .finding-id {
+    font-size: 13px;
+    color: var(--steel);
+  }
+
+  .finding-title { font-weight: 600; }
+
+  .finding-lens {
+    font-size: 13px;
+    color: var(--steel);
+  }
+
+  .finding-detail {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 14px;
+  }
+
+  .finding-detail > div {
+    background: var(--ground);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+
+  .finding-detail p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .finding-detail p:first-child {
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--steel);
+  }
+
+  @media (max-width: 640px) {
+    .report-side { max-width: none; border-right: 0; border-bottom: 1px solid rgba(19, 32, 46, 0.07); }
+    .report-main { padding: 20px 16px; }
+    .finding { grid-template-columns: 12px minmax(0, 1fr); row-gap: 4px; }
+    .finding-id, .finding-lens { grid-column: 2; }
+    .finding-title { grid-column: 2; grid-row: 1; }
+    .finding-dot { grid-row: 1; }
+  }
+
+  /* Sectors */
+  .sectors {
+    padding: 72px var(--gutter) 24px;
+  }
+
+  .sectors-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 24px 48px;
+  }
+
+  .sectors-lead {
+    margin: 0;
+    flex: 0 1 300px;
+    font-size: 18px;
+    line-height: 1.45;
+    font-weight: 600;
+  }
+
+  .sectors-lead span { color: var(--rust-text); }
+
+  .sectors-rule {
+    width: 1px;
+    height: 48px;
+    background: rgba(19, 32, 46, 0.12);
+  }
+
+  @media (max-width: 860px) {
+    .sectors-rule { display: none; }
+  }
+
+  .sectors-list {
+    flex: 1 1 520px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 34px;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--steel);
+  }
+
+  /* Shared centred section header */
+  .centered {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+  }
+
+  .centered > .display-2,
+  .narrow {
+    text-align: center;
+  }
+
+  .narrow { max-width: 36em; }
+
+  /* Lens tabs */
+  .lenses {
+    padding: 120px var(--gutter);
+  }
+
+  .tablist {
+    width: 100%;
+    margin-top: 26px;
+    display: flex;
+    flex-wrap: wrap;
+    border-bottom: 1px solid rgba(19, 32, 46, 0.1);
+  }
+
+  [role='tab'] {
+    flex: 1 1 160px;
+    background: none;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    padding: 16px 10px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--steel);
+    cursor: pointer;
+  }
+
+  [role='tab']:hover { color: var(--navy); }
+
+  [role='tab'][aria-selected='true'] {
+    border-bottom-color: var(--rust);
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .tabpanel {
+    width: 100%;
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
+    gap: 48px;
+    align-items: center;
+  }
+
+  .tabpanel[hidden] { display: none; }
+
+  .tabpanel-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .tabpanel-copy h3 {
+    margin: 0;
+    font-size: 30px;
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
+  .tabpanel-copy > p {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--steel);
+  }
+
+  .more {
+    margin-top: 6px;
+    align-self: flex-start;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .figure-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 18px;
+    box-shadow: var(--shadow-card);
+  }
+
+  .figure-ground {
+    background: var(--rust-tint);
+    border-radius: 14px;
+    min-height: 320px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Inspection bay */
+  .bay {
+    background: var(--white);
+    border: 1px solid rgba(19, 32, 46, 0.07);
+    border-radius: 28px;
+    padding: 64px 56px 40px;
+  }
+
+  .bay-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px 48px;
+  }
+
+  .bay-head h2 {
+    flex: 1 1 420px;
+    line-height: 1.06;
+  }
+
+  .bay-aside {
+    flex: 0 1 380px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: flex-start;
+  }
+
+  .bay-aside p {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--steel);
+  }
+
+  .bay-figure {
+    margin: 40px 0 0;
+    position: relative;
+    height: 540px;
+    border-radius: 20px;
+    background: var(--ground);
+    border: 1px dashed rgba(194, 81, 31, 0.45);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 0 24px;
+    text-align: center;
+  }
+
+  .corner {
+    position: absolute;
+    font-size: 14px;
+    color: var(--steel);
+  }
+
+  .corner.mono { font-size: 13px; }
+  .corner--tl { top: 20px; left: 22px; }
+  .corner--tr { top: 20px; right: 22px; font-weight: 600; }
+  .corner--bl { bottom: 20px; left: 22px; }
+  .corner--br { bottom: 20px; right: 22px; }
+
+  .bay-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .bay-note {
+    margin: 0;
+    max-width: 26em;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--steel);
+  }
+
+  @media (max-width: 640px) {
+    .bay { padding: 40px 20px 20px; }
+    .bay-figure { height: 420px; }
+  }
+
+  /* Why Bayrust */
+  .why-grid {
+    width: 100%;
+    margin-top: 32px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+    gap: 20px;
+  }
+
+  .why-feature {
+    grid-row: span 2;
+    background: var(--navy);
+    color: var(--white);
+    border-radius: 22px;
+    padding: 36px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 32px;
+    min-height: 460px;
+  }
+
+  .tag-card {
+    position: relative;
+    background: var(--paper);
+    color: var(--navy);
+    border-radius: 16px;
+    padding: 22px 22px 22px 50px;
+    transform: rotate(-2deg);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tag-hole {
+    position: absolute;
+    left: 18px;
+    top: 24px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--navy);
+    box-shadow: inset 0 0 0 3px var(--rust);
+  }
+
+  .tag-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--steel);
+  }
+
+  .tag-sev {
+    font-size: 12px;
+    background: var(--steel);
+    color: var(--white);
+    padding: 3px 9px;
+    border-radius: 6px;
+  }
+
+  .tag-title {
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .tag-lens {
+    font-size: 13px;
+    color: var(--rust-text);
+    font-weight: 700;
+  }
+
+  .why-feature-copy,
+  .why-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .why-feature-copy h3 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .why-feature-copy p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--mist);
+  }
+
+  .why-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 32px;
+  }
+
+  .why-card h3 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .why-card p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--steel);
+  }
+
+  /* Our work teaser */
+  .work {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .work-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+  }
+
+  .work-title {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: flex-start;
+  }
+
+  .case-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr));
+    gap: 20px;
+  }
+
+  .case-card {
+    text-decoration: none;
+    color: var(--navy);
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 14px 14px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .case-card:hover { border-color: var(--line-strong); color: var(--navy); }
+
+  .case-image {
+    height: 220px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  .case-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 10px;
+  }
+
+  .case-sector {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--rust-text);
+  }
+
+  .case-copy h3 {
+    margin: 0;
+    font-size: 21px;
+    line-height: 1.3;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+
+  .case-copy p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--steel);
+  }
+
+  /* Testimonials */
+  .quote {
+    width: 100%;
+    margin-top: 28px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 26px;
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+    box-shadow: var(--shadow-card);
+  }
+
+  .quote-copy {
+    flex: 999 1 460px;
+    padding: 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 36px;
+  }
+
+  .quote-name {
+    margin: 0 0 6px;
+    font-size: 19px;
+    font-weight: 700;
+  }
+
+  .quote-role {
+    margin: 0;
+    font-size: 15px;
+    color: var(--steel);
+  }
+
+  blockquote {
+    margin: 0;
+    font-size: 24px;
+    line-height: 1.5;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .quote-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+  }
+
+  .quote-stats p {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .quote-stats p + p {
+    margin-top: 4px;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--steel);
+  }
+
+  .quote-photo {
+    flex: 1 1 360px;
+    min-height: 380px;
+    background: var(--paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--steel);
+    font-size: 14px;
+  }
+
+  @media (max-width: 640px) {
+    .quote-copy { padding: 28px 24px; }
+    blockquote { font-size: 20px; }
+    .quote-photo { min-height: 260px; }
+  }
+
+  .carousel {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-top: 8px;
+  }
+
+  .carousel button {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: 1px solid rgba(19, 32, 46, 0.12);
+    background: var(--white);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .carousel-dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .carousel-dots span {
+    width: 18px;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--rust-soft);
+  }
+
+  .carousel-dots .on {
+    width: 34px;
+    background: var(--rust);
+  }
+
+  /* FAQ */
+  .faq {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
+    gap: 48px;
+  }
+
+  .faq-intro {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .faq-intro h2 {
+    margin: 0;
+    font-size: clamp(40px, 5vw, 64px);
+    line-height: 1.04;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+  }
+
+  .faq-intro p {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--steel);
+  }
+
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .faq-item {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+  }
+
+  .faq-item button {
+    width: 100%;
+    background: none;
+    border: 0;
+    padding: 20px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    text-align: left;
+    cursor: pointer;
+    color: var(--navy);
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  .faq-icon {
+    flex: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    stroke: var(--navy);
+  }
+
+  [aria-expanded='true'] .faq-icon {
+    background: var(--rust);
+    stroke: var(--white);
+  }
+
+  [aria-expanded='true'] .faq-plus { display: none; }
+
+  .faq-item p {
+    margin: 0;
+    padding: 0 22px 22px;
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--steel);
+  }
+</style>

@@ -1,0 +1,102 @@
+---
+import Logomark from './Logomark.astro';
+import { nav, site } from '../data/site';
+---
+
+<footer>
+  <div class="top">
+    <div class="about">
+      <div class="brand"><Logomark size={24} /><span>{site.name}</span></div>
+      <p>Software quality audits for teams that build. {site.location}.</p>
+    </div>
+    <div class="columns">
+      <div class="column">
+        <p class="heading">Company</p>
+        {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+      </div>
+      <div class="column">
+        <p class="heading">Contact</p>
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+        <span>{site.linkedin}</span>
+        <span>{site.location}</span>
+      </div>
+    </div>
+  </div>
+  <p class="legal">© {site.year} {site.name} Ltd</p>
+</footer>
+
+<style>
+  footer {
+    padding: 24px var(--gutter) 48px;
+  }
+
+  .top {
+    max-width: var(--content);
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 40px;
+    padding-top: 40px;
+    border-top: 1px solid rgba(19, 32, 46, 0.1);
+  }
+
+  .about {
+    flex: 1 1 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 19px;
+    font-weight: 800;
+  }
+
+  .about p {
+    margin: 0;
+    max-width: 22em;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--steel);
+  }
+
+  .columns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px 72px;
+  }
+
+  .column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .heading {
+    margin: 0 0 4px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .column a,
+  .column span {
+    font-size: 15px;
+    color: var(--steel);
+    text-decoration: none;
+  }
+
+  .column a:hover {
+    color: var(--navy);
+  }
+
+  .legal {
+    max-width: var(--content);
+    margin: 32px auto 0;
+    font-size: 14px;
+    color: var(--steel);
+  }
+</style>

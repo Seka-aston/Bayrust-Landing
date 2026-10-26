@@ -1,0 +1,114 @@
+---
+// The illustration for each of the five lenses, shared by the home page tabs and the Five lenses page.
+import type { LensId } from '../data/lenses';
+
+interface Props {
+  lens: LensId;
+}
+
+const { lens } = Astro.props;
+---
+
+{
+  lens === 'usability' && (
+    <svg width="380" height="220" viewBox="0 0 380 220" role="img" aria-label="A four-step journey where the third step is a dead end">
+      <g fill="#FFFFFF" stroke="#13202E" stroke-width="1.5">
+        <rect x="10" y="80" width="70" height="60" rx="12" />
+        <rect x="110" y="80" width="70" height="60" rx="12" />
+        <rect x="300" y="80" width="70" height="60" rx="12" stroke-dasharray="5 5" stroke-opacity="0.4" />
+      </g>
+      <rect x="205" y="80" width="70" height="60" rx="12" fill="#C2511F" />
+      <path d="M80 110h30M180 110h25" stroke="#13202E" stroke-width="1.5" />
+      <path d="M275 110h25" stroke="#13202E" stroke-width="1.5" stroke-dasharray="4 5" stroke-opacity="0.4" />
+      <path d="M230 100l20 20M250 100l-20 20" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
+      <g fill="#13202E" font-family="JetBrains Mono, monospace" font-size="12" text-anchor="middle">
+        <text x="45" y="165">Open</text>
+        <text x="145" y="165">Amount</text>
+        <text x="240" y="165" fill="#A8441A">Confirm</text>
+        <text x="335" y="165" fill-opacity="0.45">Done</text>
+      </g>
+    </svg>
+  )
+}
+{
+  lens === 'accessibility' && (
+    <svg width="380" height="220" viewBox="0 0 380 220" role="img" aria-label="Two text samples, one passing and one failing contrast">
+      <rect x="20" y="40" width="160" height="140" rx="16" fill="#13202E" />
+      <text x="100" y="118" text-anchor="middle" font-family="Open Sans, sans-serif" font-size="44" font-weight="700" fill="#F4F1EC">Aa</text>
+      <text x="100" y="160" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="#F4F1EC">14.6 : 1 pass</text>
+      <rect x="200" y="40" width="160" height="140" rx="16" fill="#FFFFFF" stroke="#13202E" stroke-width="1.5" />
+      <text x="280" y="118" text-anchor="middle" font-family="Open Sans, sans-serif" font-size="44" font-weight="700" fill="#D4D0C8">Aa</text>
+      <text x="280" y="160" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="#A8441A">1.5 : 1 fail</text>
+    </svg>
+  )
+}
+{
+  lens === 'system-logic' && (
+    <svg width="380" height="220" viewBox="0 0 380 220" role="img" aria-label="An order showing paid and failed at the same time">
+      <g fill="#FFFFFF" stroke="#13202E" stroke-width="1.5">
+        <rect x="20" y="85" width="96" height="50" rx="25" />
+        <rect x="264" y="30" width="96" height="50" rx="25" />
+      </g>
+      <rect x="264" y="140" width="96" height="50" rx="25" fill="#C2511F" />
+      <path d="M116 110 C190 110 190 55 264 55M116 110 C190 110 190 165 264 165" fill="none" stroke="#13202E" stroke-width="1.5" />
+      <g font-family="JetBrains Mono, monospace" font-size="13" text-anchor="middle">
+        <text x="68" y="114" fill="#13202E">Pending</text>
+        <text x="312" y="59" fill="#13202E">Paid</text>
+        <text x="312" y="169" fill="#FFFFFF">Failed</text>
+      </g>
+      <text x="190" y="214" text-anchor="middle" font-family="Open Sans, sans-serif" font-size="13" fill="#3C4A5A">Both states shown to the customer at once</text>
+    </svg>
+  )
+}
+{
+  lens === 'user-habits' && (
+    <svg width="380" height="240" viewBox="0 0 380 240" role="img" aria-label="A phone screen where taps cluster away from the main button">
+      <rect x="130" y="10" width="120" height="220" rx="20" fill="#FFFFFF" stroke="#13202E" stroke-width="1.5" />
+      <rect x="148" y="40" width="84" height="10" rx="5" fill="#E8E5DF" />
+      <rect x="148" y="60" width="60" height="10" rx="5" fill="#E8E5DF" />
+      <rect x="148" y="180" width="84" height="28" rx="10" fill="#FFFFFF" stroke="#13202E" stroke-width="1.5" />
+      <g fill="#C2511F">
+        <circle cx="216" cy="110" r="14" fill-opacity="0.25" />
+        <circle cx="216" cy="110" r="7" />
+        <circle cx="198" cy="124" r="10" fill-opacity="0.25" />
+        <circle cx="198" cy="124" r="5" />
+        <circle cx="226" cy="132" r="6" fill-opacity="0.5" />
+      </g>
+      <text x="190" y="199" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#3C4A5A">Pay</text>
+      <text x="60" y="114" text-anchor="middle" font-family="Open Sans, sans-serif" font-size="13" fill="#3C4A5A">Where</text>
+      <text x="60" y="132" text-anchor="middle" font-family="Open Sans, sans-serif" font-size="13" fill="#3C4A5A">people tap</text>
+    </svg>
+  )
+}
+{
+  lens === 'operational' && (
+    <svg width="380" height="220" viewBox="0 0 380 220" role="img" aria-label="Signal falling from 4G to 2G until the request times out">
+      <g fill="#13202E">
+        <rect x="40" y="120" width="22" height="40" rx="4" />
+        <rect x="70" y="100" width="22" height="60" rx="4" />
+        <rect x="100" y="80" width="22" height="80" rx="4" />
+        <rect x="130" y="60" width="22" height="100" rx="4" />
+      </g>
+      <g fill="#13202E">
+        <rect x="220" y="120" width="22" height="40" rx="4" />
+        <rect x="250" y="100" width="22" height="60" rx="4" fill-opacity="0.2" />
+        <rect x="280" y="80" width="22" height="80" rx="4" fill-opacity="0.2" />
+        <rect x="310" y="60" width="22" height="100" rx="4" fill-opacity="0.2" />
+      </g>
+      <path d="M165 110h40" stroke="#13202E" stroke-width="1.5" />
+      <path d="M198 104l7 6-7 6" fill="none" stroke="#13202E" stroke-width="1.5" />
+      <g font-family="JetBrains Mono, monospace" font-size="13" text-anchor="middle">
+        <text x="96" y="186" fill="#13202E">4G</text>
+        <text x="276" y="186" fill="#13202E">2G</text>
+        <text x="276" y="40" fill="#A8441A">Request timed out</text>
+      </g>
+    </svg>
+  )
+}
+
+<style>
+  svg {
+    max-width: 100%;
+    height: auto;
+  }
+</style>

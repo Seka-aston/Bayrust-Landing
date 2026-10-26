@@ -1,0 +1,384 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import CheckList from '../components/CheckList.astro';
+import LensFigure from '../components/LensFigure.astro';
+import { lenses } from '../data/lenses';
+---
+
+<Layout title="Five lenses" current="lenses">
+  <section class="intro">
+    <div class="intro-inner">
+      <Eyebrow>What we inspect</Eyebrow>
+      <h1 class="display-1">Five lenses,<br /><span class="accent">one inspection.</span></h1>
+      <p>
+        Each lens looks at your product from a different angle. Together they catch the rust a single kind of test would
+        miss: from a confusing label to a payment rule that quietly breaks on salary day.
+      </p>
+      <nav aria-label="Lenses on this page" class="jump">
+        {lenses.map((lens) => <a href={`#${lens.id}`}>{lens.title}</a>)}
+      </nav>
+    </div>
+  </section>
+
+  {
+    lenses.map((lens, i) => (
+      <section id={lens.id} aria-labelledby={`${lens.id}-h`} class="lens">
+        <div class:list={['lens-panel', { 'lens-panel--paper': i % 2 === 1 }]}>
+          <div class="lens-top">
+            <div class="lens-copy">
+              <p class="lens-label">{lens.title}</p>
+              <h2 id={`${lens.id}-h`}>{lens.question}</h2>
+              <p class="lens-intro">{lens.intro}</p>
+              <CheckList items={lens.checks} />
+            </div>
+            <div class="figure-card">
+              <div class="figure-ground">
+                <LensFigure lens={lens.id} />
+              </div>
+            </div>
+          </div>
+          <div class="lens-bottom">
+            <div class="lens-col">
+              <h3>Typical rust we find</h3>
+              <div class="rust-list">
+                {lens.typicalRust.map((item) => (
+                  <div class="rust-item">
+                    <span aria-hidden="true" />
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div class="lens-col">
+              <h3>What you get</h3>
+              <p class="deliverable">{lens.deliverable}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    ))
+  }
+
+  <section aria-labelledby="together-h" class="together">
+    <div class="container together-inner">
+      <div class="together-copy">
+        <Eyebrow>Why five</Eyebrow>
+        <h2 id="together-h" class="display-2">Rust rarely belongs to one lens</h2>
+        <p class="lead">
+          The worst problems sit where lenses overlap. A payment that confirms too early is a logic error, made worse by slow
+          networks, and confusing to the customer who sees it. Looking through all five at once is how we find the cause, not
+          just the symptom.
+        </p>
+      </div>
+      <div class="sample">
+        <div class="sample-card">
+          <span class="sample-hole" aria-hidden="true"></span>
+          <div class="sample-top">
+            <span class="mono">Sample finding AUD-014</span>
+            <span class="mono sample-sev">Major</span>
+          </div>
+          <p class="sample-title">Payment marked successful before the mobile-money callback returns</p>
+          <div class="sample-tags">
+            <span class="tag tag--rust">System logic</span>
+            <span class="tag">Operational</span>
+            <span class="tag">Usability</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .intro {
+    padding: 96px var(--gutter) 72px;
+  }
+
+  .intro-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 24px;
+  }
+
+  .intro-inner > p {
+    margin: 0;
+    max-width: 38em;
+    font-size: 19px;
+    line-height: 1.65;
+    color: var(--steel);
+  }
+
+  .jump {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .jump a {
+    color: var(--navy);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: var(--white);
+    border: 1px solid rgba(19, 32, 46, 0.1);
+  }
+
+  .jump a:hover {
+    border-color: var(--rust);
+  }
+
+  /* One lens */
+  .lens {
+    padding: 0 var(--gutter) 40px;
+  }
+
+  .lens-panel {
+    max-width: var(--content-wide);
+    margin: 0 auto;
+    background: var(--white);
+    border: 1px solid rgba(19, 32, 46, 0.06);
+    border-radius: 30px;
+    padding: 64px 56px;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+
+  .lens-panel--paper {
+    background: var(--paper);
+  }
+
+  .lens-top {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
+    gap: 48px;
+    align-items: center;
+  }
+
+  .lens-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .lens-label {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--rust-text);
+  }
+
+  .lens-copy h2 {
+    margin: 0;
+    font-size: clamp(32px, 3.6vw, 48px);
+    line-height: 1.08;
+    font-weight: 700;
+    letter-spacing: -0.035em;
+  }
+
+  .lens-intro {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--steel);
+  }
+
+  .figure-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 16px;
+    box-shadow: var(--shadow-card);
+  }
+
+  .figure-ground {
+    background: var(--rust-tint);
+    border-radius: 14px;
+    min-height: 340px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .lens-bottom {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: 24px 48px;
+    padding-top: 36px;
+    border-top: 1px solid rgba(19, 32, 46, 0.1);
+  }
+
+  .lens-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .lens-col h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .rust-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .rust-item {
+    position: relative;
+    background: var(--ground);
+    border: 1px solid rgba(19, 32, 46, 0.07);
+    border-radius: 14px;
+    padding: 18px 18px 18px 40px;
+    font-size: 15px;
+    line-height: 1.5;
+    font-weight: 600;
+  }
+
+  .rust-item span {
+    position: absolute;
+    left: 18px;
+    top: 24px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--rust);
+  }
+
+  .deliverable {
+    margin: 0;
+    font-size: 20px;
+    line-height: 1.5;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  @media (max-width: 640px) {
+    .lens-panel {
+      padding: 40px 20px;
+    }
+  }
+
+  /* Why five */
+  .together {
+    padding: 80px var(--gutter) 120px;
+  }
+
+  .together-inner {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
+    gap: 56px;
+    align-items: center;
+  }
+
+  .together-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .together-copy h2 {
+    line-height: 1.06;
+  }
+
+  .together-copy .lead {
+    line-height: 1.65;
+  }
+
+  .sample {
+    background: var(--navy);
+    border-radius: 26px;
+    padding: 44px;
+  }
+
+  .sample-card {
+    position: relative;
+    background: var(--paper);
+    border-radius: 18px;
+    padding: 28px 28px 28px 60px;
+    transform: rotate(-1.5deg);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .sample-hole {
+    position: absolute;
+    left: 24px;
+    top: 32px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--navy);
+    box-shadow: inset 0 0 0 4px var(--rust);
+  }
+
+  .sample-top {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--steel);
+  }
+
+  .sample-sev {
+    font-size: 13px;
+    background: var(--steel);
+    color: var(--white);
+    padding: 4px 10px;
+    border-radius: 7px;
+  }
+
+  .sample-title {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.3;
+    font-weight: 700;
+  }
+
+  .sample-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tag {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+    background: var(--white);
+    padding: 5px 11px;
+    border-radius: 999px;
+    border: 1px solid rgba(19, 32, 46, 0.15);
+  }
+
+  .tag--rust {
+    color: var(--white);
+    background: var(--rust-text);
+    border-color: var(--rust-text);
+  }
+
+  @media (max-width: 640px) {
+    .sample {
+      padding: 28px 20px;
+    }
+
+    .sample-card {
+      padding: 24px 20px 24px 52px;
+    }
+  }
+</style>
