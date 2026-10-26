@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Bayrust · How it works</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FAF9F7}
+a{color:#A8441A}a:hover{color:#13202E}
+a:focus-visible,button:focus-visible{outline:3px solid #C2511F;outline-offset:3px}
+button{font:inherit}
+</style>
+</helmet>
+<div style="font-family: 'Open Sans', Arial, sans-serif; color: #13202E; background: #FAF9F7; -webkit-font-smoothing: antialiased; overflow: hidden">
+
+<div style="position: sticky; top: 16px; z-index: 10; padding: 16px 24px 0">
+<header style="max-width: 1180px; margin: 0 auto; background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border: 1px solid rgba(19,32,46,0.07); border-radius: 18px; box-shadow: 0 1px 2px rgba(19,32,46,0.04), 0 10px 30px rgba(19,32,46,0.06); padding: 12px 14px 12px 22px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 36px">
+<a href="Main.dc.html" aria-label="Bayrust home" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #13202E">
+<svg width="26" height="26" viewBox="0 0 351 351" aria-hidden="true"><g fill="#C2511F"><path d="M251.4 308.6C246.1 320.4 239.6 331.9 231.7 341.8C297.2 319.8 345.4 260.2 350.7 188.7L327.4 188.7C298.9 188.7 276.1 211.4 271.4 239.4C267.2 265.3 260.4 288.8 251.4 308.6Z"/><path d="M199.9 188.7C229.7 188.7 254 213.5 248.6 242.8C236.7 306.3 208.4 351 175.5 351C133.8 351 99.7 279.4 96.6 188.7L199.9 188.7Z"/><path d="M272.1 115.4C276.4 143.7 299.4 166.7 328.1 166.7L351 166.7C347.4 93.3 298.5 31.7 231.7 9.2C239.6 19.1 246.1 30.6 251.4 42.4C260.8 63.2 267.8 88 272.1 115.4Z"/><path d="M249.4 113.2C254.4 142.3 230.1 166.7 200.6 166.7L96.5 166.7C98.6 73.9 133.2 0 175.5 0C209.3 0 238.1 47 249.4 113.2Z"/><path d="M74.6 166.7C75.6 119.3 84.6 75.6 99.6 42.4C104.9 30.6 111.4 19.1 119.3 9.2C52.5 31.7 3.6 93.3 0 166.7L74.6 166.7Z"/><path d="M0.3 188.7C5.6 260.2 53.8 319.8 119.3 341.8C111.4 331.9 104.9 320.4 99.6 308.6C85.1 276.5 76.1 234.4 74.7 188.7L0.3 188.7Z"/></g></svg>
+<span style="font-size: 21px; font-weight: 800; letter-spacing: -0.01em">Bayrust</span>
+</a>
+<nav aria-label="Main" style="display: flex; flex-wrap: wrap; gap: 4px 26px">
+<a href="Lenses.dc.html" style="color: #3C4A5A; text-decoration: none; font-size: 15px; font-weight: 500; padding: 8px 0">Five lenses</a>
+<a href="Process.dc.html" aria-current="page" style="color: #13202E; text-decoration: none; font-size: 15px; font-weight: 700; padding: 8px 0">How it works</a>
+<a href="Work.dc.html" style="color: #3C4A5A; text-decoration: none; font-size: 15px; font-weight: 500; padding: 8px 0">Our work</a>
+<a href="Main.dc.html#faq" style="color: #3C4A5A; text-decoration: none; font-size: 15px; font-weight: 500; padding: 8px 0">FAQ</a>
+</nav>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<a href="Process.dc.html" style="color: #13202E; text-decoration: none; font-size: 14px; font-weight: 600; padding: 11px 16px; border-radius: 11px; border: 1px solid rgba(19,32,46,0.14); background: #FFFFFF">See a sample report</a>
+<a href="#contact" style="color: #FFFFFF; text-decoration: none; font-size: 14px; font-weight: 700; padding: 12px 18px; border-radius: 11px; background: #C2511F; box-shadow: 0 6px 16px rgba(194,81,31,0.28)">Request an audit</a>
+</div>
+</header>
+</div>
+
+<section style="padding: 96px 24px 72px">
+<div style="max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 24px">
+<span style="display: inline-flex; align-items: center; gap: 8px; background: #FFFFFF; border: 1px solid rgba(19,32,46,0.09); border-radius: 10px; padding: 6px 12px; font-size: 14px; font-weight: 500; color: #3C4A5A"><span style="width: 7px; height: 7px; border-radius: 50%; background: #C2511F"></span>How it works</span>
+<h1 style="margin: 0; font-size: clamp(44px, 6vw, 80px); line-height: 1.03; font-weight: 700; letter-spacing: -0.04em">How an audit<br><span style="color: #C2511F">works, step by step.</span></h1>
+<p style="margin: 0; max-width: 38em; font-size: 19px; line-height: 1.65; color: #3C4A5A">Five stages, from the first conversation to the re-check that confirms the rust is gone. You always know what we need from you and what you’ll get next.</p>
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 6px">
+<span style="font-size: 15px; font-weight: 600; padding: 10px 16px; border-radius: 999px; background: #FFFFFF; border: 1px solid rgba(19,32,46,0.1)">[X–Y] weeks, typically</span>
+<span style="font-size: 15px; font-weight: 600; padding: 10px 16px; border-radius: 999px; background: #FFFFFF; border: 1px solid rgba(19,32,46,0.1)">Fixed price, agreed upfront</span>
+<span style="font-size: 15px; font-weight: 600; padding: 10px 16px; border-radius: 999px; background: #FFFFFF; border: 1px solid rgba(19,32,46,0.1)">Re-check included</span>
+</div>
+</div>
+</section>
+
+<section aria-label="Audit stages" style="padding: 0 24px 96px">
+<ol style="max-width: 960px; margin: 0 auto; padding: 0; list-style: none"><li style="display: grid; grid-template-columns: 52px minmax(0,1fr); gap: 28px; position: relative">
+<div style="display: flex; flex-direction: column; align-items: center"><span style="width: 52px; height: 52px; border-radius: 50%; background: #13202E; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 17px; font-weight: 500; flex: none">1</span><span aria-hidden="true" style="flex: 1; width: 2px; background: rgba(19,32,46,0.12); margin-top: 8px"></span></div>
+<div style="background: #FFFFFF; border: 1px solid rgba(19,32,46,0.08); border-radius: 22px; padding: 32px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px"><h2 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.025em">Intake</h2><span style="font-size: 15px; font-weight: 600; color: #A8441A">Week 1</span></div>
+<p style="margin: 0; font-size: 17px; line-height: 1.65; color: #3C4A5A; max-width: 44em">We meet your team, learn who your users are and what the business needs, and agree the journeys, platforms and lenses in scope.</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 14px">
+<div style="background: #F4F1EC; border-radius: 14px; padding: 16px 18px"><p style="margin: 0 0 6px; font-size: 13px; font-weight: 700; color: #3C4A5A">What we need from you</p><p style="margin: 0; font-size: 15px; line-height: 1.55">An hour of your team’s time, product access and test accounts.</p></div>
+<div style="background: #F4F1EC; border-radius: 14px; padding: 16px 18px"><p style="margin: 0 0 6px; font-size: 13px; font-weight: 700; color: #3C4A5A">What you get</p><p style="margin: 0; font-size: 15px; line-height: 1.55">A signed scope with a fixed price and dates.</p></div>
+</div>
+</div>
+</li><li style="display: grid; grid-template-columns: 52px minmax(0,1fr); gap: 28px; position: relative">
+<div style="display: flex; flex-direction: column; align-items: center"><span style="width: 52px; height: 52px; border-radius: 50%; background: #13202E; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 17px; font-weight: 500; flex: none">2</span><span aria-hidden="true" style="flex: 1; width: 2px; background: rgba(19,32,46,0.12); margin-top: 8px"></span></div>
+<div style="background: #FFFFFF; border: 1px solid rgba(19,32,46,0.08); border-radius: 22px; padding: 32px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px"><h2 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.025em">Inspection</h2><span style="font-size: 15px; font-weight: 600; color: #A8441A">Weeks [X–Y]</span></div>
+<p style="margin: 0; font-size: 17px; line-height: 1.65; color: #3C4A5A; max-width: 44em">We inspect every journey in scope through all five lenses, on real devices and real network conditions, and talk to users or staff where habits matter.</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 14px">
+<div style="background: #F4F1EC; border-radius: 14px; padding: 16px 18px"><p style="margin: 0 0 6px; font-size: 13px; font-weight: 700; color: #3C4A5A">What we need from you</p><p style="margin: 0; font-size: 15px; line-height: 1.55">A contact who can answer quick questions.</p></div>
+<div style="background: #F4F1EC; border-radius: 14px; padding: 16px 18px"><p style="margin: 0 0 6px; font-size: 13px; font-weight: 700; color: #3C4A5A">What you get</p><p style="margin: 0; font-size: 15px; line-height: 1.55">Progress updates, and an early warning for anything critical.</p></div>
+</div>
+</div>
+</li><li style="display: grid; grid-template-columns: 52px minmax(0,1fr); gap: 28px; position: relative">
+<div style="display: flex; flex-direction: column; align-items: center"><span style="width: 52px; height: 52px; border-radius: 50%; background: #13202E; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 17px; font-weight: 500; flex: none">3</span><span aria-hidden="true" style="flex: 1; width: 2px; background: rgba(19,32,46,0.12); margin-top: 8px"></span></div>
+<div style="background: #FFFFFF; border: 1px solid rgba(19,32,46,0.08); border-radius: 22px; padding: 32px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px"><h2 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.025em">Report and walkthrough</h2><span style="font-size: 15px; font-weight: 600; color: #A8441A">End of inspection</span></div>
+<p style="margin: 0; font-size: 17px; line-height: 1.65; color: #3C4A5A; max-width: 44em">We deliver the full report and walk your team through it, so engineers know what to fix and leaders know what to fund first.</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 14px">
+<div style="background: #F4F1EC; border-radius: 14px; padding: 16px 18px"><p style="margin: 0 0 6px; font-size: 13px; font-weight: 700; color: #3C4A5A">What we need from you</p><p style="margin: 0; font-size: 15px; line-height: 1.55">The people who will prioritise and fix the work.</p></div>
+<div style="background: #F4F1EC; border-radius: 14px; padding: 16px 18px"><p style="margin: 0 0 6px; font-size: 13px; font-weight: 700; color: #3C4A5A">What you get</p><p style="margin: 0; font-size: 15px; line-height: 1.55">The report, the evidence library and a fix plan.</p></div>
+</div>
+</div>
+</li><li style="display: grid; grid-template-columns: 52px minmax(0,1fr); gap: 28px; position: relative">
+<div style="display: flex; flex-direction: column; align-items: center"><span style="width: 52px; height: 52px; border-radius: 50%; border: 2px dashed #3C4A5A; color: #3C4A5A; background: #FAF9F7; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 17px; font-weight: 500; flex: none">4</span><span aria-hidden="true" style="flex: 1; width: 2px; background: rgba(19,32,46,0.12); margin-top: 8px"></span></div>
+<div style="background: #FAF9F7; border: 1px dashed rgba(19,32,46,0.25); border-radius: 22px; padding: 32px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px"><h2 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.025em">Your team fixes</h2><span style="font-size: 15px; font-weight: 600; color: #A8441A">Your schedule</span></div>
+<p style="margin: 0; font-size: 17px; line-height: 1.65; color: #3C4A5A; max-width: 44em">Your engineers ship the fixes. We stay available for questions about any finding while you work.</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 14px">
+<div style="background: #F4F1EC; border-radius: 14px; padding: 16px 18px"><p style="margin: 0 0 6px; font-size: 13px; font-weight: 700; color: #3C4A5A">What we need from you</p><p style="margin: 0; font-size: 15px; line-height: 1.55">Time to implement the recommended fixes.</p></div>
+<div style="background: #F4F1EC; border-radius: 14px; padding: 16px 18px"><p style="margin: 0 0 6px; font-size: 13px; font-weight: 700; color: #3C4A5A">What you get</p><p style="margin: 0; font-size: 15px; line-height: 1.55">Answers to questions about any finding.</p></div>
+</div>
+</div>
+</li><li style="display: grid; grid-template-columns: 52px minmax(0,1fr); gap: 28px; position: relative">
+<div style="display: flex; flex-direction: column; align-items: center"><span style="width: 52px; height: 52px; border-radius: 50%; background: #C2511F; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 17px; font-weight: 500; flex: none">5</span><span aria-hidden="true" style="flex: 1; width: 2px; background: rgba(19,32,46,0.12); margin-top: 8px"></span></div>
+<div style="background: #FFFFFF; border: 1px solid rgba(19,32,46,0.08); border-radius: 22px; padding: 32px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px"><h2 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.025em">Re-check</h2><span style="font-size: 15px; font-weight: 600; color: #A8441A">When you’re ready</span></div>
+<p style="margin: 0; font-size: 17px; line-height: 1.65; color: #3C4A5A; max-width: 44em">We inspect every fixed finding again and confirm whether the rust is gone, with fresh evidence.</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 14px">
+<div style="background: #F4F1EC; border-radius: 14px; padding: 16px 18px"><p style="margin: 0 0 6px; font-size: 13px; font-weight: 700; color: #3C4A5A">What we need from you</p><p style="margin: 0; font-size: 15px; line-height: 1.55">Notice that the fixes are live.</p></div>
+<div style="background: #F4F1EC; border-radius: 14px; padding: 16px 18px"><p style="margin: 0 0 6px; font-size: 13px; font-weight: 700; color: #3C4A5A">What you get</p><p style="margin: 0; font-size: 15px; line-height: 1.55">An updated report showing what’s resolved.</p></div>
+</div>
+</div>
+</li></ol>
+</section>
+
+<section aria-labelledby="anat-h" style="padding: 0 24px 120px">
+<div style="max-width: 1240px; margin: 0 auto; background: #FFFFFF; border: 1px solid rgba(19,32,46,0.07); border-radius: 30px; padding: 64px 56px; box-sizing: border-box; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap: 56px; align-items: center">
+<div style="background: #13202E; border-radius: 24px; padding: 44px 36px; box-sizing: border-box">
+<article aria-label="Sample finding" style="position: relative; background: #F4F1EC; border-radius: 18px; padding: 30px 30px 30px 62px; display: flex; flex-direction: column; gap: 16px; transform: rotate(-1.5deg)">
+<span aria-hidden="true" style="position: absolute; left: 24px; top: 34px; width: 16px; height: 16px; border-radius: 50%; background: #13202E; box-shadow: inset 0 0 0 4px #C2511F"></span>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px"><span style="font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #3C4A5A">AUD-014 · System logic</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; background: #3C4A5A; color: #FFFFFF; padding: 4px 10px; border-radius: 7px">Major</span></div>
+<h3 style="margin: 0; font-size: 22px; line-height: 1.3; font-weight: 700">Payment marked successful before the mobile-money callback returns</h3>
+<div style="display: flex; flex-direction: column; gap: 4px"><p style="margin: 0; font-size: 13px; font-weight: 700; color: #3C4A5A">Evidence</p><p style="margin: 0; font-size: 15px; line-height: 1.55">Recording on a throttled connection: success screen shown, callback fails, customer charged with no order.</p></div>
+<div style="display: flex; flex-direction: column; gap: 4px"><p style="margin: 0; font-size: 13px; font-weight: 700; color: #3C4A5A">Steps to reproduce</p><p style="margin: 0; font-size: 15px; line-height: 1.55">Android 10, 3G profile with 2 s latency. Pay any bill, then lose the network for 5 seconds.</p></div>
+<div style="display: flex; flex-direction: column; gap: 4px"><p style="margin: 0; font-size: 13px; font-weight: 700; color: #3C4A5A">Recommended fix</p><p style="margin: 0; font-size: 15px; line-height: 1.55">Show a pending state with a reference number until the callback confirms.</p></div>
+<span style="align-self: flex-start; font-size: 13px; font-weight: 700; color: #13202E; background: #FFFFFF; border: 1px solid rgba(19,32,46,0.15); padding: 5px 11px; border-radius: 999px">Re-check: open</span>
+</article>
+</div>
+<div style="display: flex; flex-direction: column; gap: 18px">
+<span style="display: inline-flex; align-items: center; gap: 8px; background: #FFFFFF; border: 1px solid rgba(19,32,46,0.09); border-radius: 10px; padding: 6px 12px; font-size: 14px; font-weight: 500; color: #3C4A5A"><span style="width: 7px; height: 7px; border-radius: 50%; background: #C2511F"></span>Anatomy of a finding</span>
+<h2 id="anat-h" style="margin: 0; font-size: clamp(34px, 4vw, 52px); line-height: 1.06; font-weight: 700; letter-spacing: -0.035em">Every finding has the same six parts</h2>
+<div style="display: flex; flex-direction: column"><div style="display: flex; gap: 16px; padding: 18px 0; border-top: 1px solid rgba(19,32,46,0.1)"><span aria-hidden="true" style="flex: none; width: 10px; height: 10px; border-radius: 50%; background: #C2511F; margin-top: 7px"></span><div><h3 style="margin: 0 0 4px; font-size: 17px; font-weight: 700">ID and lens</h3><p style="margin: 0; font-size: 15px; line-height: 1.55; color: #3C4A5A">A unique reference and the lens it was found through, so every finding can be tracked to its fix.</p></div></div><div style="display: flex; gap: 16px; padding: 18px 0; border-top: 1px solid rgba(19,32,46,0.1)"><span aria-hidden="true" style="flex: none; width: 10px; height: 10px; border-radius: 50%; background: #C2511F; margin-top: 7px"></span><div><h3 style="margin: 0 0 4px; font-size: 17px; font-weight: 700">Severity</h3><p style="margin: 0; font-size: 15px; line-height: 1.55; color: #3C4A5A">How much harm it causes and how many people it affects. It sets the order of work.</p></div></div><div style="display: flex; gap: 16px; padding: 18px 0; border-top: 1px solid rgba(19,32,46,0.1)"><span aria-hidden="true" style="flex: none; width: 10px; height: 10px; border-radius: 50%; background: #C2511F; margin-top: 7px"></span><div><h3 style="margin: 0 0 4px; font-size: 17px; font-weight: 700">Evidence</h3><p style="margin: 0; font-size: 15px; line-height: 1.55; color: #3C4A5A">A screen recording, screenshot or log that anyone can replay. No finding without proof.</p></div></div><div style="display: flex; gap: 16px; padding: 18px 0; border-top: 1px solid rgba(19,32,46,0.1)"><span aria-hidden="true" style="flex: none; width: 10px; height: 10px; border-radius: 50%; background: #C2511F; margin-top: 7px"></span><div><h3 style="margin: 0 0 4px; font-size: 17px; font-weight: 700">Steps to reproduce</h3><p style="margin: 0; font-size: 15px; line-height: 1.55; color: #3C4A5A">The exact device, network and actions that trigger it, so your engineers see it first time.</p></div></div><div style="display: flex; gap: 16px; padding: 18px 0; border-top: 1px solid rgba(19,32,46,0.1)"><span aria-hidden="true" style="flex: none; width: 10px; height: 10px; border-radius: 50%; background: #C2511F; margin-top: 7px"></span><div><h3 style="margin: 0 0 4px; font-size: 17px; font-weight: 700">Recommended fix</h3><p style="margin: 0; font-size: 15px; line-height: 1.55; color: #3C4A5A">A specific change your team can implement, written for your stack.</p></div></div><div style="display: flex; gap: 16px; padding: 18px 0; border-top: 1px solid rgba(19,32,46,0.1)"><span aria-hidden="true" style="flex: none; width: 10px; height: 10px; border-radius: 50%; background: #C2511F; margin-top: 7px"></span><div><h3 style="margin: 0 0 4px; font-size: 17px; font-weight: 700">Re-check status</h3><p style="margin: 0; font-size: 15px; line-height: 1.55; color: #3C4A5A">Open, fixed or confirmed. Updated after the re-check with fresh evidence.</p></div></div></div>
+</div>
+</div>
+</section>
+
+<section aria-labelledby="sev-h" style="padding: 0 24px 120px">
+<div style="max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 22px">
+<span style="display: inline-flex; align-items: center; gap: 8px; background: #FFFFFF; border: 1px solid rgba(19,32,46,0.09); border-radius: 10px; padding: 6px 12px; font-size: 14px; font-weight: 500; color: #3C4A5A"><span style="width: 7px; height: 7px; border-radius: 50%; background: #C2511F"></span>Severity</span>
+<h2 id="sev-h" style="margin: 0; text-align: center; font-size: clamp(36px, 4.4vw, 56px); line-height: 1.08; font-weight: 700; letter-spacing: -0.035em">A severity that sets the order of work</h2>
+<div style="width: 100%; margin-top: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 18px"><div style="background: #FFFFFF; border: 1px solid rgba(19,32,46,0.08); border-radius: 20px; padding: 26px; display: flex; flex-direction: column; gap: 14px"><span style="align-self: flex-start; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 500; background: #13202E; color: #FFFFFF; border: 1px solid rgba(19,32,46,0.15); padding: 6px 12px; border-radius: 8px">Critical</span><p style="margin: 0; font-size: 15px; line-height: 1.6; color: #3C4A5A">Blocks a core task or causes harm: lost money, exposed data, people locked out. Fix before anything else.</p></div><div style="background: #FFFFFF; border: 1px solid rgba(19,32,46,0.08); border-radius: 20px; padding: 26px; display: flex; flex-direction: column; gap: 14px"><span style="align-self: flex-start; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 500; background: #3C4A5A; color: #FFFFFF; border: 1px solid rgba(19,32,46,0.15); padding: 6px 12px; border-radius: 8px">Major</span><p style="margin: 0; font-size: 15px; line-height: 1.6; color: #3C4A5A">Causes real failure or confusion for many users, with a painful workaround at best.</p></div><div style="background: #FFFFFF; border: 1px solid rgba(19,32,46,0.08); border-radius: 20px; padding: 26px; display: flex; flex-direction: column; gap: 14px"><span style="align-self: flex-start; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 500; background: #E8E5DF; color: #13202E; border: 1px solid rgba(19,32,46,0.15); padding: 6px 12px; border-radius: 8px">Minor</span><p style="margin: 0; font-size: 15px; line-height: 1.6; color: #3C4A5A">Friction or inconsistency that slows people down but doesn’t stop them.</p></div><div style="background: #FFFFFF; border: 1px solid rgba(19,32,46,0.08); border-radius: 20px; padding: 26px; display: flex; flex-direction: column; gap: 14px"><span style="align-self: flex-start; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 500; background: #FFFFFF; color: #13202E; border: 1px solid rgba(19,32,46,0.15); padding: 6px 12px; border-radius: 8px">Passed</span><p style="margin: 0; font-size: 15px; line-height: 1.6; color: #3C4A5A">Inspected and working as intended. Recorded so you know what we checked.</p></div></div>
+</div>
+</section>
+
+<section aria-labelledby="rep-h" style="padding: 0 24px 120px">
+<div style="max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: 36px">
+<div style="display: flex; flex-direction: column; gap: 18px; align-items: flex-start; max-width: 720px">
+<span style="display: inline-flex; align-items: center; gap: 8px; background: #FFFFFF; border: 1px solid rgba(19,32,46,0.09); border-radius: 10px; padding: 6px 12px; font-size: 14px; font-weight: 500; color: #3C4A5A"><span style="width: 7px; height: 7px; border-radius: 50%; background: #C2511F"></span>The report</span>
+<h2 id="rep-h" style="margin: 0; font-size: clamp(36px, 4.4vw, 56px); line-height: 1.08; font-weight: 700; letter-spacing: -0.035em">What’s in your report</h2>
+<p style="margin: 0; font-size: 18px; line-height: 1.6; color: #3C4A5A">Written for two readers: the team that fixes the problems, and the leaders who decide what to fund first.</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 18px"><div style="display: flex; flex-direction: column; gap: 8px; padding: 26px; background: #FFFFFF; border: 1px solid rgba(19,32,46,0.08); border-radius: 20px"><h3 style="margin: 0; font-size: 19px; font-weight: 700; letter-spacing: -0.01em">Executive summary</h3><p style="margin: 0; font-size: 15px; line-height: 1.6; color: #3C4A5A">One page for leaders: what we found, what it costs you, and what to fund first.</p></div><div style="display: flex; flex-direction: column; gap: 8px; padding: 26px; background: #FFFFFF; border: 1px solid rgba(19,32,46,0.08); border-radius: 20px"><h3 style="margin: 0; font-size: 19px; font-weight: 700; letter-spacing: -0.01em">Findings register</h3><p style="margin: 0; font-size: 15px; line-height: 1.6; color: #3C4A5A">Every finding with its ID, lens, severity, evidence and fix.</p></div><div style="display: flex; flex-direction: column; gap: 8px; padding: 26px; background: #FFFFFF; border: 1px solid rgba(19,32,46,0.08); border-radius: 20px"><h3 style="margin: 0; font-size: 19px; font-weight: 700; letter-spacing: -0.01em">Lens scorecards</h3><p style="margin: 0; font-size: 15px; line-height: 1.6; color: #3C4A5A">How the product performs through each of the five lenses.</p></div><div style="display: flex; flex-direction: column; gap: 8px; padding: 26px; background: #FFFFFF; border: 1px solid rgba(19,32,46,0.08); border-radius: 20px"><h3 style="margin: 0; font-size: 19px; font-weight: 700; letter-spacing: -0.01em">Evidence library</h3><p style="margin: 0; font-size: 15px; line-height: 1.6; color: #3C4A5A">Recordings and screenshots behind every finding.</p></div><div style="display: flex; flex-direction: column; gap: 8px; padding: 26px; background: #FFFFFF; border: 1px solid rgba(19,32,46,0.08); border-radius: 20px"><h3 style="margin: 0; font-size: 19px; font-weight: 700; letter-spacing: -0.01em">Fix plan</h3><p style="margin: 0; font-size: 15px; line-height: 1.6; color: #3C4A5A">Findings grouped into a practical order of work for your team.</p></div></div>
+</div>
+</section>
+
+<section aria-labelledby="price-h" style="padding: 0 24px 120px">
+<div style="max-width: 1240px; margin: 0 auto; background: #13202E; border-radius: 30px; padding: 64px 56px; box-sizing: border-box; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 48px; align-items: center">
+<div style="display: flex; flex-direction: column; gap: 18px">
+<h2 id="price-h" style="margin: 0; font-size: clamp(34px, 4vw, 52px); line-height: 1.06; font-weight: 700; letter-spacing: -0.035em; color: #FFFFFF">One fixed price, agreed before we start</h2>
+<p style="margin: 0; font-size: 18px; line-height: 1.6; color: #D5DAE0">No hourly billing and no surprises. The price depends on the size of the inspection, and it includes the re-check. [PRICING DETAILS]</p>
+</div>
+<div style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 22px; padding: 32px"><p style="margin: 0 0 16px; font-size: 16px; font-weight: 700; color: #FFFFFF">What shapes the scope</p><ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px"><li style="display: flex; gap: 12px; font-size: 16px; line-height: 1.5; color: #FFFFFF"><span aria-hidden="true" style="flex: none; width: 8px; height: 8px; border-radius: 2px; background: #C2511F; margin-top: 8px"></span>How many journeys are in scope</li><li style="display: flex; gap: 12px; font-size: 16px; line-height: 1.5; color: #FFFFFF"><span aria-hidden="true" style="flex: none; width: 8px; height: 8px; border-radius: 2px; background: #C2511F; margin-top: 8px"></span>Which platforms: web, Android, iOS, USSD</li><li style="display: flex; gap: 12px; font-size: 16px; line-height: 1.5; color: #FFFFFF"><span aria-hidden="true" style="flex: none; width: 8px; height: 8px; border-radius: 2px; background: #C2511F; margin-top: 8px"></span>Which of the five lenses you need</li><li style="display: flex; gap: 12px; font-size: 16px; line-height: 1.5; color: #FFFFFF"><span aria-hidden="true" style="flex: none; width: 8px; height: 8px; border-radius: 2px; background: #C2511F; margin-top: 8px"></span>Whether we interview users or staff</li></ul></div>
+</div>
+</section>
+
+<section id="contact" aria-labelledby="cta-h" style="padding: 0 24px 64px">
+<div style="position: relative; max-width: 1240px; margin: 0 auto; background: #13202E; border-radius: 30px; overflow: hidden; padding: 96px 48px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 24px">
+<svg aria-hidden="true" width="620" height="620" viewBox="0 0 351 351" style="position: absolute; right: -160px; bottom: -220px; opacity: 0.12"><g fill="#C2511F"><path d="M251.4 308.6C246.1 320.4 239.6 331.9 231.7 341.8C297.2 319.8 345.4 260.2 350.7 188.7L327.4 188.7C298.9 188.7 276.1 211.4 271.4 239.4C267.2 265.3 260.4 288.8 251.4 308.6Z"/><path d="M199.9 188.7C229.7 188.7 254 213.5 248.6 242.8C236.7 306.3 208.4 351 175.5 351C133.8 351 99.7 279.4 96.6 188.7L199.9 188.7Z"/><path d="M272.1 115.4C276.4 143.7 299.4 166.7 328.1 166.7L351 166.7C347.4 93.3 298.5 31.7 231.7 9.2C239.6 19.1 246.1 30.6 251.4 42.4C260.8 63.2 267.8 88 272.1 115.4Z"/><path d="M249.4 113.2C254.4 142.3 230.1 166.7 200.6 166.7L96.5 166.7C98.6 73.9 133.2 0 175.5 0C209.3 0 238.1 47 249.4 113.2Z"/><path d="M74.6 166.7C75.6 119.3 84.6 75.6 99.6 42.4C104.9 30.6 111.4 19.1 119.3 9.2C52.5 31.7 3.6 93.3 0 166.7L74.6 166.7Z"/><path d="M0.3 188.7C5.6 260.2 53.8 319.8 119.3 341.8C111.4 331.9 104.9 320.4 99.6 308.6C85.1 276.5 76.1 234.4 74.7 188.7L0.3 188.7Z"/></g></svg>
+<h2 id="cta-h" style="position: relative; margin: 0; max-width: 12em; font-size: clamp(40px, 5.4vw, 72px); line-height: 1.03; font-weight: 700; letter-spacing: -0.04em; color: #FFFFFF">Where’s the rust in your product?</h2>
+<p style="position: relative; margin: 0; max-width: 32em; font-size: 18px; line-height: 1.6; color: #D5DAE0">Tell us what you’ve built and who uses it. We’ll reply within [RESPONSE TIME] with a proposed scope and price.</p>
+<div style="position: relative; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 8px">
+<a href="mailto:[YOUR EMAIL]" style="color: #FFFFFF; text-decoration: none; font-size: 16px; font-weight: 700; padding: 15px 24px; border-radius: 12px; background: #C2511F">Request an audit</a>
+<a href="Process.dc.html" style="color: #FFFFFF; text-decoration: none; font-size: 16px; font-weight: 600; padding: 14px 22px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.3)">How an audit works</a>
+</div>
+</div>
+</section>
+
+<footer style="padding: 24px 24px 48px">
+<div style="max-width: 1180px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 40px; padding-top: 40px; border-top: 1px solid rgba(19,32,46,0.1)">
+<div style="flex: 1 1 280px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; gap: 10px"><svg width="24" height="24" viewBox="0 0 351 351" aria-hidden="true"><g fill="#C2511F"><path d="M251.4 308.6C246.1 320.4 239.6 331.9 231.7 341.8C297.2 319.8 345.4 260.2 350.7 188.7L327.4 188.7C298.9 188.7 276.1 211.4 271.4 239.4C267.2 265.3 260.4 288.8 251.4 308.6Z"/><path d="M199.9 188.7C229.7 188.7 254 213.5 248.6 242.8C236.7 306.3 208.4 351 175.5 351C133.8 351 99.7 279.4 96.6 188.7L199.9 188.7Z"/><path d="M272.1 115.4C276.4 143.7 299.4 166.7 328.1 166.7L351 166.7C347.4 93.3 298.5 31.7 231.7 9.2C239.6 19.1 246.1 30.6 251.4 42.4C260.8 63.2 267.8 88 272.1 115.4Z"/><path d="M249.4 113.2C254.4 142.3 230.1 166.7 200.6 166.7L96.5 166.7C98.6 73.9 133.2 0 175.5 0C209.3 0 238.1 47 249.4 113.2Z"/><path d="M74.6 166.7C75.6 119.3 84.6 75.6 99.6 42.4C104.9 30.6 111.4 19.1 119.3 9.2C52.5 31.7 3.6 93.3 0 166.7L74.6 166.7Z"/><path d="M0.3 188.7C5.6 260.2 53.8 319.8 119.3 341.8C111.4 331.9 104.9 320.4 99.6 308.6C85.1 276.5 76.1 234.4 74.7 188.7L0.3 188.7Z"/></g></svg><span style="font-size: 19px; font-weight: 800">Bayrust</span></div>
+<p style="margin: 0; max-width: 22em; font-size: 15px; line-height: 1.6; color: #3C4A5A">Software quality audits for teams that build. Kigali, Rwanda.</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 40px 72px">
+<div style="display: flex; flex-direction: column; gap: 10px"><p style="margin: 0 0 4px; font-size: 14px; font-weight: 700">Company</p><a href="Lenses.dc.html" style="font-size: 15px; color: #3C4A5A; text-decoration: none">Five lenses</a><a href="Process.dc.html" style="font-size: 15px; color: #3C4A5A; text-decoration: none">How it works</a><a href="Work.dc.html" style="font-size: 15px; color: #3C4A5A; text-decoration: none">Our work</a><a href="Main.dc.html#faq" style="font-size: 15px; color: #3C4A5A; text-decoration: none">FAQ</a></div>
+<div style="display: flex; flex-direction: column; gap: 10px"><p style="margin: 0 0 4px; font-size: 14px; font-weight: 700">Contact</p><a href="mailto:[YOUR EMAIL]" style="font-size: 15px; color: #3C4A5A; text-decoration: none">[YOUR EMAIL]</a><span style="font-size: 15px; color: #3C4A5A">[LINKEDIN]</span><span style="font-size: 15px; color: #3C4A5A">Kigali, Rwanda</span></div>
+</div>
+</div>
+<p style="max-width: 1180px; margin: 32px auto 0; font-size: 14px; color: #3C4A5A">© 2026 Bayrust Ltd</p>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":6000}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>
