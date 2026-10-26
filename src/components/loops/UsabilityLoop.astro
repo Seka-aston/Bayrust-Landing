@@ -1,0 +1,477 @@
+---
+// Fig. 2, Usability: a customer sends money on a phone, stalls when the fee appears only after the PIN,
+// and the hesitation is filed as a finding. Shared scene parts and state classes are in src/styles/loop.css.
+import Phone from './Phone.astro';
+import Tracker from './Tracker.astro';
+import Finding from './Finding.astro';
+import '../../styles/loop.css';
+
+const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫'];
+---
+
+<figure
+  class="loop u-loop"
+  data-loop="usability"
+  role="img"
+  aria-label="Fig. 2, usability. A customer sends 20,000 francs on a phone. After entering the PIN, a 400 franc fee appears for the first time and the customer hesitates for 6.2 seconds. Bayrust logs it as a high-severity finding: show the fee on the Amount screen."
+>
+  <div class="loop-stage" aria-hidden="true">
+    <div class="loop-scene">
+      <span class="loop-chip glass">Fig. 2 · Journey rig</span>
+
+      <Phone class="loop-phone">
+        <div class="u-strip">
+          <section class="u-scr u-home">
+            <p class="u-hello">Good morning,<strong>Aline</strong></p>
+            <div class="u-balance">
+              <span>Available balance</span>
+              <strong>RWF 84,500</strong>
+              <em>•••• 4417</em>
+            </div>
+            <div class="u-actions">
+              <div class="u-action u-action--main"><i></i>Send money<b>›</b><span class="tap" data-tap="1"></span></div>
+              <div class="u-action"><i></i>Pay a bill<b>›</b></div>
+              <div class="u-action"><i></i>Buy airtime<b>›</b></div>
+            </div>
+            <p class="u-recent-head">Recent</p>
+            <div class="u-recent">
+              <p><i>JM</i><span>Jean Mugisha<small>Yesterday</small></span><b>− 12,000</b></p>
+              <p><i>KC</i><span>Kigali Coffee<small>Mon</small></span><b>− 3,500</b></p>
+            </div>
+          </section>
+
+          <section class="u-scr u-amount">
+            <p class="u-title">‹ Send money</p>
+            <div class="u-to"><i>AU</i><span>Aline Uwase<small>078 123 4567</small></span></div>
+            <p class="u-label">Amount</p>
+            <p class="u-figure">RWF <span data-amount>0</span><i class="u-caret"></i></p>
+            <div class="u-keys">{keys.map((k) => <span data-key={k}>{k}</span>)}</div>
+            <div class="u-btn">Continue<span class="tap" data-tap="2"></span></div>
+          </section>
+
+          <section class="u-scr u-confirm">
+            <p class="u-title">Confirm payment</p>
+            <div class="u-summary">
+              <p><span>To</span><b>Aline Uwase</b></p>
+              <p><span>Amount</span><b>RWF 20,000</b></p>
+            </div>
+            <p class="u-label">Enter PIN</p>
+            <div class="u-pin"><i></i><i></i><i></i><i></i></div>
+            <div class="u-fee">
+              <div class="u-fee-inner">
+                <p class="u-fee-row"><span>Fee</span><b>RWF 400</b></p>
+                <p><span>Total</span><b>RWF 20,400</b></p>
+              </div>
+              <span class="loop-markup" data-m="1"><em class="loop-markup-tag">Fee shown late</em></span>
+            </div>
+            <div class="u-btn">Confirm<span class="tap" data-tap="3"></span></div>
+          </section>
+
+          <section class="u-scr u-done">
+            <div class="u-badge">
+              <svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9" pathLength="1"></path></svg>
+            </div>
+            <p class="u-done-title">Money sent</p>
+            <p class="u-done-sub">RWF 20,400 to Aline Uwase</p>
+            <div class="u-receipt"><span>Ref</span><b>TX 8F2K-41</b></div>
+          </section>
+        </div>
+      </Phone>
+
+      <Tracker
+        title="Send money journey"
+        meta="Session 14"
+        rows={[
+          { label: 'Open', value: '0.9 s' },
+          { label: 'Amount', value: '1.4 s' },
+          { label: 'Confirm', value: null },
+          { label: 'Done', value: '0.6 s' },
+        ]}
+      />
+
+      <svg class="loop-link" viewBox="0 0 520 340" preserveAspectRatio="none">
+        <path d="M184 182 C 200 182, 198 250, 214 250" pathLength="1"></path>
+        <circle cx="184" cy="182" r="2.2"></circle>
+      </svg>
+
+      <Finding
+        lens="Usability"
+        severity="High"
+        title="Fee appears only after the PIN step"
+        evidence={['Step 03 · Confirm', 'Hesitation 6.2 s']}
+        fix="Show the fee on the Amount screen"
+      />
+    </div>
+  </div>
+</figure>
+
+<script>
+  import { playLoop, countUp } from '../../scripts/loop';
+
+  const typeAmount = (root: HTMLElement) => {
+    const out = root.querySelector<HTMLElement>('[data-amount]')!;
+    ['2', '20', '200', '2,000', '20,000'].forEach((value, i) =>
+      setTimeout(() => {
+        out.textContent = value;
+        const key = root.querySelector<HTMLElement>(`[data-key="${i === 0 ? '2' : '0'}"]`)!;
+        key.classList.remove('is-pressed');
+        void key.offsetWidth;
+        key.classList.add('is-pressed');
+      }, i * 170),
+    );
+  };
+
+  const timer = (root: HTMLElement) => root.querySelector<HTMLElement>('[data-timer]')!;
+
+  document.querySelectorAll<HTMLElement>('[data-loop="usability"]').forEach((root) =>
+    playLoop(root, {
+      duration: 11400,
+      steps: [
+        { at: 200, add: 'is-in' },
+        { at: 1300, add: 'is-tap1' },
+        { at: 1800, add: 'is-s2 is-a1 is-v1', run: (r) => { r.querySelector('[data-amount]')!.textContent = '0'; timer(r).textContent = '0.0'; } },
+        { at: 2400, add: 'is-typing', run: typeAmount },
+        { at: 3500, add: 'is-tap2' },
+        { at: 4000, add: 'is-s3 is-a2 is-v2' },
+        { at: 4500, add: 'is-pin' },
+        { at: 5400, add: 'is-fee' },
+        { at: 5900, add: 'is-push is-mark1 is-v3 is-f3', run: (r) => countUp(timer(r), 6.2, 1600) },
+        { at: 6700, add: 'is-finding' },
+        { at: 8300, add: 'is-release is-tap3' },
+        { at: 8800, add: 'is-s4 is-a3 is-unmark1 is-unlink' },
+        { at: 9300, add: 'is-tick' },
+        { at: 9700, add: 'is-v4' },
+        { at: 10700, add: 'is-out' },
+      ],
+      still: ['is-in', 'is-s3', 'is-a2', 'is-v1', 'is-v2', 'is-v3', 'is-f3', 'is-pin', 'is-fee', 'is-mark1', 'is-finding'],
+      settle: (r) => {
+        r.querySelector('[data-amount]')!.textContent = '20,000';
+        timer(r).textContent = '6.2';
+      },
+    }),
+  );
+</script>
+
+<style>
+  /* Screens slide past inside the phone */
+  .u-strip {
+    --screen: 0;
+    display: flex;
+    width: 400%;
+    height: 100%;
+    transform: translateX(calc(var(--screen) * -25%));
+    transition: transform 650ms var(--ease);
+  }
+
+  .u-loop.is-s2 .u-strip { --screen: 1; }
+  .u-loop.is-s3 .u-strip { --screen: 2; }
+  .u-loop.is-s4 .u-strip { --screen: 3; }
+
+  .u-scr {
+    position: relative;
+    width: 25%;
+    height: 100%;
+    padding: 3.1em 1.05em 1.1em;
+    display: flex;
+    flex-direction: column;
+    font-size: 0.86em;
+  }
+
+  .u-scr p { margin: 0; }
+
+  /* Screen 1: home */
+  .u-hello {
+    font-size: 0.9em;
+    color: var(--steel);
+    line-height: 1.3;
+  }
+
+  .u-hello strong {
+    display: block;
+    font-size: 1.5em;
+    color: var(--navy);
+  }
+
+  .u-balance {
+    position: relative;
+    margin-top: 0.9em;
+    padding: 1em 1.1em;
+    border-radius: 1.1em;
+    color: #fff;
+    overflow: hidden;
+    background:
+      radial-gradient(90% 120% at 100% 0%, rgba(194, 81, 31, 0.85), transparent 60%),
+      linear-gradient(135deg, #24384d, #13202e 70%);
+    box-shadow: 0 0.8em 1.6em -0.8em rgba(19, 32, 46, 0.6);
+  }
+
+  .u-balance span { display: block; font-size: 0.78em; color: var(--mist); }
+  .u-balance strong { display: block; margin-top: 0.2em; font-size: 1.45em; letter-spacing: -0.01em; }
+  .u-balance em { display: block; margin-top: 0.8em; font-style: normal; font-family: var(--font-mono); font-size: 0.72em; color: var(--fog); }
+
+  .u-actions {
+    margin-top: 1em;
+    display: grid;
+    gap: 0.55em;
+  }
+
+  .u-action {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    padding: 0.7em 0.8em;
+    border-radius: 0.9em;
+    background: var(--paper);
+    font-weight: 600;
+  }
+
+  .u-action i {
+    width: 1.8em;
+    height: 1.8em;
+    border-radius: 0.6em;
+    background: linear-gradient(135deg, #d5dae0, #b8c0c9);
+  }
+
+  .u-action b { margin-left: auto; color: var(--steel); }
+
+  .u-action--main {
+    background: #fff;
+    box-shadow: 0 0 0 1px var(--line-strong), 0 0.5em 1em -0.6em rgba(19, 32, 46, 0.35);
+  }
+
+  .u-action--main i { background: linear-gradient(135deg, #e0733f, #c2511f); }
+
+  .u-recent-head {
+    margin-top: 1.1em !important;
+    font-size: 0.8em;
+    font-weight: 600;
+    color: var(--steel);
+  }
+
+  .u-recent p {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    padding: 0.5em 0;
+    border-bottom: 1px solid var(--line);
+    line-height: 1.2;
+  }
+
+  .u-recent i {
+    display: grid;
+    place-items: center;
+    width: 2em;
+    height: 2em;
+    border-radius: 50%;
+    font-style: normal;
+    font-size: 0.72em;
+    font-weight: 700;
+    color: var(--steel);
+    background: var(--stone);
+  }
+
+  .u-recent span { font-size: 0.86em; font-weight: 600; }
+  .u-recent small { display: block; font-weight: 400; color: var(--steel); }
+  .u-recent b { margin-left: auto; font-size: 0.86em; font-variant-numeric: tabular-nums; }
+
+  /* Screen 2: amount and keypad */
+  .u-title { font-weight: 700; font-size: 1.1em; }
+
+  .u-to {
+    margin-top: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    padding: 0.55em 0.7em;
+    border-radius: 0.9em;
+    background: var(--paper);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .u-to i {
+    display: grid;
+    place-items: center;
+    width: 2.2em;
+    height: 2.2em;
+    border-radius: 50%;
+    font-style: normal;
+    font-size: 0.8em;
+    color: #fff;
+    background: linear-gradient(135deg, #3c4a5a, #13202e);
+  }
+
+  .u-to small { display: block; font-weight: 400; font-size: 0.82em; color: var(--steel); }
+
+  .u-label {
+    margin-top: 1em !important;
+    font-size: 0.8em;
+    color: var(--steel);
+  }
+
+  .u-figure {
+    display: flex;
+    align-items: center;
+    gap: 0.25em;
+    font-size: 1.75em;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .u-caret {
+    width: 0.08em;
+    height: 1em;
+    background: var(--rust);
+    opacity: 0;
+  }
+
+  .u-loop.is-s2 .u-caret { animation: u-blink 900ms steps(1) infinite; }
+  .u-loop.is-s3 .u-caret { animation: none; }
+
+  @keyframes u-blink {
+    50% { opacity: 1; }
+  }
+
+  .u-keys {
+    margin-top: auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.3em;
+    font-size: 1.05em;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .u-keys span {
+    padding: 0.4em 0;
+    border-radius: 0.6em;
+    transition: background 300ms var(--ease);
+  }
+
+  .u-keys span:global(.is-pressed) { animation: u-key 260ms var(--ease); }
+
+  @keyframes u-key {
+    30% { background: var(--stone); }
+  }
+
+  .u-btn {
+    position: relative;
+    margin-top: 0.8em;
+    padding: 0.85em;
+    border-radius: 99em;
+    text-align: center;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(180deg, #24384d, #13202e);
+    box-shadow: 0 0.6em 1.2em -0.6em rgba(19, 32, 46, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+
+  /* Screen 3: PIN, then the late fee */
+  .u-summary {
+    margin-top: 0.9em;
+    padding: 0.4em 0.8em;
+    border-radius: 0.9em;
+    background: var(--paper);
+  }
+
+  .u-summary p,
+  .u-fee-inner p {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.45em 0;
+  }
+
+  .u-summary span,
+  .u-fee-inner span { color: var(--steel); }
+
+  .u-pin {
+    margin-top: 0.6em;
+    display: flex;
+    gap: 0.9em;
+  }
+
+  .u-pin i {
+    width: 0.9em;
+    height: 0.9em;
+    border-radius: 50%;
+    border: 0.12em solid var(--navy);
+    transition: background 200ms var(--ease), transform 300ms var(--pop);
+  }
+
+  .u-loop.is-pin .u-pin i { background: var(--navy); transform: scale(1.1); }
+  .u-pin i:nth-child(2) { transition-delay: 180ms; }
+  .u-pin i:nth-child(3) { transition-delay: 360ms; }
+  .u-pin i:nth-child(4) { transition-delay: 540ms; }
+
+  .u-fee {
+    position: relative;
+    display: grid;
+    grid-template-rows: 0fr;
+    margin-top: 0.8em;
+    transition: grid-template-rows 600ms var(--ease);
+  }
+
+  .u-loop.is-fee .u-fee { grid-template-rows: 1fr; }
+
+  .u-fee-inner {
+    position: relative;
+    min-height: 0;
+    overflow: hidden;
+    padding: 0 0.8em;
+    border-radius: 0.9em;
+    background: var(--rust-tint);
+  }
+
+  .u-fee-row b { color: var(--rust-text); }
+
+  .u-confirm .u-btn { margin-top: auto; }
+
+  /* Screen 4: done */
+  .u-done { align-items: center; justify-content: center; text-align: center; }
+
+  .u-badge {
+    width: 5em;
+    height: 5em;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(circle at 30% 25%, #3c4a5a, #13202e 70%);
+    box-shadow: 0 0 0 0.6em rgba(19, 32, 46, 0.06), 0 1em 2em -0.8em rgba(19, 32, 46, 0.7);
+    transform: scale(0.4);
+    opacity: 0;
+    transition: transform 600ms var(--pop), opacity 300ms var(--ease);
+  }
+
+  .u-badge svg { width: 2.6em; height: 2.6em; }
+
+  .u-badge path {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 500ms var(--ease) 250ms;
+  }
+
+  .u-loop.is-tick .u-badge { transform: none; opacity: 1; }
+  .u-loop.is-tick .u-badge path { stroke-dashoffset: 0; }
+
+  .u-done-title { margin-top: 1.1em !important; font-size: 1.3em; font-weight: 700; }
+  .u-done-sub { margin-top: 0.2em !important; color: var(--steel); }
+
+  .u-receipt {
+    margin-top: 1.4em;
+    display: flex;
+    gap: 0.8em;
+    padding: 0.6em 1em;
+    border-radius: 0.8em;
+    background: var(--paper);
+    font-family: var(--font-mono);
+    font-size: 0.8em;
+  }
+
+  .u-receipt span { color: var(--steel); }
+</style>

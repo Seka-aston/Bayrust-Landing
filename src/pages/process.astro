@@ -3,6 +3,9 @@ import Layout from '../layouts/Layout.astro';
 import Eyebrow from '../components/Eyebrow.astro';
 import { stages, findingParts, severities, reportContents, scopeFactors } from '../data/process';
 import { site } from '../data/site';
+
+// A small animated preview for each report section, in the order of reportContents.
+const previews = ['summary', 'register', 'scores', 'evidence', 'plan'];
 ---
 
 <Layout title="How it works" current="process">
@@ -23,7 +26,7 @@ import { site } from '../data/site';
   </section>
 
   <!-- Timeline -->
-  <section aria-label="Audit stages" class="stages">
+  <section aria-label="Audit stages" class="stages" data-stages>
     <ol>
       {
         stages.map((stage, i) => (
@@ -57,28 +60,28 @@ import { site } from '../data/site';
 
   <!-- Anatomy of a finding -->
   <section aria-labelledby="anat-h" class="section">
-    <div class="container--wide anatomy">
+    <div class="container--wide anatomy" data-anatomy>
       <div class="anatomy-sample">
         <article aria-label="Sample finding" class="finding">
           <span class="finding-hole" aria-hidden="true"></span>
           <div class="finding-top">
-            <span class="mono">AUD-014 · System logic</span>
-            <span class="mono finding-sev">Major</span>
+            <span class="mono finding-id" data-part="1">AUD-014 · System logic</span>
+            <span class="mono finding-sev" data-part="2">Major</span>
           </div>
           <h3>Payment marked successful before the mobile-money callback returns</h3>
-          <div class="finding-part">
+          <div class="finding-part" data-part="3">
             <p>Evidence</p>
             <p>Recording on a throttled connection: success screen shown, callback fails, customer charged with no order.</p>
           </div>
-          <div class="finding-part">
+          <div class="finding-part" data-part="4">
             <p>Steps to reproduce</p>
             <p>Android 10, 3G profile with 2 s latency. Pay any bill, then lose the network for 5 seconds.</p>
           </div>
-          <div class="finding-part">
+          <div class="finding-part" data-part="5">
             <p>Recommended fix</p>
             <p>Show a pending state with a reference number until the callback confirms.</p>
           </div>
-          <span class="finding-status">Re-check: open</span>
+          <span class="finding-status" data-part="6">Re-check: <span data-status>open</span></span>
         </article>
       </div>
       <div class="anatomy-copy">
@@ -86,8 +89,8 @@ import { site } from '../data/site';
         <h2 id="anat-h">Every finding has the same six parts</h2>
         <div class="parts">
           {
-            findingParts.map((part) => (
-              <div class="part">
+            findingParts.map((part, i) => (
+              <div class="part" data-part={i + 1}>
                 <span aria-hidden="true" />
                 <div>
                   <h3>{part.name}</h3>
@@ -129,10 +132,36 @@ import { site } from '../data/site';
         <h2 id="rep-h" class="display-2">What’s in your report</h2>
         <p class="lead">Written for two readers: the team that fixes the problems, and the leaders who decide what to fund first.</p>
       </div>
-      <div class="report-grid">
+      <div class="report-grid" data-report-grid>
         {
-          reportContents.map((item) => (
+          reportContents.map((item, i) => (
             <div class="card">
+              <div class:list={['rp', `rp--${previews[i]}`]} aria-hidden="true">
+                {previews[i] === 'summary' && (
+                  <>
+                    <b>20</b>
+                    <small>findings</small>
+                    <i style="--w: 92%" />
+                    <i style="--w: 70%" />
+                    <i style="--w: 48%" />
+                  </>
+                )}
+                {previews[i] === 'register' && [1, 1, 0, 0].map((urgent) => <p class:list={{ 'is-urgent': urgent }}><span /><i /></p>)}
+                {previews[i] === 'scores' && [62, 38, 80, 54, 30].map((h) => <i style={`--h: ${h}%`} />)}
+                {previews[i] === 'evidence' && (
+                  <>
+                    <span class="rp-play" />
+                    <span class="rp-bar"><i /></span>
+                  </>
+                )}
+                {previews[i] === 'plan' &&
+                  ['Now', 'Next', 'Later'].map((col, c) => (
+                    <p>
+                      <small>{col}</small>
+                      {Array.from({ length: 3 - c }, () => <i />)}
+                    </p>
+                  ))}
+              </div>
               <h3>{item.name}</h3>
               <p>{item.body}</p>
             </div>
@@ -168,6 +197,72 @@ import { site } from '../data/site';
     </div>
   </section>
 </Layout>
+
+<script>
+  import { playLoop } from '../scripts/loop';
+
+  // Timeline: as the page scrolls, the rail fills down, each stage lights up when the fill reaches it,
+  // and each card rises in as it enters the view.
+  const timeline = document.querySelector<HTMLElement>('[data-stages]');
+  if (timeline && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    timeline.classList.add('is-scrolly');
+    const items = [...timeline.querySelectorAll<HTMLElement>('li')];
+    let queued = false;
+    const update = () => {
+      queued = false;
+      const anchor = innerHeight * 0.6;
+      items.forEach((li) => {
+        const line = li.querySelector('.line')!.getBoundingClientRect();
+        const num = li.querySelector('.num')!.getBoundingClientRect();
+        li.style.setProperty('--fill', Math.min(1, Math.max(0, (anchor - line.top) / line.height)).toFixed(3));
+        li.classList.toggle('is-reached', anchor > num.top + num.height / 2);
+        if (li.getBoundingClientRect().top < innerHeight * 0.92) li.classList.add('is-seen');
+      });
+    };
+    const queue = () => {
+      if (!queued) requestAnimationFrame(update);
+      queued = true;
+    };
+    addEventListener('scroll', queue, { passive: true });
+    addEventListener('resize', queue);
+    update();
+  }
+
+  // What's in your report: the section previews draw themselves while on screen.
+  document.querySelectorAll<HTMLElement>('[data-report-grid]').forEach((root) =>
+    playLoop(root, {
+      duration: 9000,
+      steps: [
+        { at: 300, add: 'is-on' },
+        { at: 8300, add: 'is-off' },
+      ],
+      still: ['is-on'],
+    }),
+  );
+
+  // Anatomy of a finding: walk the six parts in turn, lighting each on the card and in the list,
+  // then take the re-check from open to fixed to confirmed.
+  const status = (root: HTMLElement, text: string) => {
+    root.querySelector<HTMLElement>('[data-status]')!.textContent = text;
+  };
+  const beat = (n: number) => (root: HTMLElement) => {
+    root.dataset.beat = String(n);
+  };
+
+  document.querySelectorAll<HTMLElement>('[data-anatomy]').forEach((root) =>
+    playLoop(root, {
+      duration: 14400,
+      steps: [
+        { at: 0, add: 'is-live', run: (r) => { beat(0)(r); status(r, 'open'); } },
+        ...[1, 2, 3, 4, 5, 6].map((n, i) => ({ at: 600 + i * 1800, add: `is-b${n}`, run: beat(n) })),
+        { at: 10500, add: 'is-fixed', run: (r) => status(r, 'fixed') },
+        { at: 11400, add: 'is-confirmed', run: (r) => status(r, 'confirmed') },
+        { at: 12600, add: 'is-rest', run: beat(0) },
+      ],
+      still: [],
+    }),
+  );
+</script>
 
 <style>
   .intro {
@@ -263,6 +358,44 @@ import { site } from '../data/site';
     background: rgba(19, 32, 46, 0.12);
     margin-top: 8px;
   }
+
+  /* Scroll-driven timeline (added by the script, so it stays static without it) */
+  .is-scrolly .line {
+    position: relative;
+    overflow: hidden;
+    border-radius: 2px;
+  }
+
+  .is-scrolly .line::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, var(--rust), #e0733f);
+    transform: scaleY(var(--fill, 0));
+    transform-origin: top;
+  }
+
+  .is-scrolly .num {
+    transition: opacity 400ms ease, transform 600ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 500ms ease;
+  }
+
+  .is-scrolly li:not(.is-reached) .num {
+    opacity: 0.35;
+    transform: scale(0.82);
+  }
+
+  .is-scrolly li.is-reached .num { box-shadow: 0 0 0 6px rgba(194, 81, 31, 0.14); }
+
+  .is-scrolly .stage {
+    transition: opacity 600ms ease, transform 800ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 500ms ease;
+  }
+
+  .is-scrolly li:not(.is-seen) .stage {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+
+  .is-scrolly li.is-reached .stage { box-shadow: 0 24px 48px -28px rgba(19, 32, 46, 0.25); }
 
   .stage {
     background: var(--white);
@@ -438,6 +571,65 @@ import { site } from '../data/site';
     border-radius: 999px;
   }
 
+  /* The six parts light up in turn while the section is on screen */
+  .finding [data-part],
+  .part {
+    transition: background 400ms ease, box-shadow 400ms ease, opacity 400ms ease, color 400ms ease, transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .finding [data-part] { border-radius: 8px; }
+
+  .anatomy.is-live:not([data-beat='0']) .part { opacity: 0.45; }
+
+  .anatomy[data-beat='1'] .finding [data-part='1'],
+  .anatomy[data-beat='2'] .finding [data-part='2'],
+  .anatomy[data-beat='3'] .finding [data-part='3'],
+  .anatomy[data-beat='4'] .finding [data-part='4'],
+  .anatomy[data-beat='5'] .finding [data-part='5'] {
+    background: var(--white);
+    box-shadow: 0 0 0 8px var(--white), 0 0 0 10px var(--rust), 0 18px 30px -16px rgba(194, 81, 31, 0.6);
+  }
+
+  .anatomy[data-beat='2'] .finding [data-part='2'] {
+    background: var(--rust);
+    box-shadow: 0 0 0 4px var(--white), 0 0 0 6px var(--rust);
+    transform: scale(1.08);
+  }
+
+  .anatomy[data-beat='6'] .finding [data-part='6'] {
+    box-shadow: 0 0 0 4px var(--paper), 0 0 0 6px var(--rust);
+    transform: scale(1.06);
+  }
+
+  .anatomy.is-fixed .finding-status { color: var(--white); background: var(--steel); border-color: var(--steel); }
+  .anatomy.is-confirmed .finding-status { background: linear-gradient(135deg, #e0733f, #c2511f); border-color: var(--rust); }
+
+  .anatomy[data-beat='1'] .part[data-part='1'],
+  .anatomy[data-beat='2'] .part[data-part='2'],
+  .anatomy[data-beat='3'] .part[data-part='3'],
+  .anatomy[data-beat='4'] .part[data-part='4'],
+  .anatomy[data-beat='5'] .part[data-part='5'],
+  .anatomy[data-beat='6'] .part[data-part='6'] { opacity: 1; transform: translateX(6px); }
+
+  .part > span { transition: transform 400ms cubic-bezier(0.34, 1.5, 0.64, 1), box-shadow 400ms ease; }
+
+  .anatomy[data-beat='1'] .part[data-part='1'] > span,
+  .anatomy[data-beat='2'] .part[data-part='2'] > span,
+  .anatomy[data-beat='3'] .part[data-part='3'] > span,
+  .anatomy[data-beat='4'] .part[data-part='4'] > span,
+  .anatomy[data-beat='5'] .part[data-part='5'] > span,
+  .anatomy[data-beat='6'] .part[data-part='6'] > span { transform: scale(1.3); box-shadow: 0 0 0 5px rgba(194, 81, 31, 0.18); }
+
+  /* The tag sways a little, like it hangs from its hole */
+  @media (prefers-reduced-motion: no-preference) {
+    .anatomy.is-live .finding { animation: tag-sway 6s ease-in-out infinite; transform-origin: 32px 42px; }
+  }
+
+  @keyframes tag-sway {
+    0%, 100% { transform: rotate(-1.5deg); }
+    50% { transform: rotate(-0.4deg); }
+  }
+
   .anatomy-copy {
     display: flex;
     flex-direction: column;
@@ -585,6 +777,206 @@ import { site } from '../data/site';
     font-weight: 700;
     letter-spacing: -0.01em;
   }
+
+  /* Report section previews */
+  .rp {
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+    height: 84px;
+    margin-bottom: 10px;
+    padding: 12px;
+    border-radius: 12px;
+    background:
+      radial-gradient(120% 120% at 100% 0%, rgba(194, 81, 31, 0.12), transparent 60%),
+      var(--ground);
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+
+  .rp p { margin: 0; }
+
+  .rp :is(i, span, b, small, p) { transition: transform 700ms var(--ease), opacity 500ms var(--ease); }
+
+  .report-grid.is-off .rp > * { opacity: 0; transition-duration: 400ms; transition-delay: 0ms !important; }
+
+  /* Executive summary: the headline number and three summary lines */
+  .rp--summary {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-content: start;
+    column-gap: 6px;
+    row-gap: 6px;
+  }
+
+  .rp--summary b {
+    font-size: 22px;
+    line-height: 1;
+    color: var(--rust-text);
+  }
+
+  .rp--summary small {
+    align-self: end;
+    font-size: 11px;
+    color: var(--steel);
+  }
+
+  .rp--summary i {
+    grid-column: 1 / -1;
+    width: var(--w);
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(19, 32, 46, 0.14);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  .rp--summary i:nth-of-type(2) { transition-delay: 120ms; }
+  .rp--summary i:nth-of-type(3) { transition-delay: 240ms; }
+
+  .report-grid:not(.is-on) .rp--summary :is(b, small) { opacity: 0; transform: translateY(6px); }
+  .report-grid.is-on .rp--summary i { transform: none; }
+
+  /* Findings register: rows slide in, highest severity first */
+  .rp--register { display: grid; gap: 6px; align-content: start; }
+
+  .rp--register p {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 10px;
+  }
+
+  .rp--register span {
+    flex: none;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--pebble);
+  }
+
+  .rp--register .is-urgent span { background: var(--rust); }
+
+  .rp--register p i {
+    height: 6px;
+    flex: 1;
+    border-radius: 3px;
+    background: rgba(19, 32, 46, 0.12);
+  }
+
+  .rp--register p:nth-child(2) { transition-delay: 110ms; }
+  .rp--register p:nth-child(3) { transition-delay: 220ms; }
+  .rp--register p:nth-child(4) { transition-delay: 330ms; }
+
+  .report-grid:not(.is-on) .rp--register p { opacity: 0; transform: translateX(-14px); }
+
+  /* Lens scorecards: one bar per lens */
+  .rp--scores {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+  }
+
+  .rp--scores i {
+    flex: 1;
+    height: var(--h);
+    border-radius: 4px 4px 2px 2px;
+    background: linear-gradient(180deg, #e0733f, var(--rust));
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition-timing-function: var(--pop) !important;
+  }
+
+  .rp--scores i:nth-child(2n) { background: linear-gradient(180deg, #3c4a5a, var(--navy)); }
+  .rp--scores i:nth-child(2) { transition-delay: 90ms; }
+  .rp--scores i:nth-child(3) { transition-delay: 180ms; }
+  .rp--scores i:nth-child(4) { transition-delay: 270ms; }
+  .rp--scores i:nth-child(5) { transition-delay: 360ms; }
+
+  .report-grid.is-on .rp--scores i { transform: none; }
+
+  /* Evidence library: a recording plays */
+  .rp--evidence {
+    position: relative;
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(120% 120% at 100% 0%, rgba(194, 81, 31, 0.55), transparent 60%),
+      linear-gradient(135deg, #24384d, var(--navy));
+  }
+
+  .rp-play {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    clip-path: circle(50%);
+    position: relative;
+  }
+
+  .rp-play::after {
+    content: '';
+    position: absolute;
+    left: 12px;
+    top: 9px;
+    border-left: 9px solid var(--navy);
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+  }
+
+  .report-grid:not(.is-on) .rp-play { transform: scale(0.6); opacity: 0; }
+
+  .rp-bar {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 10px;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.25);
+    overflow: hidden;
+  }
+
+  .rp-bar i {
+    display: block;
+    height: 100%;
+    background: #f0a37e;
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  .report-grid.is-on .rp-bar i { transform: none; transition: transform 6500ms linear 400ms; }
+
+  /* Fix plan: work drops into Now, Next and Later */
+  .rp--plan {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .rp--plan p { display: grid; align-content: start; gap: 4px; }
+
+  .rp--plan small {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--steel);
+  }
+
+  .rp--plan i {
+    height: 10px;
+    border-radius: 3px;
+    background: rgba(19, 32, 46, 0.14);
+    transition-timing-function: var(--pop) !important;
+  }
+
+  .rp--plan p:first-child i { background: linear-gradient(90deg, #e0733f, var(--rust)); }
+  .rp--plan p:nth-child(2) i { transition-delay: 200ms; }
+  .rp--plan p:nth-child(3) i { transition-delay: 400ms; }
+
+  .report-grid:not(.is-on) .rp--plan i { opacity: 0; transform: translateY(-10px); }
+
+  .report-grid.is-still .rp-bar i { transform: scaleX(0.4); }
 
   /* Pricing */
   .pricing {

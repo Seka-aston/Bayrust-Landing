@@ -1,0 +1,32 @@
+---
+// The frosted tracker card on the right of a lens figure: a title, a meta note and up to five rows.
+// A row value of null renders a live timer (<span data-timer>) that the figure's script counts up.
+interface Row {
+  label: string;
+  value: string | null;
+}
+
+interface Props {
+  title: string;
+  meta: string;
+  rows: Row[];
+}
+
+const { title, meta, rows } = Astro.props;
+---
+
+<div class="loop-side loop-tracker glass">
+  <p class="loop-tracker-head"><b>{title}</b><span>{meta}</span></p>
+  <div class="loop-rows">
+    <span class="loop-active"></span>
+    {
+      rows.map((row, i) => (
+        <div class="loop-row" data-r={i + 1}>
+          <i>{String(i + 1).padStart(2, '0')}</i>
+          <b>{row.label}</b>
+          <span>{row.value ?? <><span data-timer>0.0</span> s</>}</span>
+        </div>
+      ))
+    }
+  </div>
+</div>

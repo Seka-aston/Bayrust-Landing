@@ -27,6 +27,17 @@ npm run check    # check for errors
 | `src/styles/global.css` | Brand colour tokens and shared styles |
 | `public/` | Files served as-is, such as the favicon |
 | `design/` | The original Claude Design artboards, kept as reference |
+| `src/components/loops/` | The animated figures: Fig. 1 (`BayLoop`) and one loop per lens (Figs. 2–6), plus the shared phone, tracker and finding card |
+| `src/styles/loop.css` | Shared stage, glass cards, phone and state classes for the figures |
+| `src/scripts/loop.ts` | The small player that runs each figure's timeline |
+
+### The animated figures
+
+Each figure is a short scripted loop built in HTML and CSS, with no video files. A figure's script lists its steps (`{ at: ms, add: 'class names' }`) at the bottom of its component; `src/scripts/loop.ts` adds those classes on time, and CSS transitions do the motion. The state classes the shared parts respond to are listed at the top of the shared section in `src/styles/loop.css`.
+
+Loops only play while they are on screen. With reduced motion turned on, each figure shows one still frame instead, set by its `still` list. Below 480px wide (560px for Fig. 1) the figures switch to a portrait layout so their text stays readable.
+
+The names, amounts and timings shown in the figures are sample content.
 
 The files in `design/` are artboards from the Claude Design canvas (`.dc.html` format). They need the canvas runtime to render, so use the Astro site to preview.
 
@@ -59,10 +70,8 @@ Logomark: `brand/bayrust-logomark.svg`.
 - Contact details: email, LinkedIn, response time
 - Audit duration and pricing details
 - Case studies and testimonials (all placeholders)
-- The interactive inspection bay figure (to be built with the Anatomy skill)
 
 ## Next
 
-1. Build the inspection bay hero figure.
-2. Add Contact and About pages.
-3. Deploy the site.
+1. Add Contact and About pages.
+2. Deploy the site.

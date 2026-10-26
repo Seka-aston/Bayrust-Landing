@@ -4,6 +4,13 @@ import Eyebrow from '../components/Eyebrow.astro';
 import CheckList from '../components/CheckList.astro';
 import LensFigure from '../components/LensFigure.astro';
 import { lenses } from '../data/lenses';
+
+// The sample finding's cause, one link per lens it was found through.
+const chain = [
+  { lens: 'System logic', role: 'Cause', text: 'Success is shown before the payment callback returns.' },
+  { lens: 'Operational', role: 'Made worse', text: 'On 3G the callback arrives 2 s later, so the gap grows.' },
+  { lens: 'Usability', role: 'Felt as', text: 'Customers pay again, sure the first payment failed.' },
+];
 ---
 
 <Layout title="Five lenses" current="lenses">
@@ -71,7 +78,7 @@ import { lenses } from '../data/lenses';
           just the symptom.
         </p>
       </div>
-      <div class="sample">
+      <div class="sample" data-together>
         <div class="sample-card">
           <span class="sample-hole" aria-hidden="true"></span>
           <div class="sample-top">
@@ -80,15 +87,43 @@ import { lenses } from '../data/lenses';
           </div>
           <p class="sample-title">Payment marked successful before the mobile-money callback returns</p>
           <div class="sample-tags">
-            <span class="tag tag--rust">System logic</span>
-            <span class="tag">Operational</span>
-            <span class="tag">Usability</span>
+            {chain.map((link, i) => <span class:list={['tag', { 'tag--rust': i === 0 }]} data-l={i + 1}>{link.lens}</span>)}
           </div>
+          <ol class="sample-chain">
+            {
+              chain.map((link, i) => (
+                <li data-l={i + 1}>
+                  <span class="mono">{link.role}</span>
+                  {link.text}
+                </li>
+              ))
+            }
+          </ol>
+          <p class="sample-fix"><b>One fix</b>Show a pending state until the callback confirms.</p>
         </div>
       </div>
     </div>
   </section>
 </Layout>
+
+<script>
+  import { playLoop } from '../scripts/loop';
+
+  // Why five: the sample finding picks up each lens in turn, then the one fix for all three.
+  document.querySelectorAll<HTMLElement>('[data-together]').forEach((root) =>
+    playLoop(root, {
+      duration: 9600,
+      steps: [
+        { at: 600, add: 'is-l1' },
+        { at: 2200, add: 'is-l2' },
+        { at: 3800, add: 'is-l3' },
+        { at: 5400, add: 'is-fix' },
+        { at: 8700, add: 'is-out' },
+      ],
+      still: ['is-l1', 'is-l2', 'is-l3', 'is-fix'],
+    }),
+  );
+</script>
 
 <style>
   .intro {
@@ -208,6 +243,13 @@ import { lenses } from '../data/lenses';
     align-items: center;
     justify-content: center;
     padding: 20px;
+  }
+
+  /* A lens figure is its own plate, so the tinted ground steps aside for it. */
+  .figure-ground:has(.loop) {
+    min-height: 0;
+    padding: 0;
+    background: none;
   }
 
   .lens-bottom {
@@ -372,6 +414,81 @@ import { lenses } from '../data/lenses';
     border-color: var(--rust-text);
   }
 
+  .sample-chain {
+    margin: 2px 0 0;
+    padding: 14px 0 0;
+    list-style: none;
+    display: grid;
+    gap: 10px;
+    border-top: 1px solid rgba(19, 32, 46, 0.1);
+  }
+
+  .sample-chain li {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 12px;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  .sample-chain .mono {
+    padding-top: 2px;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--rust-text);
+  }
+
+  .sample-fix {
+    margin: 0;
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--white);
+    background: linear-gradient(135deg, #24384d, var(--navy));
+  }
+
+  .sample-fix b { margin-right: 8px; color: #f0a37e; }
+
+  /* Played while on screen: each lens lights its tag and adds its link, then the fix lands */
+  .sample[data-together] .tag,
+  .sample[data-together] .sample-chain li,
+  .sample[data-together] .sample-fix {
+    transition: opacity 500ms ease, transform 600ms cubic-bezier(0.34, 1.4, 0.64, 1), background 400ms ease, color 400ms ease, border-color 400ms ease;
+  }
+
+  .sample[data-together]:not(.is-still) .tag--rust { color: var(--navy); background: var(--white); border-color: rgba(19, 32, 46, 0.15); }
+
+  .sample[data-together]:not(.is-still) .sample-chain [data-l],
+  .sample[data-together]:not(.is-still) .sample-fix { opacity: 0; transform: translateX(-12px); }
+
+  .sample.is-l1 .tag[data-l='1'],
+  .sample.is-l2 .tag[data-l='2'],
+  .sample.is-l3 .tag[data-l='3'] {
+    color: var(--white);
+    background: var(--rust-text);
+    border-color: var(--rust-text);
+    transform: scale(1.06);
+  }
+
+  .sample[data-together].is-l1 .sample-chain [data-l='1'],
+  .sample[data-together].is-l2 .sample-chain [data-l='2'],
+  .sample[data-together].is-l3 .sample-chain [data-l='3'],
+  .sample[data-together].is-fix .sample-fix { opacity: 1; transform: none; }
+
+  .sample[data-together].is-out .sample-chain [data-l],
+  .sample[data-together].is-out .sample-fix { opacity: 0; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .sample[data-together] .sample-card { animation: tag-sway 6s ease-in-out infinite; transform-origin: 32px 40px; }
+  }
+
+  @keyframes tag-sway {
+    0%, 100% { transform: rotate(-1.5deg); }
+    50% { transform: rotate(-0.4deg); }
+  }
+
   @media (max-width: 640px) {
     .sample {
       padding: 28px 20px;
@@ -380,5 +497,7 @@ import { lenses } from '../data/lenses';
     .sample-card {
       padding: 24px 20px 24px 52px;
     }
+
+    .sample-chain li { grid-template-columns: 1fr; gap: 2px; }
   }
 </style>

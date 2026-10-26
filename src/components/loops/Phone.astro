@@ -1,0 +1,21 @@
+---
+// A modern phone for the animated figures; the screen content goes in the slot. Styles live in src/styles/loop.css.
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div class:list={['phone', className]}>
+  <div class="phone-glass">
+    <div class="phone-screen">
+      <span class="phone-island"></span>
+      <div class="phone-status">
+        <span>9:41</span>
+        <span class="phone-status-icons"><i></i><i></i><i></i><b></b></span>
+      </div>
+      <slot />
+    </div>
+  </div>
+</div>

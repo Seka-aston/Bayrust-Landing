@@ -1,0 +1,613 @@
+/* Shared parts of the animated figures: the stage, glass cards, the phone and the tap marker.
+   Everything inside a stage is sized in em, and 1em is 1/52 of the stage width, so a figure scales as one drawing. */
+
+.loop {
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --pop: cubic-bezier(0.34, 1.5, 0.64, 1);
+  container-type: inline-size;
+  width: 100%;
+  margin: 0;
+}
+
+.loop-stage {
+  position: relative;
+  aspect-ratio: 52 / 34;
+  font-size: calc(100cqw / 52);
+  overflow: hidden;
+  border-radius: 14px;
+  isolation: isolate;
+  background:
+    radial-gradient(60% 75% at 8% 92%, rgba(194, 81, 31, 0.3), transparent 62%),
+    radial-gradient(45% 55% at 92% 6%, rgba(60, 74, 90, 0.2), transparent 62%),
+    radial-gradient(40% 50% at 72% 96%, rgba(235, 201, 183, 0.8), transparent 70%),
+    linear-gradient(160deg, #fcf8f4 0%, #f3ebe3 100%);
+}
+
+/* The wide stage for Fig. 1: 76em by 43em. */
+.loop-stage--wide {
+  aspect-ratio: 76 / 43;
+  font-size: calc(100cqw / 76);
+  border-radius: 20px;
+}
+
+/* A faint dot grid, fading out towards the edges. */
+.loop-stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: radial-gradient(rgba(19, 32, 46, 0.13) 0.07em, transparent 0.09em);
+  background-size: 1.6em 1.6em;
+  mask-image: radial-gradient(70% 70% at 50% 45%, #000 20%, transparent 80%);
+}
+
+/* A slow, soft rust glow that drifts behind the scene. */
+.loop-stage::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  width: 26em;
+  height: 26em;
+  left: 2em;
+  top: 6em;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(194, 81, 31, 0.22), transparent);
+  filter: blur(2em);
+  animation: loop-drift 14s ease-in-out infinite alternate;
+}
+
+@keyframes loop-drift {
+  to { transform: translate(18em, -4em) scale(1.2); }
+}
+
+.loop-scene {
+  position: absolute;
+  inset: 0;
+  transition: opacity 600ms var(--ease), filter 600ms var(--ease);
+}
+
+.loop.is-out .loop-scene {
+  opacity: 0;
+  filter: blur(0.4em);
+}
+
+.loop-chip {
+  position: absolute;
+  top: 1.8em;
+  right: 3em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.5em 0.9em;
+  border-radius: 99em;
+  font-family: var(--font-mono);
+  font-size: 0.72em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--steel);
+}
+
+.loop-chip::before {
+  content: '';
+  width: 0.6em;
+  height: 0.6em;
+  border-radius: 50%;
+  background: var(--rust);
+  box-shadow: 0 0 0 0 rgba(194, 81, 31, 0.5);
+  animation: loop-live 1.8s ease-out infinite;
+}
+
+@keyframes loop-live {
+  to { box-shadow: 0 0 0 0.6em rgba(194, 81, 31, 0); }
+}
+
+.glass {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.64));
+  backdrop-filter: blur(1.2em) saturate(1.4);
+  -webkit-backdrop-filter: blur(1.2em) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow:
+    0 1.8em 3.2em -1.4em rgba(19, 32, 46, 0.32),
+    0 0.3em 0.8em -0.3em rgba(19, 32, 46, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  border-radius: 1.2em;
+}
+
+/* Phone: titanium frame, black bezel, island, side buttons and a glare across the glass. */
+.phone {
+  position: absolute;
+  width: 14.6em;
+  height: 30.4em;
+  padding: 0.4em;
+  border-radius: 2.7em;
+  background: linear-gradient(145deg, #6a7480 0%, #262f3a 28%, #121a23 55%, #4d5764 84%, #2b333e 100%);
+  box-shadow:
+    inset 0 0 0 0.07em rgba(255, 255, 255, 0.3),
+    0 2.6em 4.2em -1.2em rgba(19, 32, 46, 0.5),
+    0 1em 1.6em -0.6em rgba(19, 32, 46, 0.3);
+}
+
+.phone::before,
+.phone::after {
+  content: '';
+  position: absolute;
+  width: 0.22em;
+  border-radius: 0.2em;
+  background: linear-gradient(90deg, #3a434e, #6a7480);
+}
+
+.phone::before { right: -0.18em; top: 8.4em; height: 3.6em; }
+.phone::after { left: -0.18em; top: 6.6em; height: 5.2em; box-shadow: 0 -2.4em 0 -0.02em #4d5764; }
+
+.phone-glass {
+  height: 100%;
+  padding: 0.3em;
+  border-radius: 2.32em;
+  background: #05080c;
+}
+
+.phone-screen {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 2.04em;
+  background: #ffffff;
+  color: var(--navy);
+}
+
+.phone-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: linear-gradient(118deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 34%);
+}
+
+.phone-island {
+  position: absolute;
+  z-index: 6;
+  top: 0.6em;
+  left: 50%;
+  width: 4.1em;
+  height: 1.2em;
+  margin-left: -2.05em;
+  border-radius: 1em;
+  background: #000;
+}
+
+.phone-status {
+  position: absolute;
+  z-index: 4;
+  top: 0.78em;
+  left: 1.5em;
+  right: 1.3em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72em;
+  font-weight: 700;
+}
+
+.phone-status-icons {
+  display: flex;
+  gap: 0.3em;
+  align-items: flex-end;
+}
+
+.phone-status-icons i {
+  display: block;
+  width: 0.28em;
+  border-radius: 0.1em;
+  background: currentColor;
+}
+
+.phone-status-icons i:nth-child(1) { height: 0.4em; }
+.phone-status-icons i:nth-child(2) { height: 0.6em; }
+.phone-status-icons i:nth-child(3) { height: 0.8em; }
+
+.phone-status-icons b {
+  display: block;
+  width: 1.6em;
+  height: 0.78em;
+  margin-left: 0.3em;
+  border-radius: 0.24em;
+  border: 0.1em solid currentColor;
+  background: linear-gradient(90deg, currentColor 70%, transparent 70%) content-box;
+  padding: 0.08em;
+}
+
+/* A fingertip press: drop it inside any position: relative target and trigger it with a class. */
+.tap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 2.8em;
+  height: 2.8em;
+  margin: -1.4em 0 0 -1.4em;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(19, 32, 46, 0.32), rgba(19, 32, 46, 0.12) 60%, transparent 62%);
+  box-shadow: 0 0 0 0.12em rgba(19, 32, 46, 0.35);
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes loop-tap {
+  0% { opacity: 0; transform: scale(1.5); }
+  30% { opacity: 1; transform: scale(0.9); }
+  60% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.25); }
+}
+
+.loop.is-rewind,
+.loop.is-rewind *,
+.loop.is-still *,
+.loop.is-still *::before,
+.loop.is-still *::after {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Narrow screens: a portrait stage with the phone on top and the cards stacked under it */
+@container (max-width: 480px) {
+  .loop-stage:not(.loop-stage--wide) {
+    aspect-ratio: 34 / 64;
+    font-size: calc(100cqw / 34);
+  }
+
+  .loop .loop-stage .loop-phone { left: 9.7em; }
+
+  .loop .loop-stage .loop-side {
+    left: 2em;
+    width: 30em;
+    top: 34em;
+  }
+
+  .loop .loop-stage .loop-finding { top: 47.4em; }
+
+  .loop .loop-stage .loop-link { display: none; }
+
+  .loop .loop-stage:not(.loop-stage--wide) .loop-chip {
+    top: auto;
+    bottom: 1.3em;
+    right: 50%;
+    transform: translateX(50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loop-stage::after,
+  .loop-chip::before {
+    animation: none;
+  }
+}
+
+/* ---------- Shared scene parts ----------
+   State classes the player adds to .loop:
+   is-in          phone and side cards enter
+   is-push / is-release   phone leans in for a closer look, then settles
+   is-a1…is-a4    the tracker highlight moves to that row (0 is the first)
+   is-v1…is-v5    a tracker row shows its value
+   is-f1…is-f5    a tracker row is flagged in rust
+   is-mark1/2, is-unmark1/2   a rust markup draws around something, then fades
+   is-tap1…is-tap6           the tap marker with data-tap="n" presses
+   is-finding / is-unlink    the finding card and its connector appear; the connector fades */
+
+.loop-phone {
+  left: 3.6em;
+  top: 1.8em;
+  transform-origin: 100% 60%;
+  opacity: 0;
+  transform: translateY(3em) rotate(-4deg) scale(0.94);
+  filter: blur(0.3em);
+  transition: transform 900ms var(--pop), opacity 600ms var(--ease), filter 600ms var(--ease);
+}
+
+.loop.is-in .loop-phone { opacity: 1; transform: none; filter: none; }
+.loop.is-push .loop-phone { transform: scale(1.04); transition-duration: 700ms; transition-timing-function: var(--ease); }
+.loop.is-release .loop-phone { transform: none; }
+
+.loop-side {
+  position: absolute;
+  left: 21.4em;
+  width: 27.6em;
+}
+
+/* Tracker card */
+.loop-tracker {
+  top: 4.6em;
+  padding: 0.9em 0.9em 0.7em;
+  opacity: 0;
+  transform: translateY(1.5em);
+  transition: opacity 600ms var(--ease) 200ms, transform 800ms var(--ease) 200ms;
+}
+
+.loop.is-in .loop-tracker { opacity: 1; transform: none; }
+
+.loop-tracker-head {
+  margin: 0 0 0.5em;
+  padding: 0 0.9em 0 1.05em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95em;
+  line-height: 1;
+}
+
+.loop-tracker-head span {
+  font-family: var(--font-mono);
+  font-size: 0.72em;
+  color: var(--steel);
+}
+
+.loop-rows {
+  position: relative;
+  font-size: 0.9em;
+}
+
+.loop-active {
+  --row: 0;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2.5em;
+  border-radius: 0.7em;
+  background: linear-gradient(90deg, rgba(251, 239, 232, 1), rgba(251, 239, 232, 0.5));
+  transform: translateY(calc(var(--row) * 2.5em));
+  transition: transform 600ms var(--pop);
+}
+
+.loop-active::before {
+  content: '';
+  position: absolute;
+  left: 0.4em;
+  top: 0.6em;
+  bottom: 0.6em;
+  width: 0.2em;
+  border-radius: 0.2em;
+  background: var(--rust);
+}
+
+.loop.is-a1 .loop-active { --row: 1; }
+.loop.is-a2 .loop-active { --row: 2; }
+.loop.is-a3 .loop-active { --row: 3; }
+.loop.is-a4 .loop-active { --row: 4; }
+
+.loop-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.2em 1fr auto;
+  align-items: baseline;
+  align-content: center;
+  height: 2.5em;
+  padding: 0 0.9em 0 1.2em;
+}
+
+.loop-row > * { line-height: 1; }
+
+.loop-row i {
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 0.78em;
+  color: var(--rust-text);
+}
+
+.loop-row > span {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  color: var(--steel);
+  font-variant-numeric: tabular-nums;
+  opacity: 0;
+  transform: translateX(0.6em);
+  transition: opacity 400ms var(--ease), transform 500ms var(--ease), color 400ms var(--ease);
+}
+
+.loop-row b { transition: color 400ms var(--ease); }
+
+.loop.is-v1 .loop-row[data-r='1'] > span,
+.loop.is-v2 .loop-row[data-r='2'] > span,
+.loop.is-v3 .loop-row[data-r='3'] > span,
+.loop.is-v4 .loop-row[data-r='4'] > span,
+.loop.is-v5 .loop-row[data-r='5'] > span { opacity: 1; transform: none; }
+
+.loop.is-f1 .loop-row[data-r='1'] :is(b, span),
+.loop.is-f2 .loop-row[data-r='2'] :is(b, span),
+.loop.is-f3 .loop-row[data-r='3'] :is(b, span),
+.loop.is-f4 .loop-row[data-r='4'] :is(b, span),
+.loop.is-f5 .loop-row[data-r='5'] :is(b, span) { color: var(--rust-text); font-weight: 700; }
+
+/* Rust markup: put it inside a position: relative target */
+.loop-markup {
+  position: absolute;
+  inset: 0.25em -0.35em;
+  border: 0.14em solid var(--rust);
+  border-radius: 0.9em;
+  clip-path: inset(0 100% 0 0 round 0.9em);
+  transition: clip-path 700ms var(--ease), opacity 300ms var(--ease);
+  pointer-events: none;
+}
+
+.loop-markup-tag {
+  position: absolute;
+  right: -0.4em;
+  top: -1.35em;
+  padding: 0.25em 0.6em;
+  border-radius: 0.5em;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 0.68em;
+  font-style: normal;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.3;
+  color: #fff;
+  background: var(--rust);
+  box-shadow: 0 0.5em 1em -0.4em rgba(194, 81, 31, 0.8);
+  opacity: 0;
+  transform: translateY(0.4em) scale(0.8);
+  transition: opacity 300ms var(--ease) 350ms, transform 500ms var(--pop) 350ms;
+}
+
+.loop.is-mark1 .loop-markup[data-m='1'],
+.loop.is-mark2 .loop-markup[data-m='2'] { clip-path: inset(-2em -2em -2em -2em round 0.9em); }
+
+.loop.is-mark1 .loop-markup[data-m='1'] .loop-markup-tag,
+.loop.is-mark2 .loop-markup[data-m='2'] .loop-markup-tag { opacity: 1; transform: none; }
+
+.loop.is-unmark1 .loop-markup[data-m='1'],
+.loop.is-unmark2 .loop-markup[data-m='2'] { opacity: 0; }
+
+/* Taps */
+.loop.is-tap1 .tap[data-tap='1'],
+.loop.is-tap2 .tap[data-tap='2'],
+.loop.is-tap3 .tap[data-tap='3'],
+.loop.is-tap4 .tap[data-tap='4'],
+.loop.is-tap5 .tap[data-tap='5'],
+.loop.is-tap6 .tap[data-tap='6'] { animation: loop-tap 600ms var(--ease) both; }
+
+/* Connector from a markup to the finding card */
+.loop-link {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.loop-link path {
+  fill: none;
+  stroke: var(--rust);
+  stroke-width: 1.4;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0;
+  transition: stroke-dashoffset 600ms var(--ease);
+}
+
+.loop-link circle {
+  fill: var(--rust);
+  opacity: 0;
+  transition: opacity 200ms var(--ease);
+}
+
+.loop.is-finding .loop-link :is(path, circle) { stroke-dashoffset: 0; opacity: 1; }
+.loop.is-unlink .loop-link :is(path, circle) { opacity: 0; transition: opacity 300ms var(--ease); }
+
+/* Finding card */
+.loop-finding {
+  top: 19.2em;
+  padding: 1.1em 1.3em 1.2em;
+  opacity: 0;
+  transform: translateY(2em) scale(0.96);
+  filter: blur(0.3em);
+  transition: opacity 500ms var(--ease) 250ms, transform 800ms var(--pop) 250ms, filter 500ms var(--ease) 250ms;
+}
+
+.loop.is-finding .loop-finding { opacity: 1; transform: none; filter: none; }
+
+.loop-finding p { margin: 0; }
+
+.loop-finding-tags {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.7em;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.loop-finding-tags span {
+  padding: 0.4em 0.7em;
+  border-radius: 0.5em;
+  color: var(--rust-text);
+  background: var(--rust-tint);
+}
+
+.loop-finding-tags .loop-sev {
+  color: #fff;
+  background: linear-gradient(135deg, #e0733f, #c2511f);
+  box-shadow: 0 0.4em 0.8em -0.4em rgba(194, 81, 31, 0.9);
+}
+
+.loop-finding-title {
+  margin-top: 0.75em !important;
+  font-size: 1.2em;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.loop-evidence {
+  margin-top: 0.6em !important;
+  display: flex;
+  gap: 1.2em;
+  font-family: var(--font-mono);
+  font-size: 0.74em;
+  color: var(--steel);
+}
+
+.loop-fix {
+  margin-top: 0.9em !important;
+  padding-top: 0.8em;
+  border-top: 1px solid var(--line-strong);
+  font-size: 0.86em;
+}
+
+.loop-fix b {
+  margin-right: 0.6em;
+  color: var(--rust-text);
+}
+
+/* Common pieces of app UI inside a phone screen */
+.app {
+  position: relative;
+  height: 100%;
+  padding: 3.1em 1.05em 1.1em;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.86em;
+}
+
+.app p { margin: 0; }
+
+.app-title { font-weight: 700; font-size: 1.1em; }
+
+.app-label {
+  margin-top: 1em !important;
+  font-size: 0.8em;
+  color: var(--steel);
+}
+
+.app-panel {
+  margin-top: 0.9em;
+  padding: 0.4em 0.8em;
+  border-radius: 0.9em;
+  background: var(--paper);
+}
+
+.app-panel p {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.45em 0;
+}
+
+.app-panel span { color: var(--steel); }
+
+.app-btn {
+  position: relative;
+  margin-top: auto;
+  padding: 0.85em;
+  border-radius: 99em;
+  text-align: center;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(180deg, #24384d, #13202e);
+  box-shadow: 0 0.6em 1.2em -0.6em rgba(19, 32, 46, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.app-btn--ghost {
+  color: var(--navy);
+  background: var(--paper);
+  box-shadow: none;
+}
