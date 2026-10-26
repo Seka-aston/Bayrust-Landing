@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Eyebrow from '../components/Eyebrow.astro';
 import CheckList from '../components/CheckList.astro';
 import LensFigure from '../components/LensFigure.astro';
+import BayLoop from '../components/loops/BayLoop.astro';
 import { lenses } from '../data/lenses';
 import { faqs } from '../data/faqs';
 import { site } from '../data/site';
@@ -15,11 +16,40 @@ const reportLenses = [
   { name: 'Operational', count: 5 },
 ];
 
+// The hero report cycles through these; the first is the one shown when motion is reduced.
 const reportFindings = [
-  { id: 'AUD-009', title: 'Transfer form can’t be completed with a screen reader', lens: 'Accessibility', urgent: true },
-  { id: 'AUD-014', title: 'Payment marked successful before the callback returns', lens: 'System logic', urgent: true },
-  { id: 'AUD-017', title: 'Draft transfer lost when the network drops', lens: 'Operational', urgent: true },
-  { id: 'AUD-021', title: 'Transfer fee shown only after the PIN step', lens: 'Usability', urgent: false },
+  {
+    id: 'AUD-009',
+    title: 'Transfer form can’t be completed with a screen reader',
+    lens: 'Accessibility',
+    urgent: true,
+    evidence: 'Screen-reader recording: the amount field has no label, so the form can’t be submitted.',
+    fix: 'Add a visible label tied to the field, and announce validation errors as they appear.',
+  },
+  {
+    id: 'AUD-014',
+    title: 'Payment marked successful before the callback returns',
+    lens: 'System logic',
+    urgent: true,
+    evidence: 'Network log: the success screen appears 1.8 s before the payment callback returns a failure.',
+    fix: 'Show a pending state until the callback confirms the payment.',
+  },
+  {
+    id: 'AUD-017',
+    title: 'Draft transfer lost when the network drops',
+    lens: 'Operational',
+    urgent: true,
+    evidence: 'Recording on a throttled 2G profile: the connection drops on submit and every field is cleared.',
+    fix: 'Keep the draft on the device and retry when the connection returns.',
+  },
+  {
+    id: 'AUD-021',
+    title: 'Transfer fee shown only after the PIN step',
+    lens: 'Usability',
+    urgent: false,
+    evidence: 'Session recordings: customers pause for about 6 s when the fee first appears after the PIN.',
+    fix: 'Show the fee on the amount screen, before the PIN is asked for.',
+  },
 ];
 
 const sectors = ['Banks', 'Fintechs', 'Public digital services', 'NGOs and programs', 'Software agencies'];
@@ -69,7 +99,7 @@ const caseTeasers = [
     </div>
 
     <!-- Sample report window -->
-    <div class="report">
+    <div class="report" data-report>
       <div class="report-bar">
         <div class="report-dots" aria-hidden="true"><span></span><span></span><span></span></div>
         <div class="report-title"><span>Sample audit report: mobile banking app</span></div>
@@ -79,12 +109,12 @@ const caseTeasers = [
         <aside class="report-side">
           <p class="side-label">Audit</p>
           <p class="side-name">Mobile banking app</p>
-          <div class="side-row side-row--active"><span>All findings</span><span class="mono">20</span></div>
+          <div class="side-row side-row--active"><span>All findings</span><span class="mono" data-count="20">20</span></div>
           {
             reportLenses.map((l) => (
-              <div class="side-row">
+              <div class:list={['side-row', { 'is-lens': l.name === reportFindings[0].lens }]} data-lens={l.name}>
                 <span>{l.name}</span>
-                <span class="mono">{l.count}</span>
+                <span class="mono" data-count={l.count}>{l.count}</span>
               </div>
             ))
           }
@@ -97,32 +127,39 @@ const caseTeasers = [
               <p class="report-sub">Sorted by severity, highest first</p>
             </div>
             <div class="sev-counts">
-              <span class="sev sev--critical">2 Critical</span>
-              <span class="sev sev--major">7 Major</span>
-              <span class="sev sev--minor">11 Minor</span>
+              <span class="sev sev--critical"><span data-count="2">2</span> Critical</span>
+              <span class="sev sev--major"><span data-count="7">7</span> Major</span>
+              <span class="sev sev--minor"><span data-count="11">11</span> Minor</span>
             </div>
           </div>
           <div class="findings">
             {
               reportFindings.map((f, i) => (
-                <div class:list={['finding', { 'finding--first': i === 0 }]}>
+                <div class:list={['finding', { 'is-sel': i === 0 }]} data-finding={i}>
                   <span class:list={['finding-dot', { 'finding-dot--muted': !f.urgent }]} />
                   <span class="mono finding-id">{f.id}</span>
                   <span class="finding-title">{f.title}</span>
                   <span class="finding-lens">{f.lens}</span>
+                  <span class="finding-timer" aria-hidden="true" />
                 </div>
               ))
             }
           </div>
-          <div class="finding-detail">
-            <div>
-              <p>Evidence</p>
-              <p>Screen-reader recording: the amount field has no label, so the form can’t be submitted.</p>
-            </div>
-            <div>
-              <p>Recommended fix</p>
-              <p>Add a visible label tied to the field, and announce validation errors as they appear.</p>
-            </div>
+          <div class="finding-details">
+            {
+              reportFindings.map((f, i) => (
+                <div class:list={['finding-detail', { 'is-sel': i === 0 }]} data-detail={i} aria-hidden={i === 0 ? undefined : 'true'}>
+                  <div>
+                    <p>Evidence</p>
+                    <p>{f.evidence}</p>
+                  </div>
+                  <div>
+                    <p>Recommended fix</p>
+                    <p>{f.fix}</p>
+                  </div>
+                </div>
+              ))
+            }
           </div>
         </div>
       </div>
@@ -194,17 +231,7 @@ const caseTeasers = [
           <a href="/process" class="btn btn--primary btn--sm">See the full process</a>
         </div>
       </div>
-      <figure aria-label="Placeholder for the interactive inspection bay figure" class="bay-figure">
-        <span class="mono corner corner--tl">Fig. 1</span>
-        <span class="corner corner--tr">The inspection bay</span>
-        <span class="corner corner--bl">Hover an instrument to inspect</span>
-        <span class="mono corner corner--br">0 findings</span>
-        <p class="bay-title">Interactive isometric figure</p>
-        <p class="bay-note">
-          Built with the Anatomy skill in the next step: a product on a service lift, with one instrument for each of the five
-          lenses.
-        </p>
-      </figure>
+      <div class="bay-loop"><BayLoop /></div>
     </div>
   </section>
 
@@ -216,11 +243,18 @@ const caseTeasers = [
       <p class="lead narrow">The details that make a Bayrust report something your team can act on the same week.</p>
       <div class="why-grid">
         <div class="why-feature">
-          <div class="tag-card" aria-hidden="true">
-            <span class="tag-hole"></span>
-            <div class="tag-top"><span class="mono">AUD-014</span><span class="mono tag-sev">Major</span></div>
-            <span class="tag-title">Payment marked successful before the callback returns</span>
-            <span class="tag-lens">System logic</span>
+          <div class="tag-stack" aria-hidden="true" data-tags>
+            <span class="tag-ghost"></span>
+            <span class="tag-ghost"></span>
+            <div class="tag-card">
+              <span class="tag-hole"></span>
+              <div class="tag-top"><span class="mono" data-tag="id">AUD-014</span><span class="mono tag-sev" data-tag="sev">Major</span></div>
+              <span class="tag-title" data-tag="title">Payment marked successful before the callback returns</span>
+              <div class="tag-foot">
+                <span class="tag-lens" data-tag="lens">System logic</span>
+                <span class="mono tag-evidence"><i></i><span data-tag="evidence">Recording 0:14</span></span>
+              </div>
+            </div>
           </div>
           <div class="why-feature-copy">
             <h3>Every finding is a tagged part</h3>
@@ -332,6 +366,80 @@ const caseTeasers = [
 </Layout>
 
 <script>
+  import { countUp, playLoop } from '../scripts/loop';
+
+  // Hero report: counts up as it lifts in, then walks through the findings while it is on screen.
+  const report = document.querySelector<HTMLElement>('[data-report]');
+  if (report && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const rows = [...report.querySelectorAll<HTMLElement>('[data-finding]')];
+    const details = [...report.querySelectorAll<HTMLElement>('[data-detail]')];
+    const lensRows = [...report.querySelectorAll<HTMLElement>('[data-lens]')];
+    const lensOf = rows.map((row) => row.querySelector('.finding-lens')!.textContent);
+    let current = 0;
+    let timer = 0;
+    let visible = false;
+    let hovered = false;
+
+    const show = (index: number) => {
+      current = index;
+      rows.forEach((row, i) => row.classList.toggle('is-sel', i === index));
+      details.forEach((detail, i) => {
+        detail.classList.toggle('is-sel', i === index);
+        if (i === index) detail.removeAttribute('aria-hidden');
+        else detail.setAttribute('aria-hidden', 'true');
+      });
+      lensRows.forEach((row) => row.classList.toggle('is-lens', row.dataset.lens === lensOf[index]));
+    };
+
+    const run = () => {
+      clearTimeout(timer);
+      report.classList.toggle('is-cycling', visible && !hovered);
+      if (visible && !hovered) timer = window.setTimeout(() => (show((current + 1) % rows.length), run()), 4200);
+    };
+
+    report.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => {
+      el.textContent = '0';
+      setTimeout(() => countUp(el, Number(el.dataset.count), 1200, 0), 700);
+    });
+    new IntersectionObserver(([entry]) => ((visible = entry.isIntersecting), run()), { threshold: 0.3 }).observe(report);
+    report.addEventListener('pointerenter', () => ((hovered = true), run()));
+    report.addEventListener('pointerleave', () => ((hovered = false), run()));
+  }
+
+  // Why Bayrust: finding tags drop in, get stamped field by field, then are filed into the stack.
+  const tagFindings = [
+    { id: 'AUD-014', sev: 'Major', title: 'Payment marked successful before the callback returns', lens: 'System logic', evidence: 'Network log' },
+    { id: 'AUD-009', sev: 'Critical', title: 'Transfer form can’t be completed with a screen reader', lens: 'Accessibility', evidence: 'Recording 0:42' },
+    { id: 'AUD-017', sev: 'Major', title: 'Draft transfer lost when the network drops', lens: 'Operational', evidence: 'Recording 0:14' },
+  ];
+  document.querySelectorAll<HTMLElement>('[data-tags]').forEach((root) => {
+    const field = (name: string) => root.querySelector<HTMLElement>(`[data-tag="${name}"]`)!;
+    let next = 0;
+    playLoop(root, {
+      duration: 5800,
+      steps: [
+        {
+          at: 0,
+          add: 'is-live',
+          run: () => {
+            const f = tagFindings[next];
+            next = (next + 1) % tagFindings.length;
+            field('id').textContent = '';
+            (['sev', 'title', 'lens', 'evidence'] as const).forEach((k) => (field(k).textContent = f[k]));
+            root.classList.toggle('is-critical', f.sev === 'Critical');
+            [...f.id].forEach((_, n) => setTimeout(() => (field('id').textContent = f.id.slice(0, n + 1)), 650 + n * 55));
+          },
+        },
+        { at: 100, add: 'is-drop' },
+        { at: 1100, add: 'is-sev' },
+        { at: 1400, add: 'is-title' },
+        { at: 1700, add: 'is-meta' },
+        { at: 4900, add: 'is-file' },
+      ],
+      still: ['is-drop', 'is-sev', 'is-title', 'is-meta'],
+    });
+  });
+
   // Lens tabs: click or use the arrow keys to switch.
   const tablist = document.querySelector<HTMLElement>('[data-tabs]');
   if (tablist) {
@@ -557,8 +665,17 @@ const caseTeasers = [
     display: flex;
     justify-content: space-between;
     padding: 10px 12px;
+    border-radius: 10px;
     font-size: 14px;
     color: var(--steel);
+    transition: background 400ms ease, color 400ms ease, box-shadow 400ms ease;
+  }
+
+  .side-row.is-lens {
+    color: var(--navy);
+    font-weight: 600;
+    background: rgba(251, 239, 232, 0.8);
+    box-shadow: inset 3px 0 0 var(--rust);
   }
 
   .side-row--active {
@@ -633,6 +750,7 @@ const caseTeasers = [
   }
 
   .finding {
+    position: relative;
     display: grid;
     grid-template-columns: 16px 92px minmax(0, 1fr) 120px;
     gap: 14px;
@@ -640,11 +758,29 @@ const caseTeasers = [
     padding: 15px 18px;
     border-top: 1px solid rgba(19, 32, 46, 0.07);
     font-size: 15px;
+    transition: background 400ms ease;
   }
 
-  .finding--first {
-    background: var(--rust-tint);
-    border-top: 0;
+  .finding:first-child { border-top: 0; }
+
+  .finding.is-sel { background: var(--rust-tint); }
+
+  /* Fills while a finding is selected, then the report moves to the next one */
+  .finding-timer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: var(--rust);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  .report.is-cycling .finding.is-sel .finding-timer { animation: report-timer 4200ms linear forwards; }
+
+  @keyframes report-timer {
+    to { transform: scaleX(1); }
   }
 
   .finding-dot {
@@ -668,10 +804,23 @@ const caseTeasers = [
     color: var(--steel);
   }
 
+  .finding-details { display: grid; }
+
   .finding-detail {
+    grid-area: 1 / 1;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
     gap: 14px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 400ms ease, transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+
+  .finding-detail.is-sel {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
   }
 
   .finding-detail > div {
@@ -691,6 +840,25 @@ const caseTeasers = [
     font-size: 13px;
     font-weight: 700;
     color: var(--steel);
+  }
+
+  /* The report lifts in as the page opens */
+  @media (prefers-reduced-motion: no-preference) {
+    .report { animation: report-in 1200ms cubic-bezier(0.22, 1, 0.36, 1) 250ms both; }
+
+    .finding { animation: report-row 600ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .finding:nth-child(1) { animation-delay: 800ms; }
+    .finding:nth-child(2) { animation-delay: 890ms; }
+    .finding:nth-child(3) { animation-delay: 980ms; }
+    .finding:nth-child(4) { animation-delay: 1070ms; }
+  }
+
+  @keyframes report-in {
+    from { opacity: 0; transform: perspective(1800px) rotateX(14deg) translateY(48px) scale(0.96); }
+  }
+
+  @keyframes report-row {
+    from { opacity: 0; transform: translateY(10px); }
   }
 
   @media (max-width: 640px) {
@@ -850,6 +1018,13 @@ const caseTeasers = [
     justify-content: center;
   }
 
+  /* A lens figure is its own plate, so the tinted ground steps aside for it. */
+  .figure-ground:has(.loop) {
+    min-height: 0;
+    padding: 0;
+    background: none;
+  }
+
   /* Inspection bay */
   .bay {
     background: var(--white);
@@ -886,51 +1061,10 @@ const caseTeasers = [
     color: var(--steel);
   }
 
-  .bay-figure {
-    margin: 40px 0 0;
-    position: relative;
-    height: 540px;
-    border-radius: 20px;
-    background: var(--ground);
-    border: 1px dashed rgba(194, 81, 31, 0.45);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-    padding: 0 24px;
-    text-align: center;
-  }
-
-  .corner {
-    position: absolute;
-    font-size: 14px;
-    color: var(--steel);
-  }
-
-  .corner.mono { font-size: 13px; }
-  .corner--tl { top: 20px; left: 22px; }
-  .corner--tr { top: 20px; right: 22px; font-weight: 600; }
-  .corner--bl { bottom: 20px; left: 22px; }
-  .corner--br { bottom: 20px; right: 22px; }
-
-  .bay-title {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 700;
-  }
-
-  .bay-note {
-    margin: 0;
-    max-width: 26em;
-    font-size: 15px;
-    line-height: 1.55;
-    color: var(--steel);
-  }
+  .bay-loop { margin-top: 40px; }
 
   @media (max-width: 640px) {
     .bay { padding: 40px 20px 20px; }
-    .bay-figure { height: 420px; }
   }
 
   /* Why Bayrust */
@@ -955,17 +1089,95 @@ const caseTeasers = [
     min-height: 460px;
   }
 
+  .tag-stack {
+    position: relative;
+    display: grid;
+  }
+
+  .tag-card,
+  .tag-ghost {
+    grid-area: 1 / 1;
+    border-radius: 16px;
+  }
+
+  /* Filed tags waiting behind the live one */
+  .tag-ghost {
+    background: rgba(244, 241, 236, 0.14);
+    border: 1px solid rgba(244, 241, 236, 0.12);
+    transform: translateY(-12px) scale(0.94) rotate(-3.5deg);
+  }
+
+  .tag-ghost + .tag-ghost {
+    background: rgba(244, 241, 236, 0.24);
+    transform: translateY(-6px) scale(0.97) rotate(-2.8deg);
+  }
+
   .tag-card {
     position: relative;
     background: var(--paper);
     color: var(--navy);
-    border-radius: 16px;
     padding: 22px 22px 22px 50px;
     transform: rotate(-2deg);
+    transform-origin: 25px 31px;
     display: flex;
     flex-direction: column;
     gap: 10px;
+    box-shadow: 0 24px 40px -24px rgba(0, 0, 0, 0.6);
   }
+
+  .tag-foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tag-evidence {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--steel);
+  }
+
+  .tag-evidence i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--rust);
+    box-shadow: 0 0 0 3px rgba(194, 81, 31, 0.18);
+  }
+
+  .tag-stack.is-critical .tag-sev { background: var(--navy); }
+
+  /* Played while on screen: drop in on its string, stamp each field, then file it */
+  .tag-stack.is-live:not(.is-still) .tag-card {
+    opacity: 0;
+    transform: translateY(-40px) rotate(-12deg);
+    transition: opacity 300ms ease, transform 1000ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .tag-stack.is-live.is-drop .tag-card { opacity: 1; transform: rotate(-2deg); }
+
+  .tag-stack.is-live.is-file .tag-card {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.94) rotate(-3.5deg);
+    transition: opacity 500ms ease, transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .tag-stack.is-live:not(.is-still) :is(.tag-sev, .tag-title, .tag-foot) {
+    opacity: 0;
+    transition: opacity 300ms ease, transform 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .tag-stack.is-live:not(.is-still) .tag-sev { transform: scale(1.8) rotate(8deg); }
+  .tag-stack.is-live:not(.is-still) .tag-title,
+  .tag-stack.is-live:not(.is-still) .tag-foot { transform: translateY(6px); }
+
+  .tag-stack.is-live.is-sev .tag-card .tag-sev,
+  .tag-stack.is-live.is-title .tag-card .tag-title,
+  .tag-stack.is-live.is-meta .tag-card .tag-foot { opacity: 1; transform: none; }
 
   .tag-hole {
     position: absolute;

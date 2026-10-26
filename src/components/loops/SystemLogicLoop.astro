@@ -1,0 +1,400 @@
+---
+// Fig. 4, System logic: the app shows success before the payment API answers; the API then fails,
+// and the trace beside the phone shows the contradiction. Shared scene parts are in src/styles/loop.css.
+import Phone from './Phone.astro';
+import Finding from './Finding.astro';
+import '../../styles/loop.css';
+---
+
+<figure
+  class="loop s-loop"
+  data-loop="system-logic"
+  role="img"
+  aria-label="Fig. 4, system logic. A customer pays 3,500 francs. The app shows 'Payment successful' after 1.2 seconds, but the payment API is still waiting and returns 'failed' at 3 seconds, when an SMS tells the customer the payment failed. Bayrust logs it as a high-severity finding: wait for the payment callback before showing the result."
+>
+  <div class="loop-stage" aria-hidden="true">
+    <div class="loop-scene">
+      <span class="loop-chip glass">Fig. 4 · Logic analyser</span>
+
+      <Phone class="loop-phone">
+        <div class="s-strip">
+          <section class="app">
+            <p class="app-title">Pay merchant</p>
+            <div class="s-merchant"><i>KC</i><span>Kigali Coffee<small>Till 204 118</small></span></div>
+            <p class="app-label">Amount</p>
+            <p class="s-figure">RWF 3,500</p>
+            <div class="app-panel">
+              <p><span>From</span><b>Wallet •••• 4417</b></p>
+              <p><span>Fee</span><b>RWF 0</b></p>
+            </div>
+            <div class="app-btn">Pay<span class="tap" data-tap="1"></span></div>
+          </section>
+
+          <section class="app s-center">
+            <span class="s-spinner"></span>
+            <p class="s-state">Processing payment</p>
+            <p class="s-sub">Kigali Coffee · RWF 3,500</p>
+          </section>
+
+          <section class="app s-center">
+            <div class="s-ok">
+              <span class="s-badge"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"></path></svg></span>
+              <p class="s-state">Payment successful</p>
+              <p class="s-sub">RWF 3,500 to Kigali Coffee</p>
+              <span class="loop-markup" data-m="1"><em class="loop-markup-tag">Not confirmed</em></span>
+            </div>
+            <div class="app-btn app-btn--ghost">Done</div>
+          </section>
+        </div>
+
+        <div class="s-sms">
+          <i></i>
+          <p><small>Messages · now</small>Payment of RWF 3,500 failed. You have not been charged.</p>
+        </div>
+      </Phone>
+
+      <div class="loop-side s-trace glass">
+        <p class="loop-tracker-head"><b>Payment states</b><span>Trace 0–4 s</span></p>
+        <div class="s-lanes">
+          <div class="s-lane">
+            <b>Screen</b>
+            <div class="s-track">
+              <span class="s-seg s-seg--wait" style="left: 0; width: 29%">Pending</span>
+              <span class="s-seg s-seg--ok" style="left: 30%; width: 70%">Success</span>
+            </div>
+          </div>
+          <div class="s-lane">
+            <b>Payment API</b>
+            <div class="s-track">
+              <span class="s-seg s-seg--wait" style="left: 0; width: 74%">Waiting for callback</span>
+              <span class="s-seg s-seg--fail" style="left: 75%; width: 25%">Failed</span>
+            </div>
+          </div>
+          <div class="s-axis">{[0, 1, 2, 3, 4].map((t) => <span style={`left: ${t * 25}%`}>{t} s</span>)}</div>
+          <span class="s-band"><em>Contradiction</em></span>
+          <span class="s-cursor"></span>
+        </div>
+      </div>
+
+      <svg class="loop-link" viewBox="0 0 520 340" preserveAspectRatio="none">
+        <path d="M186 150 C 204 150, 196 250, 214 250" pathLength="1"></path>
+        <circle cx="186" cy="150" r="2.2"></circle>
+      </svg>
+
+      <Finding
+        lens="System logic"
+        severity="High"
+        title="Success shown before the payment callback returns"
+        evidence={['Screen: success at 1.2 s', 'API: failed at 3.0 s']}
+        fix="Wait for the callback, then show the result"
+      />
+    </div>
+  </div>
+</figure>
+
+<script>
+  import { playLoop } from '../../scripts/loop';
+
+  document.querySelectorAll<HTMLElement>('[data-loop="system-logic"]').forEach((root) =>
+    playLoop(root, {
+      duration: 11500,
+      steps: [
+        { at: 200, add: 'is-in' },
+        { at: 1000, add: 'is-tap1' },
+        { at: 1400, add: 'is-s2 is-trace' },
+        { at: 2600, add: 'is-s3' },
+        { at: 4400, add: 'is-sms' },
+        { at: 4900, add: 'is-push is-mark1 is-conflict' },
+        { at: 6400, add: 'is-finding' },
+        { at: 9000, add: 'is-release is-unmark1 is-unlink' },
+        { at: 10800, add: 'is-out' },
+      ],
+      still: ['is-in', 'is-s2', 'is-s3', 'is-trace', 'is-sms', 'is-mark1', 'is-conflict', 'is-finding'],
+    }),
+  );
+</script>
+
+<style>
+  /* Screens */
+  .s-strip {
+    --screen: 0;
+    display: flex;
+    width: 300%;
+    height: 100%;
+    transform: translateX(calc(var(--screen) * -33.333%));
+    transition: transform 650ms var(--ease);
+  }
+
+  .s-strip > .app { width: 33.333%; }
+
+  .s-loop.is-s2 .s-strip { --screen: 1; }
+  .s-loop.is-s3 .s-strip { --screen: 2; }
+
+  .s-merchant {
+    margin-top: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    padding: 0.55em 0.7em;
+    border-radius: 0.9em;
+    background: var(--paper);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .s-merchant i {
+    display: grid;
+    place-items: center;
+    width: 2.2em;
+    height: 2.2em;
+    border-radius: 0.7em;
+    font-style: normal;
+    font-size: 0.8em;
+    color: #fff;
+    background: linear-gradient(135deg, #e0733f, #a8441a);
+  }
+
+  .s-merchant small { display: block; font-weight: 400; font-size: 0.82em; color: var(--steel); }
+
+  .s-figure {
+    font-size: 1.75em;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .s-center {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .s-spinner {
+    width: 3.6em;
+    height: 3.6em;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, rgba(19, 32, 46, 0) 0%, var(--navy) 80%);
+    mask: radial-gradient(farthest-side, transparent calc(100% - 0.42em), #000 calc(100% - 0.4em));
+    animation: s-spin 900ms linear infinite;
+  }
+
+  @keyframes s-spin {
+    to { transform: rotate(1turn); }
+  }
+
+  .s-state {
+    margin-top: 1em !important;
+    font-size: 1.05em;
+    font-weight: 700;
+  }
+
+  .s-sub {
+    margin-top: 0.2em !important;
+    color: var(--steel);
+  }
+
+  .s-ok {
+    position: relative;
+    margin: auto 0;
+    padding: 1.2em 0.8em 1em;
+    display: grid;
+    justify-items: center;
+  }
+
+  .s-ok .s-state { margin-top: 0.8em !important; }
+
+  .s-badge {
+    display: grid;
+    place-items: center;
+    width: 4.4em;
+    height: 4.4em;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 25%, #3c4a5a, #13202e 70%);
+    box-shadow: 0 0 0 0.6em rgba(19, 32, 46, 0.06), 0 1em 2em -0.8em rgba(19, 32, 46, 0.7);
+  }
+
+  .s-badge svg { width: 2.3em; height: 2.3em; }
+
+  .s-badge path {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .s-center .app-btn { margin-top: 0; width: 100%; }
+
+  .s-ok .loop-markup { inset: 0; }
+
+  /* The SMS that contradicts the screen */
+  .s-sms {
+    position: absolute;
+    z-index: 7;
+    top: 2.6em;
+    left: 0.55em;
+    right: 0.55em;
+    display: flex;
+    gap: 0.6em;
+    padding: 0.7em 0.8em;
+    border-radius: 1.2em;
+    font-size: 0.8em;
+    line-height: 1.3;
+    background: rgba(246, 244, 241, 0.94);
+    backdrop-filter: blur(1em);
+    -webkit-backdrop-filter: blur(1em);
+    box-shadow: 0 1em 2em -0.8em rgba(19, 32, 46, 0.55), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+    opacity: 0;
+    transform: translateY(-140%) scale(0.96);
+    transition: transform 700ms var(--pop), opacity 300ms var(--ease);
+  }
+
+  .s-sms i {
+    flex: none;
+    width: 2.2em;
+    height: 2.2em;
+    border-radius: 0.6em;
+    background: linear-gradient(135deg, #3c4a5a, #13202e);
+  }
+
+  .s-sms p { margin: 0; font-weight: 600; }
+  .s-sms small { display: block; font-weight: 400; color: var(--steel); }
+
+  .s-loop.is-sms .s-sms { opacity: 1; transform: none; }
+
+  /* Trace card */
+  .s-trace {
+    top: 4.6em;
+    padding: 0.9em 1.1em 0.9em;
+    opacity: 0;
+    transform: translateY(1.5em);
+    transition: opacity 600ms var(--ease) 200ms, transform 800ms var(--ease) 200ms;
+  }
+
+  .s-loop.is-in .s-trace { opacity: 1; transform: none; }
+
+  .s-trace .loop-tracker-head { padding: 0; margin-bottom: 0.9em; }
+
+  .s-lanes {
+    --label: 6.4em;
+    position: relative;
+    font-size: 0.9em;
+  }
+
+  .s-lane {
+    display: grid;
+    grid-template-columns: var(--label) 1fr;
+    align-items: center;
+    height: 2.7em;
+  }
+
+  .s-lane b { font-size: 0.92em; }
+
+  .s-track {
+    position: relative;
+    height: 1.9em;
+    border-radius: 0.6em;
+    background: rgba(19, 32, 46, 0.04);
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 4000ms linear;
+  }
+
+  .s-loop.is-trace .s-track { clip-path: inset(0 0 0 0); }
+
+  .s-seg {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    padding: 0 0.6em;
+    border-radius: 0.6em;
+    font-family: var(--font-mono);
+    font-size: 0.72em;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .s-seg--wait {
+    color: var(--steel);
+    background: repeating-linear-gradient(-45deg, var(--stone) 0 0.5em, #efece7 0.5em 1em);
+  }
+
+  .s-seg--ok {
+    color: #fff;
+    background: linear-gradient(90deg, #24384d, #13202e);
+  }
+
+  .s-seg--fail {
+    color: #fff;
+    background: linear-gradient(90deg, #e0733f, #c2511f);
+  }
+
+  .s-axis {
+    position: relative;
+    height: 1.2em;
+    margin: 0.4em 0 0 var(--label);
+  }
+
+  .s-axis span {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 0.68em;
+    white-space: nowrap;
+    color: var(--steel);
+  }
+
+  .s-axis span:first-child { transform: none; }
+  .s-axis span:last-child { transform: translateX(-100%); }
+
+  .s-cursor {
+    position: absolute;
+    top: -0.3em;
+    bottom: 1.4em;
+    left: var(--label);
+    width: 0.14em;
+    margin-left: -0.07em;
+    border-radius: 0.1em;
+    background: var(--rust);
+    box-shadow: 0 0 0.8em rgba(194, 81, 31, 0.6);
+    opacity: 0;
+    transition: left 4000ms linear, opacity 300ms var(--ease);
+  }
+
+  .s-loop.is-trace .s-cursor { left: 100%; opacity: 1; }
+  .s-loop.is-finding .s-cursor { opacity: 0; }
+
+  .s-band {
+    position: absolute;
+    top: -0.3em;
+    bottom: 1.4em;
+    left: calc(var(--label) + (100% - var(--label)) * 0.3);
+    width: calc((100% - var(--label)) * 0.45);
+    border-radius: 0.6em;
+    border: 0.12em dashed var(--rust);
+    background: rgba(194, 81, 31, 0.1);
+    opacity: 0;
+    transform: scaleY(0.8);
+    transition: opacity 400ms var(--ease), transform 600ms var(--pop);
+  }
+
+  .s-band em {
+    position: absolute;
+    left: 50%;
+    top: -1.1em;
+    transform: translateX(-50%);
+    padding: 0.2em 0.6em;
+    border-radius: 0.5em;
+    font-family: var(--font-mono);
+    font-size: 0.66em;
+    font-style: normal;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: #fff;
+    background: var(--rust);
+  }
+
+  .s-loop.is-conflict .s-band { opacity: 1; transform: none; }
+</style>

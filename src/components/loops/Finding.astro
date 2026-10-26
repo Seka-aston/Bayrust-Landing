@@ -1,0 +1,20 @@
+---
+// The finding card a lens figure files at the end of its story.
+interface Props {
+  lens: string;
+  severity: string;
+  title: string;
+  evidence: string[];
+  fix: string;
+  top?: string;
+}
+
+const { lens, severity, title, evidence, fix, top } = Astro.props;
+---
+
+<div class="loop-side loop-finding glass" style={top ? `top: ${top}` : undefined}>
+  <p class="loop-finding-tags"><span>Finding · {lens}</span><span class="loop-sev">{severity}</span></p>
+  <p class="loop-finding-title">{title}</p>
+  <p class="loop-evidence">{evidence.map((item) => <span>{item}</span>)}</p>
+  <p class="loop-fix"><b>Fix</b>{fix}</p>
+</div>

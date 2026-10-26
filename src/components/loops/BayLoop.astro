@@ -1,0 +1,546 @@
+---
+// Fig. 1, the inspection bay: one product is inspected through the five lenses in turn,
+// and every lens files its findings into the same report. Shared scene parts are in src/styles/loop.css.
+import Phone from './Phone.astro';
+import '../../styles/loop.css';
+
+const lenses = [
+  { name: 'Usability', check: 'Key journeys walked', findings: 3, top: 'Fee shown only after the PIN' },
+  { name: 'Accessibility', check: 'WCAG 2.2 AA', findings: 2, top: 'Amount field has no label' },
+  { name: 'System logic', check: 'States and callbacks', findings: 2, top: 'Success before the callback' },
+  { name: 'User habits', check: 'Field observation', findings: 1, top: 'Codes shared as screenshots' },
+  { name: 'Operational', check: 'Networks and devices', findings: 2, top: 'Draft lost when offline' },
+];
+const total = lenses.reduce((sum, lens) => sum + lens.findings, 0);
+// Row centres in the 760 × 430 connector space (10 units per em).
+const rowY = lenses.map((_, i) => 74 + i * 64);
+---
+
+<figure
+  class="loop b-loop"
+  data-loop="bay"
+  role="img"
+  aria-label={`Fig. 1, the inspection bay. One product is inspected through the five lenses in turn: usability, accessibility, system logic, user habits and operational requirements. Each lens files its findings into the same audit report, ${total} findings in total, which ends ready for the walkthrough with your team.`}
+>
+  <div class="loop-stage loop-stage--wide" aria-hidden="true">
+    <div class="loop-scene">
+      <span class="loop-chip glass">Fig. 1 · The inspection bay</span>
+
+      <div class="b-pad"></div>
+      <Phone class="loop-phone b-phone">
+        <section class="app b-app">
+          <p class="b-hello">Good morning,<strong>Aline</strong></p>
+          <div class="b-card"><span>Available balance</span><strong>RWF 84,500</strong></div>
+          <div class="b-actions"><i></i><i></i><i></i><i></i></div>
+          <p class="b-list-head">Recent</p>
+          <div class="b-list"><p></p><p></p><p></p></div>
+        </section>
+        <span class="b-scan"></span>
+      </Phone>
+
+      <svg class="b-beams" viewBox="0 0 760 430" preserveAspectRatio="none">
+        {rowY.map((y, i) => <path data-l={i + 1} d={`M212 214 C 250 214, 244 ${y}, 282 ${y}`} pathLength="1"></path>)}
+      </svg>
+
+      <ol class="b-lenses">
+        {
+          lenses.map((lens, i) => (
+            <li class="b-lens glass" data-l={i + 1}>
+              <i>{String(i + 1).padStart(2, '0')}</i>
+              <span>
+                <b>{lens.name}</b>
+                <small>{lens.check}</small>
+              </span>
+              <em class="b-state">
+                <span class="b-queued">Queued</span>
+                <span class="b-busy">Inspecting</span>
+                <span class="b-found">{lens.findings} {lens.findings === 1 ? 'finding' : 'findings'}</span>
+              </em>
+            </li>
+          ))
+        }
+      </ol>
+
+      <div class="b-report glass">
+        <p class="b-report-head"><span>Audit report</span><span class="b-status"><span>Draft</span><span>Final</span></span></p>
+        <p class="b-report-title">Send money app</p>
+        <div class="b-stats">
+          <p><b data-total>0</b><small>Findings</small></p>
+          <p><b><span data-lenses>0</span>/5</b><small>Lenses</small></p>
+        </div>
+        <div class="b-progress"><span></span></div>
+        <ul class="b-entries">
+          {
+            lenses.map((lens, i) => (
+              <li data-l={i + 1}>
+                <i>{lens.name}</i>
+                {lens.top}
+              </li>
+            ))
+          }
+        </ul>
+        <p class="b-stamp"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9" pathLength="1"></path></svg>Ready for walkthrough</p>
+      </div>
+    </div>
+  </div>
+</figure>
+
+<script>
+  import { playLoop, countUp, type Step } from '../../scripts/loop';
+
+  const counts = [3, 2, 2, 1, 2];
+  const el = (root: HTMLElement, sel: string) => root.querySelector<HTMLElement>(sel)!;
+
+  const lensSteps: Step[] = counts.flatMap((n, i) => {
+    const at = 1300 + i * 1900;
+    const before = counts.slice(0, i).reduce((a, b) => a + b, 0);
+    return [
+      { at, add: `is-l${i + 1}` },
+      {
+        at: at + 1200,
+        add: `is-d${i + 1}`,
+        run: (r: HTMLElement) => {
+          countUp(el(r, '[data-total]'), before + n, 600, 0, before);
+          el(r, '[data-lenses]').textContent = String(i + 1);
+        },
+      },
+    ];
+  });
+
+  document.querySelectorAll<HTMLElement>('[data-loop="bay"]').forEach((root) =>
+    playLoop(root, {
+      duration: 14200,
+      steps: [
+        { at: 0, add: 'is-reset', run: (r) => { el(r, '[data-total]').textContent = '0'; el(r, '[data-lenses]').textContent = '0'; } },
+        { at: 200, add: 'is-in' },
+        ...lensSteps,
+        { at: 11300, add: 'is-done' },
+        { at: 13500, add: 'is-out' },
+      ],
+      still: ['is-in', 'is-l1', 'is-l2', 'is-l3', 'is-l4', 'is-l5', 'is-d1', 'is-d2', 'is-d3', 'is-d4', 'is-d5', 'is-done'],
+      settle: (r) => {
+        el(r, '[data-total]').textContent = String(counts.reduce((a, b) => a + b, 0));
+        el(r, '[data-lenses]').textContent = '5';
+      },
+    }),
+  );
+</script>
+
+<style>
+  /* The product on its inspection pad */
+  .b-loop :global(.b-phone) { left: 6.4em; top: 6.2em; }
+
+  .b-pad {
+    position: absolute;
+    left: 3.2em;
+    top: 33.4em;
+    width: 21em;
+    height: 5em;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(19, 32, 46, 0.28), rgba(19, 32, 46, 0.08) 60%, transparent);
+    box-shadow: 0 0 0 0.14em rgba(194, 81, 31, 0.25), 0 0 0 1.4em rgba(194, 81, 31, 0.06);
+    opacity: 0;
+    transform: scale(0.7);
+    transition: opacity 600ms var(--ease), transform 900ms var(--pop);
+  }
+
+  .b-loop.is-in .b-pad { opacity: 1; transform: none; }
+
+  .b-hello { font-size: 0.9em; color: var(--steel); line-height: 1.3; }
+  .b-hello strong { display: block; font-size: 1.5em; color: var(--navy); }
+
+  .b-card {
+    margin-top: 0.9em;
+    padding: 1em 1.1em;
+    border-radius: 1.1em;
+    color: #fff;
+    background:
+      radial-gradient(90% 120% at 100% 0%, rgba(194, 81, 31, 0.85), transparent 60%),
+      linear-gradient(135deg, #24384d, #13202e 70%);
+  }
+
+  .b-card span { display: block; font-size: 0.78em; color: var(--mist); }
+  .b-card strong { display: block; margin-top: 0.2em; font-size: 1.45em; }
+
+  .b-actions {
+    margin-top: 1em;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.6em;
+  }
+
+  .b-actions i {
+    aspect-ratio: 1;
+    border-radius: 0.9em;
+    background: var(--paper);
+  }
+
+  .b-actions i:first-child { background: linear-gradient(135deg, #e0733f, #c2511f); }
+
+  .b-list-head { margin-top: 1.2em !important; font-size: 0.8em; font-weight: 600; color: var(--steel); }
+
+  .b-list p {
+    height: 2.6em;
+    margin-top: 0.5em !important;
+    border-radius: 0.8em;
+    background: var(--paper);
+  }
+
+  /* A scan line sweeps the screen while a lens is inspecting */
+  .b-scan {
+    position: absolute;
+    z-index: 4;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 5em;
+    background: linear-gradient(180deg, rgba(194, 81, 31, 0), rgba(194, 81, 31, 0.16) 80%, rgba(194, 81, 31, 0.7) 100%);
+    border-bottom: 0.1em solid var(--rust);
+    opacity: 0;
+    transform: translateY(-5em);
+  }
+
+  .b-loop:is(.is-l1:not(.is-d1), .is-l2:not(.is-d2), .is-l3:not(.is-d3), .is-l4:not(.is-d4), .is-l5:not(.is-d5)) .b-scan {
+    opacity: 1;
+    animation: b-scan 1200ms var(--ease) infinite;
+  }
+
+  @keyframes b-scan {
+    from { transform: translateY(-5em); }
+    to { transform: translateY(28em); }
+  }
+
+  /* Beams from the product to the lens that is inspecting */
+  .b-beams {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .b-beams path {
+    fill: none;
+    stroke: var(--rust);
+    stroke-width: 1.6;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    opacity: 0;
+    transition: stroke-dashoffset 500ms var(--ease), opacity 400ms var(--ease), stroke 400ms var(--ease);
+  }
+
+  .b-loop.is-l1 .b-beams [data-l='1'],
+  .b-loop.is-l2 .b-beams [data-l='2'],
+  .b-loop.is-l3 .b-beams [data-l='3'],
+  .b-loop.is-l4 .b-beams [data-l='4'],
+  .b-loop.is-l5 .b-beams [data-l='5'] { stroke-dashoffset: 0; opacity: 1; }
+
+  .b-loop.is-d1 .b-beams [data-l='1'],
+  .b-loop.is-d2 .b-beams [data-l='2'],
+  .b-loop.is-d3 .b-beams [data-l='3'],
+  .b-loop.is-d4 .b-beams [data-l='4'],
+  .b-loop.is-d5 .b-beams [data-l='5'] { stroke: var(--pebble); opacity: 0.6; }
+
+  /* The five lenses */
+  .b-lenses {
+    position: absolute;
+    left: 28.2em;
+    top: 4.6em;
+    width: 21.4em;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.8em;
+  }
+
+  .b-lens {
+    display: grid;
+    grid-template-columns: 2.4em 1fr auto;
+    align-items: center;
+    height: 5.6em;
+    padding: 0 1.1em;
+    border-radius: 1em;
+    opacity: 0;
+    transform: translateX(1.5em);
+    transition: opacity 500ms var(--ease), transform 700ms var(--ease), box-shadow 400ms var(--ease), border-color 400ms var(--ease);
+  }
+
+  .b-loop.is-in .b-lens { opacity: 1; transform: none; }
+  .b-lens:nth-child(2) { transition-delay: 80ms; }
+  .b-lens:nth-child(3) { transition-delay: 160ms; }
+  .b-lens:nth-child(4) { transition-delay: 240ms; }
+  .b-lens:nth-child(5) { transition-delay: 320ms; }
+
+  .b-lens > i {
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 0.8em;
+    color: var(--rust-text);
+  }
+
+  .b-lens b { display: block; font-size: 1.05em; line-height: 1.2; }
+  .b-lens small { display: block; margin-top: 0.15em; font-size: 0.8em; color: var(--steel); }
+
+  .b-state {
+    display: grid;
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 0.72em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .b-state > span {
+    grid-area: 1 / 1;
+    justify-self: end;
+    padding: 0.35em 0.7em;
+    border-radius: 0.5em;
+    white-space: nowrap;
+    transition: opacity 300ms var(--ease), transform 400ms var(--pop);
+  }
+
+  .b-queued { color: var(--steel); background: rgba(19, 32, 46, 0.05); }
+  .b-busy { color: var(--rust-text); background: var(--rust-tint); opacity: 0; }
+  .b-found {
+    color: #fff;
+    background: linear-gradient(135deg, #e0733f, #c2511f);
+    box-shadow: 0 0.4em 0.8em -0.4em rgba(194, 81, 31, 0.9);
+    opacity: 0;
+    transform: scale(0.7);
+  }
+
+  .b-loop.is-l1 [data-l='1'] .b-queued,
+  .b-loop.is-l2 [data-l='2'] .b-queued,
+  .b-loop.is-l3 [data-l='3'] .b-queued,
+  .b-loop.is-l4 [data-l='4'] .b-queued,
+  .b-loop.is-l5 [data-l='5'] .b-queued { opacity: 0; }
+
+  .b-loop.is-l1 [data-l='1'] .b-busy,
+  .b-loop.is-l2 [data-l='2'] .b-busy,
+  .b-loop.is-l3 [data-l='3'] .b-busy,
+  .b-loop.is-l4 [data-l='4'] .b-busy,
+  .b-loop.is-l5 [data-l='5'] .b-busy { opacity: 1; animation: b-blink 900ms ease-in-out infinite; }
+
+  @keyframes b-blink {
+    50% { opacity: 0.45; }
+  }
+
+  .b-loop.is-d1 [data-l='1'] .b-busy,
+  .b-loop.is-d2 [data-l='2'] .b-busy,
+  .b-loop.is-d3 [data-l='3'] .b-busy,
+  .b-loop.is-d4 [data-l='4'] .b-busy,
+  .b-loop.is-d5 [data-l='5'] .b-busy { opacity: 0; animation: none; }
+
+  .b-loop.is-d1 [data-l='1'] .b-found,
+  .b-loop.is-d2 [data-l='2'] .b-found,
+  .b-loop.is-d3 [data-l='3'] .b-found,
+  .b-loop.is-d4 [data-l='4'] .b-found,
+  .b-loop.is-d5 [data-l='5'] .b-found { opacity: 1; transform: none; }
+
+  .b-loop.is-l1:not(.is-d1) .b-lens[data-l='1'],
+  .b-loop.is-l2:not(.is-d2) .b-lens[data-l='2'],
+  .b-loop.is-l3:not(.is-d3) .b-lens[data-l='3'],
+  .b-loop.is-l4:not(.is-d4) .b-lens[data-l='4'],
+  .b-loop.is-l5:not(.is-d5) .b-lens[data-l='5'] {
+    border-color: rgba(194, 81, 31, 0.5);
+    box-shadow: 0 0 0 0.25em rgba(194, 81, 31, 0.12), 0 1.8em 3.2em -1.4em rgba(194, 81, 31, 0.45);
+    transform: translateX(-0.4em);
+  }
+
+  /* The report every lens feeds */
+  .b-report {
+    position: absolute;
+    left: 52.2em;
+    top: 4.6em;
+    width: 20.4em;
+    height: 34.4em;
+    padding: 1.4em 1.4em 1.2em;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transform: translateY(1.5em);
+    transition: opacity 600ms var(--ease) 300ms, transform 800ms var(--ease) 300ms;
+  }
+
+  .b-loop.is-in .b-report { opacity: 1; transform: none; }
+
+  .b-report p { margin: 0; }
+
+  .b-report-head {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 0.72em;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--steel);
+  }
+
+  .b-status {
+    display: grid;
+    padding: 0.1em 0.5em;
+    border-radius: 0.4em;
+    background: rgba(19, 32, 46, 0.06);
+    transition: color 300ms var(--ease), background 300ms var(--ease);
+  }
+
+  .b-status span {
+    grid-area: 1 / 1;
+    text-align: center;
+    transition: opacity 300ms var(--ease);
+  }
+
+  .b-status span:last-child { opacity: 0; }
+
+  .b-loop.is-done .b-status { color: #fff; background: var(--navy); }
+  .b-loop.is-done .b-status span:first-child { opacity: 0; }
+  .b-loop.is-done .b-status span:last-child { opacity: 1; }
+
+  .b-report-title {
+    margin-top: 0.5em !important;
+    font-size: 1.35em;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .b-stats {
+    margin-top: 1em;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8em;
+  }
+
+  .b-stats p {
+    padding: 0.8em 0.9em;
+    border-radius: 0.9em;
+    background: var(--paper);
+  }
+
+  .b-stats b {
+    display: block;
+    font-size: 2em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+
+  .b-stats p:first-child b { color: var(--rust-text); }
+
+  .b-stats small { display: block; margin-top: 0.4em; font-size: 0.78em; color: var(--steel); }
+
+  .b-progress {
+    margin-top: 1em;
+    height: 0.4em;
+    border-radius: 0.4em;
+    background: rgba(19, 32, 46, 0.07);
+    overflow: hidden;
+  }
+
+  .b-progress span {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #e0733f, #c2511f);
+    transition: width 600ms var(--ease);
+  }
+
+  .b-loop.is-d1 .b-progress span { width: 20%; }
+  .b-loop.is-d2 .b-progress span { width: 40%; }
+  .b-loop.is-d3 .b-progress span { width: 60%; }
+  .b-loop.is-d4 .b-progress span { width: 80%; }
+  .b-loop.is-d5 .b-progress span { width: 100%; }
+
+  .b-entries {
+    margin: 1em 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.55em;
+  }
+
+  .b-entries li {
+    padding: 0.55em 0.7em 0.55em 0.9em;
+    border-radius: 0.7em;
+    font-size: 0.82em;
+    font-weight: 600;
+    line-height: 1.25;
+    background: #fff;
+    box-shadow: inset 0.2em 0 0 var(--rust), 0 0.3em 0.8em -0.4em rgba(19, 32, 46, 0.25);
+    opacity: 0;
+    transform: translateX(-1.5em);
+    transition: opacity 400ms var(--ease), transform 600ms var(--pop);
+  }
+
+  .b-entries i {
+    display: block;
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 0.8em;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--rust-text);
+  }
+
+  .b-loop.is-d1 .b-entries [data-l='1'],
+  .b-loop.is-d2 .b-entries [data-l='2'],
+  .b-loop.is-d3 .b-entries [data-l='3'],
+  .b-loop.is-d4 .b-entries [data-l='4'],
+  .b-loop.is-d5 .b-entries [data-l='5'] { opacity: 1; transform: none; }
+
+  .b-stamp {
+    margin-top: auto !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    padding: 0.8em;
+    border-radius: 99em;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(180deg, #24384d, #13202e);
+    box-shadow: 0 0.8em 1.6em -0.8em rgba(19, 32, 46, 0.7);
+    opacity: 0;
+    transform: translateY(0.8em) scale(0.9);
+    transition: opacity 300ms var(--ease), transform 600ms var(--pop);
+  }
+
+  .b-stamp svg { width: 1.3em; height: 1.3em; }
+
+  .b-stamp path {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 500ms var(--ease) 300ms;
+  }
+
+  .b-loop.is-done .b-stamp { opacity: 1; transform: none; }
+  .b-loop.is-done .b-stamp path { stroke-dashoffset: 0; }
+
+  /* Narrow screens: the lenses above the report, without the phone */
+  @container (max-width: 560px) {
+    .loop-stage--wide {
+      aspect-ratio: 38 / 76;
+      font-size: calc(100cqw / 38);
+    }
+
+    .b-loop :global(.b-phone),
+    .b-pad,
+    .b-beams { display: none; }
+
+    .b-lenses { left: 2em; width: 34em; }
+
+    .b-report {
+      left: 2em;
+      top: 38.2em;
+      width: 34em;
+      height: 35.6em;
+    }
+  }
+</style>
