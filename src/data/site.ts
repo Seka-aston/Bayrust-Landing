@@ -7,6 +7,7 @@ export const site = {
     'Independent software quality audits from Kigali, Rwanda: usability, accessibility, system logic, user habits and operational fit.',
   email: '[YOUR EMAIL]',
   linkedin: '[LINKEDIN]',
+  founderLinkedin: 'https://www.linkedin.com/in/aston-guevara/',
   responseTime: '[RESPONSE TIME]',
   auditDuration: '[X–Y] business days',
   pricingDetails: '[PRICING DETAILS]',
