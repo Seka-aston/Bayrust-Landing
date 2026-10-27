@@ -5,7 +5,7 @@ import { stages, findingParts, severities, reportContents, scopeFactors } from '
 import { site } from '../data/site';
 
 // A small animated preview for each report section, in the order of reportContents.
-const previews = ['summary', 'register', 'scores', 'evidence', 'plan'];
+const previews = ['summary', 'register', 'scores', 'evidence', 'plan', 'conformance'];
 ---
 
 <Layout title="How it works" current="process">
@@ -14,8 +14,8 @@ const previews = ['summary', 'register', 'scores', 'evidence', 'plan'];
       <Eyebrow>How it works</Eyebrow>
       <h1 class="display-1">How an audit<br /><span class="accent">works, step by step.</span></h1>
       <p>
-        Five stages, from the first conversation to the re-check that confirms the rust is gone. You always know what we need
-        from you and what you’ll get next.
+        Five stages, from a free scoping call to the re-check that confirms the rust is gone. At every stage you know exactly
+        what we need from you and what you’ll get next.
       </p>
       <div class="facts">
         <span>{site.auditDuration}, typically</span>
@@ -162,6 +162,17 @@ const previews = ['summary', 'register', 'scores', 'evidence', 'plan'];
                       {Array.from({ length: 3 - c }, () => <i />)}
                     </p>
                   ))}
+                {previews[i] === 'conformance' && (
+                  <>
+                    <b>AA</b>
+                    {[1, 1, 0].map((pass) => (
+                      <p class:list={{ 'is-fail': !pass }}>
+                        <span />
+                        <i />
+                      </p>
+                    ))}
+                  </>
+                )}
               </div>
               <h3>{item.name}</h3>
               <p>{item.body}</p>
@@ -178,8 +189,12 @@ const previews = ['summary', 'register', 'scores', 'evidence', 'plan'];
       <div class="pricing-copy">
         <h2 id="price-h">One fixed price, agreed before we start</h2>
         <p>
-          No hourly billing and no surprises. The price depends on the size of the inspection, and it includes the re-check.
+          No hourly billing and no surprises. The price depends on the size of the inspection, and it includes the re-check.{' '}
           {site.pricingDetails}
+        </p>
+        <p class="pricing-promise">
+          What we don’t promise: a specific conversion number. Results depend on what your team ships. What we do promise:
+          every finding is real, evidenced and fixable.
         </p>
       </div>
       <div class="scope">
@@ -764,7 +779,7 @@ const previews = ['summary', 'register', 'scores', 'evidence', 'plan'];
 
   .report-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
     gap: 18px;
   }
 
@@ -977,6 +992,53 @@ const previews = ['summary', 'register', 'scores', 'evidence', 'plan'];
 
   .report-grid:not(.is-on) .rp--plan i { opacity: 0; transform: translateY(-10px); }
 
+  /* Accessibility conformance: the AA level and criteria passing or failing */
+  .rp--conformance {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-content: start;
+    column-gap: 12px;
+    row-gap: 7px;
+  }
+
+  .rp--conformance b {
+    grid-row: span 3;
+    align-self: center;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid var(--navy);
+    font-size: 15px;
+    color: var(--navy);
+    transition-timing-function: var(--pop);
+  }
+
+  .rp--conformance p { display: flex; align-items: center; gap: 7px; }
+
+  .rp--conformance span {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--navy);
+  }
+
+  .rp--conformance .is-fail span { background: var(--rust); }
+
+  .rp--conformance p i {
+    width: 72%;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(19, 32, 46, 0.14);
+  }
+
+  .rp--conformance p:nth-of-type(2) { transition-delay: 120ms; }
+  .rp--conformance p:nth-of-type(3) { transition-delay: 240ms; }
+
+  .report-grid:not(.is-on) .rp--conformance b { opacity: 0; transform: scale(0.6); }
+  .report-grid:not(.is-on) .rp--conformance p { opacity: 0; transform: translateX(-14px); }
+
   .report-grid.is-still .rp-bar i { transform: scaleX(0.4); }
 
   /* Pricing */
@@ -1010,6 +1072,11 @@ const previews = ['summary', 'register', 'scores', 'evidence', 'plan'];
     font-size: 18px;
     line-height: 1.6;
     color: var(--mist);
+  }
+
+  .pricing-copy .pricing-promise {
+    font-size: 16px;
+    color: var(--fog);
   }
 
   .scope {

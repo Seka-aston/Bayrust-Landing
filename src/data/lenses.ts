@@ -49,9 +49,9 @@ export const lenses: Lens[] = [
     lower: 'accessibility',
     question: 'Does it work for everyone?',
     summary: 'We test with keyboards, screen readers and low-vision settings, and check every screen against WCAG 2.2 AA.',
-    highlights: ['Screen-reader and keyboard walkthroughs', 'Contrast, focus and text-size checks', 'Findings mapped to WCAG criteria'],
+    highlights: ['Screen-reader and keyboard walkthroughs', 'Contrast, focus and text-size checks', 'A conformance summary you can share with partners and regulators'],
     intro:
-      'Customers who rely on screen readers, larger text or a keyboard are locked out when the basics are missed. Accessibility is also increasingly expected in public and financial services.',
+      'Customers who rely on screen readers, larger text or a keyboard are locked out when the basics are missed. Accessibility is also increasingly expected by partners, funders and regulators in public and financial services.',
     checks: [
       'Screen-reader walkthroughs with TalkBack and VoiceOver',
       'Keyboard-only navigation and focus order',
@@ -60,7 +60,7 @@ export const lenses: Lens[] = [
       'Every failure mapped to WCAG 2.2 AA',
     ],
     typicalRust: ['An amount field with no label', 'Grey hint text that fails contrast', 'A pop-up you can’t close with the keyboard'],
-    deliverable: 'A WCAG 2.2 AA conformance summary, with every failure tied to its criterion.',
+    deliverable: 'A WCAG 2.2 AA conformance summary you can share with partners and regulators, with every failure tied to its criterion.',
   },
   {
     id: 'system-logic',
@@ -122,18 +122,27 @@ export const lenses: Lens[] = [
     lower: 'operational requirements',
     question: 'Does it survive real conditions?',
     summary:
-      'We test on slow and dropping networks, shared devices, peak loads and staff handovers, because that is where products actually run.',
-    highlights: ['Throttled and interrupted connections', 'Shared devices and session handovers', 'Behaviour at month-end and peak loads'],
+      'We test on slow and dropping networks, shared devices, peak days and staff handovers, and we follow every payment through to the end, because that is where products actually run.',
+    highlights: [
+      'Slow, dropping and offline connections',
+      'Mobile-money, card and USSD payments followed end to end',
+      'Shared devices, peak days and staff handovers',
+    ],
     intro:
       'A product that works in the office can fail in the field. Network drops, shared devices, peak days and shift changes are normal conditions, not edge cases.',
     checks: [
-      'Throttled, unstable and offline connections',
+      'Slow, unstable and offline connections',
+      'Mobile-money, card and USSD payments followed end to end',
       'Low-cost and older devices',
       'Shared devices, sessions and sign-outs',
-      'Peak loads such as month-end and salary days',
+      'Peak days such as month-end and salary day',
       'Handovers between staff, shifts and branches',
     ],
-    typicalRust: ['A draft lost when the connection drops', 'Sessions left open on a shared branch tablet', 'Timeouts on salary day'],
+    typicalRust: [
+      'A draft lost when the connection drops',
+      'A mobile-money payment that succeeds but never updates the order',
+      'Sessions left open on a shared branch tablet',
+    ],
     deliverable: 'A conditions report showing how the product behaves in each environment we tested.',
   },
 ];

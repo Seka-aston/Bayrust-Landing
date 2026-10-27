@@ -8,13 +8,17 @@ import { site } from '../data/site';
     <Logomark size={620} class="watermark" />
     <h2 id="cta-h">Where’s the rust in your product?</h2>
     <p>
-      Tell us what you’ve built and who uses it. We’ll reply within {site.responseTime} with a proposed scope and
-      price.
+      Book a free scoping call. We’ll learn what you’ve built and who uses it, then send a fixed-price proposal
+      within {site.responseTime}.
     </p>
     <div class="actions">
-      <a href={`mailto:${site.email}`} class="btn btn--primary">Request an audit</a>
-      <a href="/process" class="btn btn--ghost">How an audit works</a>
+      <a href={`mailto:${site.email}`} class="btn btn--primary">Book a free scoping call</a>
+      <a href="/report" class="btn btn--ghost">See a sample report</a>
     </div>
+    <p class="founding">
+      Founding clients: we’re taking on {site.foundingClients} organisations this year at a reduced rate, in exchange for
+      permission to publish a case study.
+    </p>
   </div>
 </section>
 
@@ -63,6 +67,13 @@ import { site } from '../data/site';
     font-size: 18px;
     line-height: 1.6;
     color: var(--mist);
+  }
+
+  .founding {
+    margin-top: 10px;
+    max-width: 36em;
+    font-size: 15px;
+    color: var(--fog);
   }
 
   .actions {

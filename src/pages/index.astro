@@ -52,24 +52,53 @@ const reportFindings = [
   },
 ];
 
+const proofPoints = ['Five lenses in every audit', 'Evidence behind every finding', 'Checked against WCAG 2.2 AA', 'Re-check included'];
+
+// When teams call us: the four moments an outside inspection is worth it.
+const moments = [
+  {
+    title: 'Before a launch',
+    body: 'The cheapest moment to find rust is before your customers do. We can inspect prototypes, staging and beta builds.',
+  },
+  {
+    title: 'Before you accept a vendor’s delivery',
+    body: 'An independent check that what you paid for actually works, before the final invoice is signed.',
+  },
+  {
+    title: 'When customers complain and nobody knows why',
+    body: 'Support calls are rising, completion is falling, and the team can’t agree on the cause. We find it.',
+  },
+  {
+    title: 'Once a year, as a health check',
+    body: 'Products drift as features pile up. A yearly inspection catches the rust before it spreads.',
+  },
+];
+
+const founderCredentials = [
+  'Senior UX designer at a Nordic EdTech company, working on its design system and reviewing the quality of what teams ship',
+  'Former lead product designer of a vehicle telematics platform',
+  'Product designer since 2018, across food tech, software and education',
+  'BSc (Hons) Entrepreneurial Leadership, First Class, African Leadership University',
+];
+
 const sectors = ['Banks', 'Fintechs', 'Public digital services', 'NGOs and programs', 'Software agencies'];
 
 const reasons = [
   {
     title: 'Tested where your users are',
-    body: 'Low-cost Android phones, slow and dropping networks, shared devices and the languages your customers read.',
+    body: 'Low-cost Android phones, slow and dropping networks, shared devices, mobile money and USSD. The conditions your product actually lives in.',
   },
   {
     title: 'Written for two readers',
-    body: 'Engineers get the steps to reproduce. Leaders get a one-page summary of what to fund first.',
+    body: 'Engineers get reproduction steps, delivered straight into Jira, GitHub, Trello or a spreadsheet. Leaders get one page on what to fund first.',
   },
   {
     title: 'Independent by design',
-    body: 'We don’t build the product we inspect, so the report says what’s true, not what’s convenient.',
+    body: 'We don’t build software or sell tools, so there’s no follow-on contract to protect. The report says what’s true, not what’s convenient.',
   },
   {
     title: 'The re-check is included',
-    body: 'Once your team ships the fixes, we inspect again and confirm the rust is gone.',
+    body: 'Once your team ships the fixes, we inspect every one again and confirm the rust is really gone, with fresh evidence.',
   },
 ];
 
@@ -86,16 +115,30 @@ const caseTeasers = [
     <div class="hero-stripes" aria-hidden="true"></div>
     <div class="hero-glow" aria-hidden="true"></div>
     <div class="hero-copy">
-      <span class="badge">Independent software quality audits, from Kigali<span>New</span></span>
+      <span class="badge">Now taking on founding clients in Kigali<span>Founding rate</span></span>
       <h1>Find the rust<br /><span class="accent">before your users do.</span></h1>
       <p>
-        Bayrust inspects your app, website or platform across five lenses: usability, accessibility, system logic, user
-        habits and operational fit. You get every finding with proof, a severity, and the fix.
+        Independent audits for apps, websites and platforms. We test what your users experience and what your system
+        actually does, on the phones and networks they really use. Every problem comes back with proof, a severity and a
+        specific fix.
       </p>
       <div class="hero-actions">
-        <a href="#contact" class="btn btn--primary hero-primary">Request an audit</a>
-        <a href="/process" class="btn btn--secondary">How an audit works</a>
+        <a href="#contact" class="btn btn--primary hero-primary">Book a free scoping call</a>
+        <a href="/report" class="btn btn--secondary">See a sample report</a>
       </div>
+      <ul class="proof">
+        {
+          proofPoints.map((point) => (
+            <li>
+              <svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true">
+                <circle cx="10" cy="10" r="10" fill="#C2511F" />
+                <path d="M6 10.4l2.6 2.6L14.2 7.4" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              {point}
+            </li>
+          ))
+        }
+      </ul>
     </div>
 
     <!-- Sample report window -->
@@ -181,8 +224,8 @@ const caseTeasers = [
       <Eyebrow>What we inspect</Eyebrow>
       <h2 id="lens-h" class="display-2">Five lenses, one inspection</h2>
       <p class="lead narrow">
-        Most audits stop at what’s visible on screen. We also check whether the logic holds, whether the product fits how
-        people behave, and whether it survives the conditions it really runs in.
+        Most audits stop at what’s on the screen. Ours also tests the rules underneath, the habits of the people using it,
+        and the conditions it has to survive. All five lenses, in every audit.
       </p>
       <div role="tablist" aria-label="Inspection lenses" class="tablist" data-tabs>
         {
@@ -240,7 +283,9 @@ const caseTeasers = [
     <div class="container centered">
       <Eyebrow>Why Bayrust</Eyebrow>
       <h2 id="why-h" class="display-2">Proof, not opinions</h2>
-      <p class="lead narrow">The details that make a Bayrust report something your team can act on the same week.</p>
+      <p class="lead narrow">
+        What makes a Bayrust report something your team acts on the same week, instead of a document that sits in a folder.
+      </p>
       <div class="why-grid">
         <div class="why-feature">
           <div class="tag-stack" aria-hidden="true" data-tags>
@@ -269,6 +314,47 @@ const caseTeasers = [
             </div>
           ))
         }
+      </div>
+    </div>
+  </section>
+
+  <!-- When teams call us -->
+  <section aria-labelledby="when-h" class="section">
+    <div class="container when">
+      <div class="when-head">
+        <Eyebrow>When teams call us</Eyebrow>
+        <h2 id="when-h" class="display-2">You don’t need a crisis to need an audit</h2>
+        <p class="lead">
+          The teams closest to a product are the last to see its rust. An outside inspection is worth it at four moments.
+        </p>
+      </div>
+      <div class="when-grid">
+        {
+          moments.map((m) => (
+            <div class="when-card">
+              <h3>{m.title}</h3>
+              <p>{m.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Who inspects your product -->
+  <section aria-labelledby="who-h" class="section">
+    <div class="container--wide who">
+      <div class="who-photo">[FOUNDER PHOTO]</div>
+      <div class="who-copy">
+        <Eyebrow>Who inspects your product</Eyebrow>
+        <h2 id="who-h">Led by a product designer, not a sales team</h2>
+        <p>
+          Bayrust is led by Aston Guevara Seka, who has spent eight years designing digital products and reviewing what
+          development teams actually ship. Every audit is done by people who have built products themselves, so every fix we
+          recommend is one a real team can ship.
+        </p>
+        <CheckList items={founderCredentials} />
+        <a href={site.linkedin} class="who-link">Aston on LinkedIn</a>
       </div>
     </div>
   </section>
@@ -578,6 +664,25 @@ const caseTeasers = [
 
   .hero-primary {
     box-shadow: 0 8px 20px rgba(194, 81, 31, 0.3);
+  }
+
+  .proof {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px 26px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--steel);
+  }
+
+  .proof li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
   }
 
   /* Sample report */
@@ -1258,6 +1363,116 @@ const caseTeasers = [
     font-size: 16px;
     line-height: 1.6;
     color: var(--steel);
+  }
+
+  /* When teams call us */
+  .when {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .when-head {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: flex-start;
+    max-width: 760px;
+  }
+
+  .when-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+    gap: 18px;
+  }
+
+  .when-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .when-card h3 {
+    margin: 0;
+    font-size: 21px;
+    line-height: 1.3;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+
+  .when-card p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--steel);
+  }
+
+  /* Who inspects your product */
+  .who {
+    background: var(--white);
+    border: 1px solid rgba(19, 32, 46, 0.07);
+    border-radius: 30px;
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .who-photo {
+    flex: 1 1 360px;
+    min-height: 440px;
+    background: var(--paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--steel);
+    font-size: 14px;
+  }
+
+  .who-copy {
+    flex: 999 1 520px;
+    padding: 56px 52px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .who-copy h2 {
+    margin: 0;
+    font-size: clamp(32px, 3.8vw, 48px);
+    line-height: 1.08;
+    font-weight: 700;
+    letter-spacing: -0.035em;
+  }
+
+  .who-copy > p {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--steel);
+  }
+
+  .who-copy :global(.checks) {
+    margin: 0;
+  }
+
+  .who-link {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  @media (max-width: 640px) {
+    .who-photo {
+      min-height: 280px;
+    }
+
+    .who-copy {
+      padding: 36px 24px;
+    }
   }
 
   /* Our work teaser */

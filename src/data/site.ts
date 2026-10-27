@@ -8,8 +8,9 @@ export const site = {
   email: '[YOUR EMAIL]',
   linkedin: '[LINKEDIN]',
   responseTime: '[RESPONSE TIME]',
-  auditDuration: '[X–Y] weeks',
+  auditDuration: '[X–Y] business days',
   pricingDetails: '[PRICING DETAILS]',
+  foundingClients: '[N]',
   location: 'Kigali, Rwanda',
   year: 2026,
 };

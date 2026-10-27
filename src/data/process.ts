@@ -13,14 +13,14 @@ export interface Stage {
 export const stages: Stage[] = [
   {
     name: 'Intake',
-    when: 'Week 1',
+    when: 'Days 1–3',
     body: 'We meet your team, learn who your users are and what the business needs, and agree the journeys, platforms and lenses in scope.',
     need: 'An hour of your team’s time, product access and test accounts.',
     get: 'A signed scope with a fixed price and dates.',
   },
   {
     name: 'Inspection',
-    when: 'Weeks [X–Y]',
+    when: '[X–Y] business days',
     body: 'We inspect every journey in scope through all five lenses, on real devices and real network conditions, and talk to users or staff where habits matter.',
     need: 'A contact who can answer quick questions.',
     get: 'Progress updates, and an early warning for anything critical.',
@@ -30,14 +30,14 @@ export const stages: Stage[] = [
     when: 'End of inspection',
     body: 'We deliver the full report and walk your team through it, so engineers know what to fix and leaders know what to fund first.',
     need: 'The people who will prioritise and fix the work.',
-    get: 'The report, the evidence library and a fix plan.',
+    get: 'The report, a one-page leadership summary, a [90-minute] walkthrough, and findings delivered into Jira, GitHub, Trello or a spreadsheet.',
   },
   {
     name: 'Your team fixes',
     when: 'Your schedule',
     body: 'Your engineers ship the fixes. We stay available for questions about any finding while you work.',
     need: 'Time to implement the recommended fixes.',
-    get: 'Answers to questions about any finding.',
+    get: 'Up to [N] follow-up calls about any finding while you work.',
     style: 'client',
   },
   {
@@ -92,6 +92,7 @@ export const reportContents = [
   { name: 'Lens scorecards', body: 'How the product performs through each of the five lenses.' },
   { name: 'Evidence library', body: 'Recordings and screenshots behind every finding.' },
   { name: 'Fix plan', body: 'Findings grouped into a practical order of work for your team.' },
+  { name: 'Accessibility conformance summary', body: 'WCAG 2.2 AA results you can share with partners, funders and regulators.' },
 ];
 
 export const scopeFactors = [
