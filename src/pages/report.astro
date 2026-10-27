@@ -1,0 +1,1495 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import Logomark from '../components/Logomark.astro';
+import { lenses } from '../data/lenses';
+import { audit, summary, scores, findings, plan, type Severity } from '../data/report';
+
+const severityOrder: Severity[] = ['Critical', 'Major', 'Minor'];
+const lensName = Object.fromEntries(lenses.map((l) => [l.id, l.name]));
+const byId = Object.fromEntries(findings.map((f) => [f.id, f]));
+
+// The register is sorted by severity, highest first, then by ID.
+const register = [...findings].sort(
+  (a, b) => severityOrder.indexOf(a.severity) - severityOrder.indexOf(b.severity) || a.id.localeCompare(b.id),
+);
+
+const total = findings.length;
+const fixed = findings.filter((f) => f.recheck.status === 'confirmed').length;
+const severityCounts = severityOrder.map((name) => {
+  const all = findings.filter((f) => f.severity === name);
+  return { name, total: all.length, open: all.filter((f) => f.recheck.status === 'open').length };
+});
+
+const lensRows = lenses.map((l) => {
+  const own = findings.filter((f) => f.lens === l.id);
+  return {
+    id: l.id,
+    name: l.name,
+    count: own.length,
+    bySeverity: severityOrder.map((s) => ({ s, n: own.filter((f) => f.severity === s).length })).filter((x) => x.n),
+    ...scores[l.id],
+  };
+});
+
+const average = (key: 'before' | 'after') => Math.round(lensRows.reduce((sum, r) => sum + r[key], 0) / lensRows.length);
+const overall = { before: average('before'), after: average('after') };
+
+const anchor = (id: string) => `#${id.toLowerCase()}`;
+const sections = [
+  { id: 'summary', name: 'Executive summary' },
+  { id: 'scores', name: 'Lens scorecards' },
+  { id: 'register', name: 'Findings register' },
+  { id: 'plan', name: 'Fix plan' },
+];
+---
+
+<Layout title="Sample report" description="A sample Bayrust audit report: executive summary, lens scorecards, findings register and fix plan.">
+  <section class="intro">
+    <div class="intro-inner">
+      <Eyebrow>Sample report</Eyebrow>
+      <h1 class="display-1">The report your<br /><span class="accent">team would get.</span></h1>
+      <p>
+        A full audit of a fictional mobile banking app. Filter the findings, open any one for its evidence and fix, then
+        switch to the re-check to see what changed.
+      </p>
+    </div>
+  </section>
+
+  <section aria-label="Sample audit report" class="section">
+    <article class="container--wide doc" data-doc data-version="report">
+      <header class="doc-bar">
+        <div class="doc-title">
+          <Logomark size={22} />
+          <div>
+            <p class="mono">Audit report · Sample</p>
+            <p>{audit.product}</p>
+          </div>
+        </div>
+        <div class="doc-actions">
+          <div role="group" aria-label="Report version" class="versions">
+            <button type="button" aria-pressed="true" data-v="report">First report <span>{audit.reported}</span></button>
+            <button type="button" aria-pressed="false" data-v="recheck">Re-check <span>{audit.rechecked}</span></button>
+          </div>
+          <button type="button" class="print" data-print>Save as PDF</button>
+        </div>
+      </header>
+
+      <div class="doc-body">
+        <nav aria-label="Report sections" class="toc">
+          <p>Contents</p>
+          {
+            sections.map((s, i) => (
+              <a href={`#${s.id}`} data-toc={s.id}>
+                <span class="mono">{String(i + 1).padStart(2, '0')}</span>
+                {s.name}
+              </a>
+            ))
+          }
+          <p class="toc-note">All names, numbers and findings are sample content.</p>
+        </nav>
+
+        <div class="doc-main">
+          <!-- Executive summary -->
+          <section id="summary" aria-labelledby="summary-h" class="part">
+            <div class="part-head">
+              <span class="mono part-num">01</span>
+              <h2 id="summary-h">Executive summary</h2>
+            </div>
+            <p class="verdict">
+              <span class="v-report">{summary.verdict}</span>
+              <span class="v-recheck">{summary.recheck}</span>
+            </p>
+
+            <div class="tiles">
+              <div class="tile tile--total">
+                <p class="tile-n">
+                  <span class="v-report">{total}</span>
+                  <span class="v-recheck">{fixed}<small> / {total}</small></span>
+                </p>
+                <p>
+                  <span class="v-report">Findings</span>
+                  <span class="v-recheck">Confirmed fixed</span>
+                </p>
+              </div>
+              {
+                severityCounts.map((c) => (
+                  <div class="tile">
+                    <span class:list={['mono', 'sev', `sev--${c.name.toLowerCase()}`]}>{c.name}</span>
+                    <p class="tile-n">{c.total}</p>
+                    <p>
+                      <span class="v-report">{c.total} open</span>
+                      <span class="v-recheck">{c.open ? `${c.open} still open` : 'All fixed'}</span>
+                    </p>
+                  </div>
+                ))
+              }
+            </div>
+
+            <div class="summary-cols">
+              <div>
+                <h3>Fund first</h3>
+                <ol class="fund">
+                  {
+                    summary.fundFirst.map((item) => (
+                      <li>
+                        <p>{item.body}</p>
+                        <p class="refs">
+                          {item.ids.map((id) => (
+                            <a href={anchor(id)} class="mono ref" data-ref={id}>
+                              {id}
+                            </a>
+                          ))}
+                        </p>
+                      </li>
+                    ))
+                  }
+                </ol>
+              </div>
+              <div>
+                <h3>Scope</h3>
+                <dl class="scope">
+                  <div><dt>Client</dt><dd>{audit.client}</dd></div>
+                  <div><dt>Platforms</dt><dd>{audit.platforms}</dd></div>
+                  <div><dt>Journeys</dt><dd>{audit.journeys.join(', ')}</dd></div>
+                  <div><dt>Devices</dt><dd>{audit.devices}</dd></div>
+                  <div><dt>Networks</dt><dd>{audit.networks}</dd></div>
+                  <div><dt>Inspected</dt><dd>{audit.inspected}</dd></div>
+                  <div><dt>Re-checked</dt><dd>{audit.rechecked}</dd></div>
+                </dl>
+              </div>
+            </div>
+          </section>
+
+          <!-- Lens scorecards -->
+          <section id="scores" aria-labelledby="scores-h" class="part">
+            <div class="part-head">
+              <span class="mono part-num">02</span>
+              <h2 id="scores-h">Lens scorecards</h2>
+              <p class="overall">
+                Overall
+                <b class="v-report">{overall.before}</b>
+                <b class="v-recheck">{overall.after}</b>
+                <span>/ 100</span>
+              </p>
+            </div>
+            <p class="part-lead">
+              Each lens is scored out of 100 from the share of checks passed, weighted by severity.{' '}
+              <span class="v-recheck">The pale mark shows the score at the first report.</span>
+            </p>
+            <ul class="scores">
+              {
+                lensRows.map((r) => (
+                  <li style={`--b: ${r.before}; --a: ${r.after}`}>
+                    <div class="score-name">
+                      <p>{r.name}</p>
+                      <p>
+                        {r.count} findings · {r.bySeverity.map((x) => `${x.n} ${x.s.toLowerCase()}`).join(', ')}
+                      </p>
+                    </div>
+                    <div class="score-bar" aria-hidden="true">
+                      <i class="score-was" />
+                      <i class="score-fill" />
+                    </div>
+                    <p class="score-n">
+                      <b class="v-report">{r.before}</b>
+                      <b class="v-recheck">{r.after}</b>
+                      <span class="v-recheck mono">+{r.after - r.before}</span>
+                    </p>
+                  </li>
+                ))
+              }
+            </ul>
+          </section>
+
+          <!-- Findings register -->
+          <section id="register" aria-labelledby="register-h" class="part">
+            <div class="part-head">
+              <span class="mono part-num">03</span>
+              <h2 id="register-h">Findings register</h2>
+            </div>
+            <p class="part-lead">Sorted by severity, highest first. Open any finding for its evidence, steps and fix.</p>
+
+            <div class="filters" data-filters>
+              <div role="group" aria-label="Filter by lens" class="chips">
+                <button type="button" aria-pressed="true" data-filter="lens" data-value="all">All <span>{total}</span></button>
+                {
+                  lensRows.map((r) => (
+                    <button type="button" aria-pressed="false" data-filter="lens" data-value={r.id}>
+                      {r.name} <span>{r.count}</span>
+                    </button>
+                  ))
+                }
+              </div>
+              <div role="group" aria-label="Filter by severity" class="chips">
+                <button type="button" aria-pressed="true" data-filter="sev" data-value="all">Any severity</button>
+                {
+                  severityCounts.map((c) => (
+                    <button type="button" aria-pressed="false" data-filter="sev" data-value={c.name}>
+                      {c.name} <span>{c.total}</span>
+                    </button>
+                  ))
+                }
+              </div>
+            </div>
+            <p class="shown" aria-live="polite" data-shown>Showing all {total} findings</p>
+
+            <div class="register">
+              {
+                register.map((f) => (
+                  <details id={f.id.toLowerCase()} class="f" data-lens={f.lens} data-sev={f.severity}>
+                    <summary>
+                      <span class:list={['mono', 'sev', `sev--${f.severity.toLowerCase()}`]}>{f.severity}</span>
+                      <span class="mono f-id">{f.id}</span>
+                      <span class="f-title">
+                        {f.title}
+                        <span>
+                          {lensName[f.lens]} · {f.journey}
+                        </span>
+                      </span>
+                      <span class:list={['status', `status--${f.recheck.status}`]}>
+                        <span class="v-report">Open</span>
+                        <span class="v-recheck">{f.recheck.status === 'confirmed' ? 'Fixed' : 'Still open'}</span>
+                      </span>
+                      <span class="chev" aria-hidden="true" />
+                    </summary>
+                    <div class="f-body">
+                      <div class:list={['evidence', `evidence--${f.evidence.kind.toLowerCase()}`]}>
+                        <div class="ev-thumb" aria-hidden="true">
+                          <span class="ev-icon" />
+                          <span class="mono">{f.evidence.label}</span>
+                        </div>
+                        <div>
+                          <p class="f-label">Evidence · {f.evidence.kind}</p>
+                          <p>{f.evidence.body}</p>
+                        </div>
+                      </div>
+                      <div>
+                        <p class="f-label">Steps to reproduce</p>
+                        <p>{f.steps}</p>
+                      </div>
+                      <div>
+                        <p class="f-label">Recommended fix</p>
+                        <p>{f.fix}</p>
+                      </div>
+                      <div>
+                        <p class="f-label">Re-check</p>
+                        <p>
+                          <span class="v-report">Pending. We inspect this again once your fix is live.</span>
+                          <span class="v-recheck">{f.recheck.note}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </details>
+                ))
+              }
+              <div class="empty" data-empty hidden>
+                <p>No findings match both filters.</p>
+                <button type="button" data-clear>Clear filters</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Fix plan -->
+          <section id="plan" aria-labelledby="plan-h" class="part">
+            <div class="part-head">
+              <span class="mono part-num">04</span>
+              <h2 id="plan-h">Fix plan</h2>
+            </div>
+            <p class="part-lead">The findings grouped into an order of work, so the riskiest rust goes first.</p>
+            <div class="plan">
+              {
+                plan.map((col) => (
+                  <div class="plan-col">
+                    <div class="plan-head">
+                      <h3>{col.name}</h3>
+                      <span>{col.when}</span>
+                    </div>
+                    <ul>
+                      {col.ids.map((id) => {
+                        const f = byId[id];
+                        return (
+                          <li class:list={[`is-${f.recheck.status}`]}>
+                            <a href={anchor(id)} data-ref={id}>
+                              <span class:list={['plan-dot', `plan-dot--${f.severity.toLowerCase()}`]} aria-hidden="true" />
+                              <span class="mono">{id}</span>
+                              <span class="plan-title">{f.title}</span>
+                            </a>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                ))
+              }
+            </div>
+          </section>
+        </div>
+      </div>
+    </article>
+  </section>
+</Layout>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-doc]').forEach((doc) => {
+    const items = [...doc.querySelectorAll<HTMLDetailsElement>('details.f')];
+    const shown = doc.querySelector<HTMLElement>('[data-shown]')!;
+    const empty = doc.querySelector<HTMLElement>('[data-empty]')!;
+    const filter = { lens: 'all', sev: 'all' };
+
+    // Report version: the first report, or the re-check with each finding's outcome.
+    const versions = [...doc.querySelectorAll<HTMLButtonElement>('[data-v]')];
+    versions.forEach((btn) =>
+      btn.addEventListener('click', () => {
+        doc.dataset.version = btn.dataset.v;
+        versions.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      }),
+    );
+
+    // Register filters: one lens and one severity at a time.
+    const chips = [...doc.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+    const apply = () => {
+      let count = 0;
+      items.forEach((el) => {
+        const match =
+          (filter.lens === 'all' || el.dataset.lens === filter.lens) && (filter.sev === 'all' || el.dataset.sev === filter.sev);
+        el.hidden = !match;
+        if (match) count++;
+      });
+      chips.forEach((c) => c.setAttribute('aria-pressed', String(filter[c.dataset.filter as 'lens' | 'sev'] === c.dataset.value)));
+      shown.textContent =
+        count === items.length ? `Showing all ${count} findings` : `Showing ${count} of ${items.length} findings`;
+      empty.hidden = count > 0;
+    };
+    chips.forEach((chip) =>
+      chip.addEventListener('click', () => {
+        filter[chip.dataset.filter as 'lens' | 'sev'] = chip.dataset.value!;
+        apply();
+      }),
+    );
+    doc.querySelector('[data-clear]')!.addEventListener('click', () => {
+      filter.lens = filter.sev = 'all';
+      apply();
+    });
+
+    // Links to a finding open it, clearing the filters if they hide it.
+    const reveal = (id: string, scroll: boolean) => {
+      const el = items.find((d) => d.id === id);
+      if (!el) return;
+      if (el.hidden) {
+        filter.lens = filter.sev = 'all';
+        apply();
+      }
+      el.open = true;
+      if (scroll) el.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      el.querySelector('summary')!.focus({ preventScroll: true });
+    };
+    doc.querySelectorAll<HTMLAnchorElement>('[data-ref]').forEach((a) =>
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const id = a.dataset.ref!.toLowerCase();
+        history.replaceState(null, '', `#${id}`);
+        reveal(id, true);
+      }),
+    );
+    if (location.hash) reveal(location.hash.slice(1), false);
+
+    // Contents: highlight the section being read.
+    const toc = [...doc.querySelectorAll<HTMLAnchorElement>('[data-toc]')];
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          toc.forEach((a) => a.toggleAttribute('aria-current', a.dataset.toc === entry.target.id));
+        });
+      },
+      { rootMargin: '-30% 0px -60% 0px' },
+    );
+    toc.forEach((a) => observer.observe(doc.querySelector(`#${a.dataset.toc}`)!));
+
+    // Save as PDF prints every finding open, then restores what was open before.
+    let wasOpen: boolean[] = [];
+    addEventListener('beforeprint', () => {
+      wasOpen = items.map((d) => d.open);
+      items.forEach((d) => (d.open = true));
+    });
+    addEventListener('afterprint', () => items.forEach((d, i) => (d.open = wasOpen[i])));
+    doc.querySelector('[data-print]')!.addEventListener('click', () => print());
+  });
+</script>
+
+<style>
+  .intro {
+    padding: 96px var(--gutter) 72px;
+  }
+
+  .intro-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 24px;
+  }
+
+  .intro-inner > p {
+    margin: 0;
+    max-width: 38em;
+    font-size: 19px;
+    line-height: 1.65;
+    color: var(--steel);
+  }
+
+  /* Version-dependent text */
+  [data-version='report'] .v-recheck,
+  [data-version='recheck'] .v-report {
+    display: none;
+  }
+
+  /* The document */
+  .doc {
+    background: var(--white);
+    border: 1px solid rgba(19, 32, 46, 0.07);
+    border-radius: 30px;
+    box-shadow: var(--shadow-card);
+  }
+
+  .doc-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px 24px;
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--line);
+    background: var(--paper);
+    border-radius: 30px 30px 0 0;
+  }
+
+  .doc-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .doc-title p {
+    margin: 0;
+  }
+
+  .doc-title p:first-child {
+    font-size: 12px;
+    color: var(--steel);
+    letter-spacing: 0.02em;
+  }
+
+  .doc-title p:last-child {
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  .doc-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .versions {
+    display: flex;
+    padding: 4px;
+    gap: 4px;
+    background: var(--white);
+    border: 1px solid var(--line-strong);
+    border-radius: 12px;
+  }
+
+  .versions button {
+    border: 0;
+    background: none;
+    color: var(--steel);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: background 200ms ease, color 200ms ease;
+  }
+
+  .versions button span {
+    font-weight: 400;
+    opacity: 0.75;
+    margin-left: 4px;
+  }
+
+  .versions button[aria-pressed='true'] {
+    background: var(--navy);
+    color: var(--white);
+  }
+
+  .print {
+    border: 1px solid var(--line-strong);
+    background: var(--white);
+    color: var(--navy);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px 16px;
+    border-radius: 11px;
+    cursor: pointer;
+  }
+
+  .print:hover {
+    border-color: var(--navy);
+  }
+
+  .doc-body {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 56px;
+    padding: 24px 56px 32px 32px;
+  }
+
+  /* Contents */
+  .toc {
+    position: sticky;
+    top: 110px;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: 32px;
+  }
+
+  .toc > p:first-child {
+    margin: 0 0 10px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--steel);
+  }
+
+  .toc a {
+    display: flex;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--steel);
+    text-decoration: none;
+  }
+
+  .toc a span {
+    font-size: 12px;
+    padding-top: 2px;
+    color: var(--pebble);
+  }
+
+  .toc a:hover {
+    color: var(--navy);
+  }
+
+  .toc a[aria-current] {
+    background: var(--rust-tint);
+    color: var(--navy);
+    font-weight: 700;
+  }
+
+  .toc a[aria-current] span {
+    color: var(--rust-text);
+  }
+
+  .toc-note {
+    margin: 20px 12px 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--steel);
+  }
+
+  /* Report parts */
+  .part {
+    padding: 40px 0 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .part + .part {
+    border-top: 1px solid var(--line);
+  }
+
+  .part-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 14px;
+  }
+
+  .part-num {
+    font-size: 14px;
+    color: var(--rust-text);
+  }
+
+  .part-head h2 {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
+  .part-lead {
+    margin: -10px 0 0;
+    max-width: 46em;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--steel);
+  }
+
+  .part h3 {
+    margin: 0 0 14px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--steel);
+  }
+
+  /* Severity badges, as on How it works */
+  .sev {
+    flex: none;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid rgba(19, 32, 46, 0.15);
+    padding: 4px 9px;
+    border-radius: 7px;
+  }
+
+  .sev--critical {
+    background: var(--navy);
+    color: var(--white);
+  }
+
+  .sev--major {
+    background: var(--steel);
+    color: var(--white);
+  }
+
+  .sev--minor {
+    background: var(--stone);
+    color: var(--navy);
+  }
+
+  /* Summary */
+  .verdict {
+    margin: 0;
+    max-width: 40em;
+    font-size: 20px;
+    line-height: 1.6;
+  }
+
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr));
+    gap: 12px;
+  }
+
+  .tile {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 18px 20px;
+    background: var(--ground);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+  }
+
+  .tile p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--steel);
+  }
+
+  .tile .tile-n {
+    font-size: 40px;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--navy);
+  }
+
+  .tile-n small {
+    font-size: 20px;
+    color: var(--steel);
+    font-weight: 600;
+  }
+
+  .tile--total {
+    background: var(--navy);
+    border-color: var(--navy);
+    justify-content: flex-end;
+  }
+
+  .tile--total p,
+  .tile--total .tile-n,
+  .tile--total small {
+    color: var(--white);
+  }
+
+  .tile--total p:last-child {
+    color: var(--mist);
+  }
+
+  .summary-cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    gap: 20px 40px;
+    margin-top: 8px;
+  }
+
+  .fund {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: fund;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .fund li {
+    counter-increment: fund;
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr);
+    column-gap: 12px;
+  }
+
+  .fund li::before {
+    content: counter(fund);
+    grid-row: span 2;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--rust);
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 700;
+    display: grid;
+    place-items: center;
+  }
+
+  .fund p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
+  .refs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px !important;
+  }
+
+  .ref {
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: var(--rust-tint);
+    color: var(--rust-text);
+    text-decoration: none;
+  }
+
+  .ref:hover {
+    background: var(--rust);
+    color: var(--white);
+  }
+
+  .scope {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .scope div {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .scope div:first-child {
+    padding-top: 0;
+  }
+
+  .scope dt {
+    color: var(--steel);
+  }
+
+  .scope dd {
+    margin: 0;
+  }
+
+  /* Scorecards */
+  .overall {
+    margin: 0 0 0 auto;
+    font-size: 15px;
+    color: var(--steel);
+  }
+
+  .overall span {
+    margin-left: 4px;
+  }
+
+  .overall b {
+    margin-left: 6px;
+    font-size: 28px;
+    color: var(--navy);
+    letter-spacing: -0.02em;
+  }
+
+  .scores {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .scores li {
+    display: grid;
+    grid-template-columns: minmax(0, 230px) minmax(0, 1fr) 84px;
+    align-items: center;
+    gap: 24px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .scores li:first-child {
+    border-top: 1px solid var(--line);
+  }
+
+  .score-name p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .score-name p + p {
+    margin-top: 2px;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--steel);
+  }
+
+  .score-bar {
+    position: relative;
+    height: 12px;
+    border-radius: 999px;
+    background: var(--paper);
+  }
+
+  .score-bar i {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: inherit;
+  }
+
+  .score-fill {
+    width: calc(var(--b) * 1%);
+    background: linear-gradient(90deg, var(--rust-soft), var(--rust));
+    transition: width 900ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .score-was {
+    width: calc(var(--b) * 1%);
+    opacity: 0;
+    background: var(--rust-soft);
+    transition: opacity 400ms ease;
+  }
+
+  [data-version='recheck'] .score-fill {
+    width: calc(var(--a) * 1%);
+    background: linear-gradient(90deg, var(--steel), var(--navy));
+  }
+
+  [data-version='recheck'] .score-was {
+    z-index: 1;
+    opacity: 1;
+    width: 3px;
+    left: calc(var(--b) * 1% - 1.5px);
+    background: var(--rust-soft);
+  }
+
+  .score-n {
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .score-n b {
+    font-size: 24px;
+    letter-spacing: -0.02em;
+  }
+
+  .score-n span {
+    font-size: 13px;
+    color: var(--rust-text);
+  }
+
+  /* Register */
+  .filters {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .chips button,
+  .empty button {
+    border: 1px solid var(--line-strong);
+    background: var(--white);
+    color: var(--steel);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+
+  .chips button span {
+    margin-left: 2px;
+    font-weight: 400;
+    opacity: 0.7;
+  }
+
+  .chips button:hover {
+    color: var(--navy);
+    border-color: var(--navy);
+  }
+
+  .chips button[aria-pressed='true'] {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: var(--white);
+  }
+
+  .shown {
+    margin: -8px 0 0;
+    font-size: 14px;
+    color: var(--steel);
+  }
+
+  .register {
+    border-top: 1px solid var(--line);
+  }
+
+  .f {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .f summary {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 76px 70px minmax(0, 1fr) auto 20px;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 8px;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: background 200ms ease;
+  }
+
+  .f summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .f summary:hover {
+    background: var(--ground);
+  }
+
+  .f summary:focus-visible {
+    outline: 3px solid var(--rust);
+    outline-offset: -3px;
+  }
+
+  .f summary .sev {
+    justify-self: start;
+  }
+
+  .f-id {
+    font-size: 13px;
+    color: var(--steel);
+  }
+
+  .f-title {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .f-title span {
+    display: block;
+    margin-top: 2px;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--steel);
+  }
+
+  .status {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--rust-tint);
+    color: var(--rust-text);
+    white-space: nowrap;
+  }
+
+  [data-version='recheck'] .status--confirmed {
+    background: var(--paper);
+    color: var(--navy);
+  }
+
+  [data-version='recheck'] .status--confirmed::before {
+    content: '✓ ';
+  }
+
+  .chev {
+    width: 9px;
+    height: 9px;
+    border-right: 2px solid var(--steel);
+    border-bottom: 2px solid var(--steel);
+    transform: translateY(-3px) rotate(45deg);
+    transition: transform 250ms ease;
+  }
+
+  .f[open] .chev {
+    transform: translateY(2px) rotate(225deg);
+  }
+
+  .f[open] summary {
+    background: var(--ground);
+  }
+
+  .f-body {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px 28px;
+    padding: 18px 8px 28px 170px;
+  }
+
+  .f-body p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .f-body .f-label {
+    margin-bottom: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--steel);
+  }
+
+  .evidence {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 190px minmax(0, 1fr);
+    gap: 18px;
+    align-items: center;
+  }
+
+  .ev-thumb {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    border-radius: 12px;
+    overflow: hidden;
+    background:
+      radial-gradient(120% 90% at 85% 10%, rgba(194, 81, 31, 0.45), transparent 60%),
+      linear-gradient(160deg, #1d2d3f, var(--navy));
+    display: grid;
+    place-items: center;
+  }
+
+  .ev-thumb > .mono {
+    position: absolute;
+    left: 10px;
+    bottom: 8px;
+    font-size: 11px;
+    color: var(--mist);
+  }
+
+  .ev-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    display: grid;
+    place-items: center;
+  }
+
+  /* Recording: a play button */
+  .evidence--recording .ev-icon::before {
+    content: '';
+    margin-left: 3px;
+    border-left: 11px solid var(--white);
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+  }
+
+  /* Screenshot: a small frame */
+  .evidence--screenshot .ev-icon {
+    border-radius: 8px;
+    width: 30px;
+    height: 44px;
+  }
+
+  .evidence--screenshot .ev-icon::before {
+    content: '';
+    width: 16px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--white);
+    box-shadow: 0 7px 0 rgba(255, 255, 255, 0.6), 0 14px 0 rgba(255, 255, 255, 0.6);
+    margin-bottom: 10px;
+  }
+
+  /* Log: lines of text */
+  .evidence--log .ev-icon {
+    border-radius: 8px;
+    width: 52px;
+    height: 34px;
+  }
+
+  .evidence--log .ev-icon::before {
+    content: '';
+    width: 30px;
+    height: 2px;
+    background: var(--white);
+    box-shadow: 0 6px 0 var(--rust), 0 -6px 0 rgba(255, 255, 255, 0.6);
+  }
+
+  .empty {
+    padding: 36px 8px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .empty[hidden] {
+    display: none;
+  }
+
+  .empty p {
+    margin: 0;
+    color: var(--steel);
+  }
+
+  /* Fix plan */
+  .plan {
+    display: grid;
+    align-items: start;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+    gap: 14px;
+  }
+
+  .plan-col {
+    background: var(--ground);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 18px;
+  }
+
+  .plan-col:first-child {
+    background: var(--rust-tint);
+    border-color: rgba(194, 81, 31, 0.18);
+  }
+
+  .plan-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .plan-head h3 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--navy);
+  }
+
+  .plan-head span {
+    font-size: 13px;
+    color: var(--steel);
+  }
+
+  .plan ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .plan a {
+    display: grid;
+    grid-template-columns: 8px auto minmax(0, 1fr);
+    align-items: baseline;
+    gap: 8px;
+    padding: 9px 10px;
+    border-radius: 10px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    text-decoration: none;
+    color: var(--navy);
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .plan a:hover {
+    border-color: var(--navy);
+  }
+
+  .plan a .mono {
+    font-size: 12px;
+    color: var(--steel);
+  }
+
+  .plan-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    transform: translateY(-1px);
+  }
+
+  .plan-dot--critical {
+    background: var(--navy);
+  }
+
+  .plan-dot--major {
+    background: var(--steel);
+  }
+
+  .plan-dot--minor {
+    background: var(--pebble);
+  }
+
+  [data-version='recheck'] .plan .is-confirmed a {
+    background: transparent;
+    color: var(--steel);
+  }
+
+  [data-version='recheck'] .plan .is-confirmed .plan-title {
+    text-decoration: line-through;
+    text-decoration-color: var(--pebble);
+  }
+
+  [data-version='recheck'] .plan .is-confirmed .plan-dot {
+    background: none;
+    width: auto;
+    height: auto;
+    transform: none;
+  }
+
+  [data-version='recheck'] .plan .is-confirmed .plan-dot::before {
+    content: '✓';
+    font-size: 12px;
+    color: var(--navy);
+  }
+
+  @media (max-width: 1040px) {
+    .doc-body {
+      grid-template-columns: minmax(0, 1fr);
+      padding: 8px 32px 24px;
+    }
+
+    .toc {
+      display: none;
+    }
+
+    .f-body {
+      padding-left: 8px;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .doc {
+      border-radius: 22px;
+    }
+
+    .doc-bar {
+      padding: 18px 20px;
+      border-radius: 22px 22px 0 0;
+    }
+
+    .doc-body {
+      padding: 0 20px 12px;
+    }
+
+    .part-head h2 {
+      font-size: 26px;
+    }
+
+    .doc-actions,
+    .versions {
+      width: 100%;
+    }
+
+    .versions button {
+      flex: 1;
+    }
+
+    .versions button span {
+      display: block;
+      margin: 2px 0 0;
+      font-size: 12px;
+    }
+
+    .tile .tile-n {
+      font-size: 32px;
+    }
+
+    .verdict {
+      font-size: 18px;
+    }
+
+    .scores li {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px 16px;
+    }
+
+    .score-bar {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+
+    .f summary {
+      grid-template-columns: auto minmax(0, 1fr) 20px;
+      gap: 8px 12px;
+      padding: 14px 4px;
+    }
+
+    .f summary .sev {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .f-id {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .f-title {
+      grid-column: 1 / 3;
+      grid-row: 2;
+    }
+
+    .status {
+      grid-column: 1 / 3;
+      grid-row: 3;
+      justify-self: start;
+    }
+
+    .chev {
+      grid-column: 3;
+      grid-row: 1;
+    }
+
+    .f-body,
+    .evidence {
+      grid-template-columns: minmax(0, 1fr);
+      padding: 8px 4px 24px;
+    }
+
+    .evidence {
+      padding: 0;
+    }
+
+    .ev-thumb {
+      max-width: 260px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .score-fill,
+    .score-was,
+    .chev {
+      transition: none;
+    }
+  }
+
+  /* Save as PDF: just the report, with every finding open */
+  @media print {
+    :global(.bar),
+    :global(footer),
+    :global(#contact),
+    .intro,
+    .toc,
+    .doc-actions,
+    .filters,
+    .shown,
+    .chev,
+    .empty {
+      display: none !important;
+    }
+
+    :global(body) {
+      background: var(--white);
+    }
+
+    .section {
+      padding: 0;
+    }
+
+    .doc {
+      border: 0;
+      box-shadow: none;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .doc-bar {
+      border-radius: 12px;
+    }
+
+    .doc-body {
+      display: block;
+      padding: 0;
+    }
+
+    .f[hidden] {
+      display: block;
+    }
+
+    .f,
+    .plan-col,
+    .scores li,
+    .tile {
+      break-inside: avoid;
+    }
+
+    .f-body {
+      padding-left: 8px;
+    }
+
+    .part {
+      break-before: page;
+    }
+
+    .part:first-child {
+      break-before: auto;
+    }
+  }
+</style>
