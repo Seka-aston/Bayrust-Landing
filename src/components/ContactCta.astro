@@ -15,6 +15,7 @@ import { site } from '../data/site';
       <a href={site.calendly} target="_blank" rel="noopener" class="btn btn--primary">Book a free scoping call</a>
       <a href="/report" class="btn btn--ghost">See a sample report</a>
     </div>
+    <p class="email">Prefer email? Write to <a href={`mailto:${site.email}`}>{site.email}</a></p>
     <p class="founding">
       Founding clients: we’re taking on {site.foundingClients} organisations this year at a reduced rate, in exchange for
       permission to publish a case study.
@@ -67,6 +68,19 @@ import { site } from '../data/site';
     font-size: 18px;
     line-height: 1.6;
     color: var(--mist);
+  }
+
+  .email {
+    font-size: 16px;
+  }
+
+  .email a {
+    color: var(--white);
+    font-weight: 600;
+  }
+
+  .email a:hover {
+    color: var(--rust-soft);
   }
 
   .founding {

@@ -5,7 +5,8 @@ export const site = {
   tagline: 'Find the rust before your users do.',
   description:
     'Independent software quality audits from Kigali, Rwanda: usability, accessibility, system logic, user habits and operational fit.',
-  email: '[YOUR EMAIL]',
+  email: 'audits@bayrust.com',
+  founderEmail: 'aston@bayrust.com',
   linkedin: '[LINKEDIN]',
   calendly: 'https://calendly.com/audit-bayrust',
   founderLinkedin: 'https://www.linkedin.com/in/aston-guevara/',

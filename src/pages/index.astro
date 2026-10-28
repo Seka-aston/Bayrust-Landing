@@ -232,7 +232,10 @@ const caseTeasers = [
           <p>“Rwanda’s software ecosystem doesn’t lack talent. It lacks a standard to hold its work to. That’s what Bayrust is here to bring.”</p>
           <footer>Aston Guevara Seka, founder</footer>
         </blockquote>
-        <a href={site.founderLinkedin} class="who-link" rel="me">Aston on LinkedIn</a>
+        <div class="who-links">
+          <a href={`mailto:${site.founderEmail}`} class="who-link">{site.founderEmail}</a>
+          <a href={site.founderLinkedin} class="who-link" rel="me">Aston on LinkedIn</a>
+        </div>
       </div>
     </div>
   </section>
@@ -300,7 +303,7 @@ const caseTeasers = [
     <div class="container faq">
       <div class="faq-intro">
         <h2 id="faq-h">Questions teams ask before an audit</h2>
-        <p>Can’t find yours? Ask us at {site.email}.</p>
+        <p>Can’t find yours? Ask us at <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
       </div>
       <div class="faq-list" data-faq>
         {
@@ -1039,6 +1042,12 @@ const caseTeasers = [
     margin-top: 10px;
     font-size: 14px;
     color: var(--steel);
+  }
+
+  .who-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 28px;
   }
 
   .who-link {
