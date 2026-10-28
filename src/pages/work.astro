@@ -44,7 +44,7 @@ const filters = ['All', ...sectors];
     <div class="container all">
       <div class="all-head">
         <h2 id="all-h">All case studies</h2>
-        <div role="group" aria-label="Filter by sector" class="filters" data-filters>
+        <div role="group" aria-label="Filter by sector" class="filters scroll-row" data-filters>
           {
             filters.map((name, i) => (
               <button aria-pressed={i === 0 ? 'true' : 'false'} data-filter={name}>
@@ -122,6 +122,21 @@ const filters = ['All', ...sectors];
     font-size: 19px;
     line-height: 1.65;
     color: var(--steel);
+  }
+
+  @media (max-width: 640px) {
+    .intro {
+      padding: 48px var(--gutter) 48px;
+    }
+
+    .intro-inner {
+      gap: 20px;
+    }
+
+    .intro-inner > p {
+      font-size: 17px;
+      line-height: 1.6;
+    }
   }
 
   /* Featured */
@@ -214,7 +229,15 @@ const filters = ['All', ...sectors];
   @media (max-width: 640px) {
     .featured-image {
       flex-basis: 100%;
-      min-height: 260px;
+      min-height: 200px;
+    }
+
+    .case-image {
+      height: 160px;
+    }
+
+    .all-head h2 {
+      font-size: 28px;
     }
 
     .featured-copy {

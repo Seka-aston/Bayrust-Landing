@@ -9,13 +9,13 @@ interface Props {
 const { current } = Astro.props;
 ---
 
-<div class="bar">
+<div class="bar" data-header>
   <header>
-    <div class="left">
-      <a href="/" class="brand" aria-label={`${site.name} home`}>
-        <Logomark size={26} />
-        <span>{site.name}</span>
-      </a>
+    <a href="/" class="brand" aria-label={`${site.name} home`}>
+      <Logomark size={26} />
+      <span>{site.name}</span>
+    </a>
+    <div class="menu" id="site-menu">
       <nav aria-label="Main">
         {
           nav.map((item) => (
@@ -25,13 +25,40 @@ const { current } = Astro.props;
           ))
         }
       </nav>
+      <div class="actions">
+        <a href="/report" class="sample">See a sample report</a>
+        <a href="#contact" class="request">Book a scoping call</a>
+      </div>
     </div>
-    <div class="actions">
-      <a href="/report" class="sample">See a sample report</a>
-      <a href="#contact" class="request">Book a scoping call</a>
-    </div>
+    <button type="button" class="toggle" aria-expanded="false" aria-controls="site-menu" data-toggle>
+      <span class="visually-hidden">Menu</span>
+      <span class="toggle-icon" aria-hidden="true"><i></i><i></i></span>
+    </button>
   </header>
 </div>
+
+<script>
+  // Below 1000px the menu folds behind a button. Without this script the links stay visible, wrapped.
+  document.querySelectorAll<HTMLElement>('[data-header]').forEach((bar) => {
+    const toggle = bar.querySelector<HTMLButtonElement>('[data-toggle]')!;
+    const set = (open: boolean) => {
+      bar.classList.toggle('is-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+    };
+    bar.classList.add('has-menu');
+    toggle.addEventListener('click', () => set(!bar.classList.contains('is-open')));
+    bar.querySelectorAll('.menu a').forEach((a) => a.addEventListener('click', () => set(false)));
+    addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && bar.classList.contains('is-open')) {
+        set(false);
+        toggle.focus();
+      }
+    });
+    addEventListener('click', (e) => {
+      if (bar.classList.contains('is-open') && !bar.contains(e.target as Node)) set(false);
+    });
+  });
+</script>
 
 <style>
   .bar {
@@ -57,11 +84,14 @@ const { current } = Astro.props;
     gap: 12px 24px;
   }
 
-  .left {
+  .menu {
+    flex: 1;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 8px 36px;
+    justify-content: space-between;
+    gap: 12px 24px;
+    margin-left: 36px;
   }
 
   .brand {
@@ -129,5 +159,123 @@ const { current } = Astro.props;
   .request:hover {
     color: var(--white);
     background: var(--rust-text);
+  }
+
+  .toggle {
+    display: none;
+  }
+
+  /* Compact bar: the brand and a menu button, with the links in a panel below */
+  @media (max-width: 1000px) {
+    .bar {
+      top: 10px;
+      padding-top: 10px;
+    }
+
+    .has-menu header {
+      padding: 8px 8px 8px 18px;
+      border-radius: 16px;
+    }
+
+    .has-menu .menu {
+      display: none;
+      flex: 1 1 100%;
+      order: 3;
+      margin: 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 14px;
+      padding: 6px 10px 12px 0;
+    }
+
+    .has-menu.is-open .menu {
+      display: flex;
+      animation: menu-in 260ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .has-menu nav {
+      flex-direction: column;
+      gap: 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .has-menu nav a {
+      padding: 14px 0;
+      font-size: 17px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .has-menu .actions {
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .has-menu .actions a {
+      text-align: center;
+      font-size: 15px;
+      padding: 14px 18px;
+    }
+
+    .has-menu .toggle {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--paper);
+      cursor: pointer;
+    }
+
+    .toggle-icon {
+      position: relative;
+      width: 18px;
+      height: 12px;
+    }
+
+    .toggle-icon i {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--navy);
+      transition: transform 250ms ease, top 250ms ease;
+    }
+
+    .toggle-icon i:first-child {
+      top: 1px;
+    }
+
+    .toggle-icon i:last-child {
+      top: 9px;
+    }
+
+    .is-open .toggle-icon i:first-child {
+      top: 5px;
+      transform: rotate(45deg);
+    }
+
+    .is-open .toggle-icon i:last-child {
+      top: 5px;
+      transform: rotate(-45deg);
+    }
+  }
+
+  @keyframes menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .has-menu.is-open .menu {
+      animation: none;
+    }
+
+    .toggle-icon i {
+      transition: none;
+    }
   }
 </style>

@@ -229,7 +229,7 @@ const caseTeasers = [
         Most audits stop at what’s on the screen. Ours also tests the rules underneath, the habits of the people using it,
         and the conditions it has to survive. All five lenses, in every audit.
       </p>
-      <div role="tablist" aria-label="Inspection lenses" class="tablist" data-tabs>
+      <div role="tablist" aria-label="Inspection lenses" class="tablist scroll-row" data-tabs>
         {
           lenses.map((lens, i) => (
             <button
@@ -541,6 +541,7 @@ const caseTeasers = [
         tab.tabIndex = on ? 0 : -1;
         document.getElementById(tab.getAttribute('aria-controls')!)!.hidden = !on;
       });
+      tabs[index].scrollIntoView({ block: 'nearest', inline: 'nearest' });
     };
     tabs.forEach((tab, i) => {
       tab.addEventListener('click', () => select(i));
@@ -971,12 +972,21 @@ const caseTeasers = [
   }
 
   @media (max-width: 640px) {
-    .report-side { max-width: none; border-right: 0; border-bottom: 1px solid rgba(19, 32, 46, 0.07); }
+    .report { margin-top: 48px; padding: 6px; border-radius: 18px; }
+    .report-bar { padding: 6px 8px 10px; gap: 10px; }
+    .report-dots span { width: 9px; height: 9px; }
+    .report-title { min-width: 0; }
+    .report-title span { min-width: 0; padding: 4px 12px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .report-spacer { display: none; }
+    .report-body { min-height: 0; border-radius: 12px; }
+    .report-side { display: none; }
     .report-main { padding: 20px 16px; }
-    .finding { grid-template-columns: 12px minmax(0, 1fr); row-gap: 4px; }
-    .finding-id, .finding-lens { grid-column: 2; }
-    .finding-title { grid-column: 2; grid-row: 1; }
-    .finding-dot { grid-row: 1; }
+    .finding { grid-template-columns: 12px auto minmax(0, 1fr); column-gap: 10px; row-gap: 4px; padding: 13px 14px; }
+    .finding-title { grid-column: 2 / -1; grid-row: 1; }
+    .finding-id { grid-column: 2; grid-row: 2; }
+    .finding-lens { grid-column: 3; grid-row: 2; }
+    .finding-dot { grid-row: 1; align-self: start; margin-top: 6px; }
+    .finding-detail > div { padding: 14px 16px; }
   }
 
   /* Sectors */
@@ -1761,5 +1771,141 @@ const caseTeasers = [
     font-size: 16px;
     line-height: 1.65;
     color: var(--steel);
+  }
+
+  /* Phones: one column, tighter spacing, and sideways rails instead of tall stacks */
+  @media (max-width: 640px) {
+    .hero {
+      padding-top: 40px;
+    }
+
+    .hero-copy {
+      gap: 20px;
+    }
+
+    .badge {
+      max-width: 100%;
+      padding: 6px 6px 6px 14px;
+      border-radius: 16px;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    .badge {
+      text-wrap: balance;
+    }
+
+    .badge span {
+      flex: none;
+      white-space: nowrap;
+    }
+
+    h1 {
+      font-size: 44px;
+      line-height: 1.04;
+    }
+
+    .hero-copy > p {
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    .hero-actions {
+      align-self: stretch;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .hero-actions .btn {
+      text-align: center;
+    }
+
+    /* One tidy column of ticks, centred as a block but aligned on the left */
+    .proof {
+      display: grid;
+      gap: 8px;
+      text-align: left;
+    }
+
+    .sectors {
+      padding: 56px var(--gutter) 8px;
+    }
+
+    .sectors-inner {
+      gap: 14px;
+    }
+
+    .sectors-lead {
+      flex-basis: 100%;
+      font-size: 17px;
+    }
+
+    .sectors-list {
+      flex-basis: 100%;
+      gap: 6px 20px;
+      font-size: 17px;
+    }
+
+    .lenses {
+      padding: 80px var(--gutter);
+    }
+
+    .tablist {
+      margin-top: 18px;
+    }
+
+    [role='tab'] {
+      padding: 14px 14px;
+      font-size: 15px;
+    }
+
+    .tabpanel {
+      margin-top: 28px;
+      gap: 32px;
+    }
+
+    .tabpanel-copy h3 {
+      font-size: 24px;
+    }
+
+    .bay-loop {
+      margin-top: 28px;
+    }
+
+    .faq {
+      gap: 32px;
+    }
+
+    .faq-intro h2 {
+      font-size: 32px;
+      line-height: 1.1;
+      letter-spacing: -0.035em;
+    }
+
+    /* Case studies become a rail you swipe through */
+    .case-grid {
+      grid-auto-flow: column;
+      grid-template-columns: none;
+      grid-auto-columns: 84%;
+      gap: 14px;
+      margin-inline: calc(var(--gutter) * -1);
+      padding: 0 var(--gutter) 4px;
+      scroll-padding-inline: var(--gutter);
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+
+    .case-grid::-webkit-scrollbar {
+      display: none;
+    }
+
+    .case-card {
+      scroll-snap-align: start;
+    }
+
+    .case-image {
+      height: 170px;
+    }
   }
 </style>

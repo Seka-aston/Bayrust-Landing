@@ -23,7 +23,7 @@ const chain = [
         what a single kind of test would miss: from a confusing label to a payment rule that quietly breaks on salary day.
         Here is exactly what each one covers.
       </p>
-      <nav aria-label="Lenses on this page" class="jump">
+      <nav aria-label="Lenses on this page" class="jump scroll-row">
         {lenses.map((lens) => <a href={`#${lens.id}`}>{lens.title}</a>)}
       </nav>
     </div>
@@ -170,6 +170,21 @@ const chain = [
 
   .jump a:hover {
     border-color: var(--rust);
+  }
+
+  @media (max-width: 640px) {
+    .intro {
+      padding: 48px var(--gutter) 48px;
+    }
+
+    .intro-inner {
+      gap: 20px;
+    }
+
+    .intro-inner > p {
+      font-size: 17px;
+      line-height: 1.6;
+    }
   }
 
   /* One lens */
