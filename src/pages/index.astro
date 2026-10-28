@@ -220,12 +220,26 @@ const caseTeasers = [
         <Image src={founderPhoto} alt="Aston Guevara Seka, founder of Bayrust" widths={[360, 540, 720]} sizes="(max-width: 880px) 100vw, 420px" />
       </div>
       <div class="who-copy">
-        <h2 id="who-h">Led by a product designer, not a sales team</h2>
+        <h2 id="who-h">Why Bayrust started in Kigali</h2>
         <p>
-          Bayrust is led by Aston Guevara Seka, who has spent eight years designing digital products and reviewing what
-          development teams actually ship. Every audit is done by people who have built products themselves, so every fix we
-          recommend is one a real team can ship.
+          Rwanda is growing fast. As new opportunities arrive, government institutions and businesses are turning to software
+          to meet the demand, from public services to banking and payments.
         </p>
+        <p>
+          Yet users are losing trust in Rwandan-made software. Not because the country’s engineers lack talent, but because
+          the ecosystem has almost no shared standards: no UX certification, no quality benchmark, rarely an accessibility
+          test. Just one release after another.
+        </p>
+        <p>
+          Aston Guevara Seka was looking for a technical product to bring to this market when he saw that the real gap was
+          standards. He founded Bayrust to fill it, drawing on more than eight years of user experience design across several
+          industries, and his training in business.
+        </p>
+        <blockquote>
+          <p>“Rwanda’s software ecosystem doesn’t lack talent. It lacks a standard to hold its work to. That’s what Bayrust is here to bring.”</p>
+          <footer>Aston Guevara Seka, founder</footer>
+        </blockquote>
+        <h3>What Aston brings to every audit</h3>
         <CheckList items={founderCredentials} />
         <a href={site.founderLinkedin} class="who-link" rel="me">Aston on LinkedIn</a>
       </div>
@@ -1011,6 +1025,37 @@ const caseTeasers = [
     color: var(--steel);
   }
 
+  .who-copy > p + p {
+    margin-top: -6px;
+  }
+
+  .who-copy blockquote {
+    margin: 8px 0;
+    padding: 4px 0 4px 22px;
+    border-left: 3px solid var(--rust);
+  }
+
+  .who-copy blockquote p {
+    margin: 0;
+    font-size: 21px;
+    line-height: 1.45;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: var(--navy);
+  }
+
+  .who-copy blockquote footer {
+    margin-top: 10px;
+    font-size: 14px;
+    color: var(--steel);
+  }
+
+  .who-copy h3 {
+    margin: 8px 0 0;
+    font-size: 17px;
+    font-weight: 700;
+  }
+
   .who-copy :global(.checks) {
     margin: 0;
   }
@@ -1027,6 +1072,10 @@ const caseTeasers = [
 
     .who-copy {
       padding: 36px 24px;
+    }
+
+    .who-copy blockquote p {
+      font-size: 19px;
     }
   }
 
