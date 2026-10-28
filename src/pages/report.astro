@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Eyebrow from '../components/Eyebrow.astro';
 import Logomark from '../components/Logomark.astro';
 import { lenses } from '../data/lenses';
 import { audit, summary, scores, findings, plan, type Severity } from '../data/report';
@@ -47,7 +46,6 @@ const sections = [
 <Layout title="Sample report" description="A sample Bayrust audit report: executive summary, lens scorecards, findings register and fix plan.">
   <section class="intro">
     <div class="intro-inner">
-      <Eyebrow>Sample report</Eyebrow>
       <h1 class="display-1">The report your<br /><span class="accent">team would get.</span></h1>
       <p>
         A full audit of a fictional mobile banking app. Filter the findings, open any one for its evidence and fix, then

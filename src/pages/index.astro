@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Eyebrow from '../components/Eyebrow.astro';
 import CheckList from '../components/CheckList.astro';
 import LensFigure from '../components/LensFigure.astro';
 import BayLoop from '../components/loops/BayLoop.astro';
@@ -117,7 +116,6 @@ const caseTeasers = [
     <div class="hero-stripes" aria-hidden="true"></div>
     <div class="hero-glow" aria-hidden="true"></div>
     <div class="hero-copy">
-      <span class="badge">Now taking on founding clients in Kigali<span>Founding rate</span></span>
       <h1>Find the rust<br /><span class="accent">before your users do.</span></h1>
       <p>
         Independent audits for apps, websites and platforms. We test what your users experience and what your system
@@ -223,7 +221,6 @@ const caseTeasers = [
   <!-- Five lenses tabs -->
   <section aria-labelledby="lens-h" class="lenses">
     <div class="container centered">
-      <Eyebrow>What we inspect</Eyebrow>
       <h2 id="lens-h" class="display-2">Five lenses, one inspection</h2>
       <p class="lead narrow">
         Most audits stop at what’s on the screen. Ours also tests the rules underneath, the habits of the people using it,
@@ -283,7 +280,6 @@ const caseTeasers = [
   <!-- Why Bayrust -->
   <section aria-labelledby="why-h" class="section">
     <div class="container centered">
-      <Eyebrow>Why Bayrust</Eyebrow>
       <h2 id="why-h" class="display-2">Proof, not opinions</h2>
       <p class="lead narrow">
         What makes a Bayrust report something your team acts on the same week, instead of a document that sits in a folder.
@@ -324,7 +320,6 @@ const caseTeasers = [
   <section aria-labelledby="when-h" class="section">
     <div class="container when">
       <div class="when-head">
-        <Eyebrow>When teams call us</Eyebrow>
         <h2 id="when-h" class="display-2">You don’t need a crisis to need an audit</h2>
         <p class="lead">
           The teams closest to a product are the last to see its rust. An outside inspection is worth it at four moments.
@@ -350,7 +345,6 @@ const caseTeasers = [
         <Image src={founderPhoto} alt="Aston Guevara Seka, founder of Bayrust" widths={[360, 540, 720]} sizes="(max-width: 880px) 100vw, 420px" />
       </div>
       <div class="who-copy">
-        <Eyebrow>Who inspects your product</Eyebrow>
         <h2 id="who-h">Led by a product designer, not a sales team</h2>
         <p>
           Bayrust is led by Aston Guevara Seka, who has spent eight years designing digital products and reviewing what
@@ -368,7 +362,6 @@ const caseTeasers = [
     <div class="container work">
       <div class="work-head">
         <div class="work-title">
-          <Eyebrow>Our work</Eyebrow>
           <h2 id="work-h" class="display-2">Rust we’ve found</h2>
         </div>
         <a href="/work" class="btn btn--secondary btn--sm">View all case studies</a>
@@ -395,7 +388,6 @@ const caseTeasers = [
   <!-- Testimonials -->
   <section aria-labelledby="quote-h" class="section">
     <div class="container centered">
-      <Eyebrow>Testimonials</Eyebrow>
       <h2 id="quote-h" class="display-2">What teams say after the re-check</h2>
       <div class="quote">
         <div class="quote-copy">
@@ -427,7 +419,6 @@ const caseTeasers = [
   <section id="faq" aria-labelledby="faq-h" class="section">
     <div class="container faq">
       <div class="faq-intro">
-        <Eyebrow>FAQ</Eyebrow>
         <h2 id="faq-h">Questions teams ask before an audit</h2>
         <p>Can’t find yours? Ask us at {site.email}.</p>
       </div>
@@ -620,28 +611,6 @@ const caseTeasers = [
     align-items: center;
     text-align: center;
     gap: 26px;
-  }
-
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--white);
-    border: 1px solid rgba(19, 32, 46, 0.09);
-    border-radius: 999px;
-    padding: 7px 8px 7px 16px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--steel);
-  }
-
-  .badge span {
-    background: var(--rust);
-    color: var(--white);
-    border-radius: 999px;
-    padding: 3px 10px;
-    font-size: 12px;
-    font-weight: 700;
   }
 
   h1 {
@@ -1781,23 +1750,6 @@ const caseTeasers = [
 
     .hero-copy {
       gap: 20px;
-    }
-
-    .badge {
-      max-width: 100%;
-      padding: 6px 6px 6px 14px;
-      border-radius: 16px;
-      font-size: 13px;
-      text-align: left;
-    }
-
-    .badge {
-      text-wrap: balance;
-    }
-
-    .badge span {
-      flex: none;
-      white-space: nowrap;
     }
 
     h1 {

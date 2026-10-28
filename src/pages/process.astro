@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Eyebrow from '../components/Eyebrow.astro';
 import { stages, findingParts, severities, reportContents, scopeFactors } from '../data/process';
 import { site } from '../data/site';
 
@@ -11,7 +10,6 @@ const previews = ['summary', 'register', 'scores', 'evidence', 'plan', 'conforma
 <Layout title="How it works" current="process">
   <section class="intro">
     <div class="intro-inner">
-      <Eyebrow>How it works</Eyebrow>
       <h1 class="display-1">How an audit<br /><span class="accent">works, step by step.</span></h1>
       <p>
         Five stages, from a free scoping call to the re-check that confirms the rust is gone. At every stage you know exactly
@@ -85,7 +83,6 @@ const previews = ['summary', 'register', 'scores', 'evidence', 'plan', 'conforma
         </article>
       </div>
       <div class="anatomy-copy">
-        <Eyebrow>Anatomy of a finding</Eyebrow>
         <h2 id="anat-h">Every finding has the same six parts</h2>
         <div class="parts">
           {
@@ -107,7 +104,6 @@ const previews = ['summary', 'register', 'scores', 'evidence', 'plan', 'conforma
   <!-- Severity -->
   <section aria-labelledby="sev-h" class="section">
     <div class="container centered">
-      <Eyebrow>Severity</Eyebrow>
       <h2 id="sev-h" class="display-2">A severity that sets the order of work</h2>
       <div class="sev-grid">
         {
@@ -128,7 +124,6 @@ const previews = ['summary', 'register', 'scores', 'evidence', 'plan', 'conforma
   <section aria-labelledby="rep-h" class="section">
     <div class="container report">
       <div class="report-intro">
-        <Eyebrow>The report</Eyebrow>
         <h2 id="rep-h" class="display-2">What’s in your report</h2>
         <p class="lead">Written for two readers: the team that fixes the problems, and the leaders who decide what to fund first.</p>
         <a href="/report" class="btn btn--secondary btn--sm">Open the sample report</a>

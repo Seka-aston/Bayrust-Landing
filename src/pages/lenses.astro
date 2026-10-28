@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Eyebrow from '../components/Eyebrow.astro';
 import CheckList from '../components/CheckList.astro';
 import LensFigure from '../components/LensFigure.astro';
 import { lenses } from '../data/lenses';
@@ -16,7 +15,6 @@ const chain = [
 <Layout title="Five lenses" current="lenses">
   <section class="intro">
     <div class="intro-inner">
-      <Eyebrow>What we inspect</Eyebrow>
       <h1 class="display-1">Five lenses,<br /><span class="accent">one inspection.</span></h1>
       <p>
         Every Bayrust audit uses all five. Each lens looks at your product from a different angle, so together they catch
@@ -71,7 +69,6 @@ const chain = [
   <section aria-labelledby="together-h" class="together">
     <div class="container together-inner">
       <div class="together-copy">
-        <Eyebrow>Why five</Eyebrow>
         <h2 id="together-h" class="display-2">Rust rarely belongs to one lens</h2>
         <p class="lead">
           The worst problems sit where lenses overlap. A payment that confirms too early is a logic error, made worse by slow

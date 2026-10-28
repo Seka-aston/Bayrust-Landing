@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Eyebrow from '../components/Eyebrow.astro';
 import { caseStudies, featured, sectors, tones } from '../data/work';
 
 const filters = ['All', ...sectors];
@@ -9,7 +8,6 @@ const filters = ['All', ...sectors];
 <Layout title="Our work" current="work">
   <section class="intro">
     <div class="intro-inner">
-      <Eyebrow>Our work</Eyebrow>
       <h1 class="display-1">Rust we’ve found,<br /><span class="accent">and what changed.</span></h1>
       <p>
         Every case study here is published with the client’s permission, and follows the same structure: the challenge, what
