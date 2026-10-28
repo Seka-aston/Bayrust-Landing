@@ -18,42 +18,59 @@ const reportLenses = [
 ];
 
 // The hero report cycles through these; the first is the one shown when motion is reduced.
+// `media` drives the small evidence preview: a recording with its length, or the log lines behind the finding.
 const reportFindings = [
   {
     id: 'AUD-009',
     title: 'Transfer form can’t be completed with a screen reader',
     lens: 'Accessibility',
-    urgent: true,
+    severity: 'Critical',
     evidence: 'Screen-reader recording: the amount field has no label, so the form can’t be submitted.',
     fix: 'Add a visible label tied to the field, and announce validation errors as they appear.',
+    media: { kind: 'recording', length: '0:42', caption: 'TalkBack · Android 12' },
   },
   {
     id: 'AUD-014',
     title: 'Payment marked successful before the callback returns',
     lens: 'System logic',
-    urgent: true,
-    evidence: 'Network log: the success screen appears 1.8 s before the payment callback returns a failure.',
+    severity: 'Major',
+    evidence: 'Network log: the success screen appears 1.8\u00a0s before the payment callback returns a failure.',
     fix: 'Show a pending state until the callback confirms the payment.',
+    media: {
+      kind: 'log',
+      lines: [
+        ['0.4 s', 'Payment request sent'],
+        ['0.6 s', 'Success screen shown'],
+        ['2.4 s', 'Callback: payment failed'],
+      ],
+    },
   },
   {
     id: 'AUD-017',
     title: 'Draft transfer lost when the network drops',
     lens: 'Operational',
-    urgent: true,
+    severity: 'Major',
     evidence: 'Recording on a throttled 2G profile: the connection drops on submit and every field is cleared.',
     fix: 'Keep the draft on the device and retry when the connection returns.',
+    media: { kind: 'recording', length: '0:14', caption: '2G profile · Android 10' },
   },
   {
     id: 'AUD-020',
     title: 'Transfer fee shown only after the PIN step',
     lens: 'Usability',
-    urgent: false,
-    evidence: 'Session recordings: customers pause for about 6 s when the fee first appears after the PIN.',
+    severity: 'Minor',
+    evidence: 'Session recordings: customers pause for about 6\u00a0s when the fee first appears after the PIN.',
     fix: 'Show the fee on the amount screen, before the PIN is asked for.',
+    media: { kind: 'recording', length: '1:06', caption: 'Session 14 · Send money' },
   },
 ];
 
-const proofPoints = ['Five lenses in every audit', 'Evidence behind every finding', 'Checked against WCAG 2.2 AA', 'Re-check included'];
+const severityTotals = [
+  { name: 'Critical', count: 2 },
+  { name: 'Major', count: 7 },
+  { name: 'Minor', count: 11 },
+];
+const mostPerLens = Math.max(...reportLenses.map((l) => l.count));
 
 // When teams call us: the four moments an outside inspection is worth it.
 const moments = [
@@ -126,42 +143,57 @@ const caseTeasers = [
         <a href="#contact" class="btn btn--primary hero-primary">Book a free scoping call</a>
         <a href="/report" class="btn btn--secondary">See a sample report</a>
       </div>
-      <ul class="proof">
-        {
-          proofPoints.map((point) => (
-            <li>
-              <svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true">
-                <circle cx="10" cy="10" r="10" fill="#C2511F" />
-                <path d="M6 10.4l2.6 2.6L14.2 7.4" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-              {point}
-            </li>
-          ))
-        }
-      </ul>
     </div>
 
     <!-- Sample report window -->
     <div class="report" data-report>
       <div class="report-bar">
         <div class="report-dots" aria-hidden="true"><span></span><span></span><span></span></div>
-        <div class="report-title"><span>Sample audit report: mobile banking app</span></div>
-        <span class="report-spacer" aria-hidden="true"></span>
+        <p class="report-crumbs">
+          <span>Audits</span><i aria-hidden="true">/</i><span>Mobile banking app</span><i aria-hidden="true">/</i><b>Report</b>
+        </p>
+        <span class="report-status"><span aria-hidden="true"></span>Final</span>
       </div>
       <div class="report-body">
         <aside class="report-side">
-          <p class="side-label">Audit</p>
-          <p class="side-name">Mobile banking app</p>
-          <div class="side-row side-row--active"><span>All findings</span><span class="mono" data-count="20">20</span></div>
+          <div class="side-product">
+            <span class="side-app" aria-hidden="true"><i></i><i></i></span>
+            <div>
+              <p class="side-name">Mobile banking app</p>
+              <p class="side-meta">Android · Web · v4.2</p>
+            </div>
+          </div>
+          <p class="side-label">Lenses</p>
+          <div class="side-row side-row--all"><span>All findings</span><span class="mono" data-count="20">20</span></div>
           {
             reportLenses.map((l) => (
-              <div class:list={['side-row', { 'is-lens': l.name === reportFindings[0].lens }]} data-lens={l.name}>
+              <div
+                class:list={['side-row', { 'is-lens': l.name === reportFindings[0].lens }]}
+                data-lens={l.name}
+                style={`--share: ${l.count / mostPerLens}`}
+              >
                 <span>{l.name}</span>
                 <span class="mono" data-count={l.count}>{l.count}</span>
+                <span class="side-bar" aria-hidden="true"><i /></span>
               </div>
             ))
           }
-          <div class="side-note">Inspected on 12 devices and 3 network profiles</div>
+          <div class="side-cover">
+            <p class="side-label">Coverage</p>
+            <p>
+              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                <rect x="4" y="1.5" width="8" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.4" />
+                <path d="M7 12.2h2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+              </svg>
+              <span><b data-count="12">12</b> devices</span>
+            </p>
+            <p>
+              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M3 13v-2M6.3 13V8.5M9.6 13V6M13 13V3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+              </svg>
+              <span><b data-count="3">3</b> network profiles</span>
+            </p>
+          </div>
         </aside>
         <div class="report-main">
           <div class="report-head">
@@ -169,17 +201,27 @@ const caseTeasers = [
               <p class="report-h">Findings</p>
               <p class="report-sub">Sorted by severity, highest first</p>
             </div>
-            <div class="sev-counts">
-              <span class="sev sev--critical"><span data-count="2">2</span> Critical</span>
-              <span class="sev sev--major"><span data-count="7">7</span> Major</span>
-              <span class="sev sev--minor"><span data-count="11">11</span> Minor</span>
+            <div class="sev-summary">
+              <div class="sev-bar" aria-hidden="true">
+                {severityTotals.map((t) => <i class={`sev-seg sev-seg--${t.name.toLowerCase()}`} style={`--n: ${t.count}`} />)}
+              </div>
+              <div class="sev-legend">
+                {
+                  severityTotals.map((t) => (
+                    <span>
+                      <i class={`sev-key sev-key--${t.name.toLowerCase()}`} aria-hidden="true" />
+                      <b data-count={t.count}>{t.count}</b> {t.name}
+                    </span>
+                  ))
+                }
+              </div>
             </div>
           </div>
           <div class="findings">
             {
               reportFindings.map((f, i) => (
                 <div class:list={['finding', { 'is-sel': i === 0 }]} data-finding={i}>
-                  <span class:list={['finding-dot', { 'finding-dot--muted': !f.urgent }]} />
+                  <span class={`sev-pill sev-pill--${f.severity.toLowerCase()}`}>{f.severity}</span>
                   <span class="mono finding-id">{f.id}</span>
                   <span class="finding-title">{f.title}</span>
                   <span class="finding-lens">{f.lens}</span>
@@ -192,13 +234,42 @@ const caseTeasers = [
             {
               reportFindings.map((f, i) => (
                 <div class:list={['finding-detail', { 'is-sel': i === 0 }]} data-detail={i} aria-hidden={i === 0 ? undefined : 'true'}>
-                  <div>
-                    <p>Evidence</p>
+                  <div class:list={['ev-media', `ev-media--${f.media.kind}`]} aria-hidden="true">
+                    {f.media.kind === 'recording' ? (
+                      <>
+                        <span class="ev-rec mono">Rec</span>
+                        <span class="ev-play" />
+                        <span class="ev-caption">{f.media.caption}</span>
+                        <span class="ev-track">
+                          <span class="ev-scrub"><i /></span>
+                          <span class="mono">{f.media.length}</span>
+                        </span>
+                      </>
+                    ) : (
+                      <ol class="ev-log">
+                        {f.media.lines?.map(([time, text], n) => (
+                          <li class:list={{ 'is-bad': n === f.media.lines!.length - 1 }}>
+                            <span class="mono">{time}</span>
+                            {text}
+                          </li>
+                        ))}
+                      </ol>
+                    )}
+                  </div>
+                  <div class="ev-copy">
+                    <p class="ev-label">Evidence</p>
                     <p>{f.evidence}</p>
                   </div>
-                  <div>
-                    <p>Recommended fix</p>
+                  <div class="ev-fix">
+                    <p class="ev-label">
+                      <svg width="14" height="14" viewBox="0 0 20 20" aria-hidden="true">
+                        <circle cx="10" cy="10" r="10" fill="#C2511F" />
+                        <path d="M6 10.4l2.6 2.6L14.2 7.4" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                      Recommended fix
+                    </p>
                     <p>{f.fix}</p>
+                    <span class="ev-status">Re-check pending</span>
                   </div>
                 </div>
               ))
@@ -640,42 +711,30 @@ const caseTeasers = [
     box-shadow: 0 8px 20px rgba(194, 81, 31, 0.3);
   }
 
-  .proof {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px 26px;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--steel);
-  }
-
-  .proof li {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  /* Sample report */
+  /* Sample report: a live audit workspace */
   .report {
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
     position: relative;
     max-width: var(--content);
     margin: 72px auto 0;
-    background: var(--white);
-    border: 1px solid var(--line);
-    border-radius: 22px;
-    box-shadow: 0 2px 4px rgba(19, 32, 46, 0.04), 0 40px 80px rgba(19, 32, 46, 0.1);
-    padding: 10px;
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(19, 32, 46, 0.08);
+    border-radius: 24px;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.9) inset,
+      0 2px 4px rgba(19, 32, 46, 0.04),
+      0 24px 48px -12px rgba(19, 32, 46, 0.12),
+      0 60px 120px -40px rgba(194, 81, 31, 0.18);
+    padding: 8px;
   }
 
+  /* Window bar */
   .report-bar {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 6px 10px 12px;
+    gap: 16px;
+    padding: 6px 10px 12px 12px;
   }
 
   .report-dots {
@@ -690,97 +749,216 @@ const caseTeasers = [
     background: #E3E1DC;
   }
 
-  .report-title {
+  .report-crumbs {
     flex: 1;
+    min-width: 0;
+    margin: 0;
     display: flex;
+    align-items: center;
     justify-content: center;
-  }
-
-  .report-title span {
-    background: var(--paper);
-    border-radius: 8px;
-    padding: 5px 18px;
+    gap: 8px;
     font-size: 13px;
     color: var(--steel);
+    white-space: nowrap;
   }
 
-  .report-spacer {
-    width: 47px;
+  .report-crumbs i {
+    font-style: normal;
+    color: var(--pebble);
+  }
+
+  .report-crumbs b {
+    font-weight: 600;
+    color: var(--navy);
+  }
+
+  .report-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px 4px 8px;
+    border-radius: 999px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+
+  .report-status span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--rust);
+    box-shadow: 0 0 0 3px rgba(194, 81, 31, 0.16);
   }
 
   .report-body {
-    border: 1px solid rgba(19, 32, 46, 0.07);
-    border-radius: 14px;
     display: flex;
-    flex-wrap: wrap;
-    min-height: 500px;
+    min-height: 520px;
     overflow: hidden;
+    border-radius: 16px;
+    border: 1px solid rgba(19, 32, 46, 0.07);
+    background: var(--white);
   }
 
+  /* Sidebar */
   .report-side {
-    flex: 1 1 240px;
-    max-width: 280px;
-    background: var(--ground);
-    border-right: 1px solid rgba(19, 32, 46, 0.07);
-    padding: 22px 16px;
+    flex: 0 0 248px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
+    padding: 18px 14px;
+    background: linear-gradient(180deg, var(--ground), #F6F3EE);
+    border-right: 1px solid rgba(19, 32, 46, 0.07);
   }
 
-  .side-label {
-    margin: 0 8px 4px;
-    font-size: 13px;
-    color: var(--steel);
+  .side-product {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 8px 16px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .side-product p { margin: 0; }
+
+  .side-app {
+    flex: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(145deg, #2A3B4F, var(--navy));
+    box-shadow: 0 6px 14px -6px rgba(19, 32, 46, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    padding: 0 9px;
+  }
+
+  .side-app i {
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.85);
+  }
+
+  .side-app i + i {
+    width: 60%;
+    background: var(--rust);
   }
 
   .side-name {
-    margin: 0 8px 16px;
-    font-size: 17px;
+    font-size: 15px;
     font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .side-meta {
+    margin-top: 2px !important;
+    font-size: 12px;
+    color: var(--steel);
+  }
+
+  .side-label {
+    margin: 8px 10px 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #7A8592;
   }
 
   .side-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 12px;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    row-gap: 7px;
+    padding: 9px 10px;
     border-radius: 10px;
     font-size: 14px;
     color: var(--steel);
     transition: background 400ms ease, color 400ms ease, box-shadow 400ms ease;
   }
 
-  .side-row.is-lens {
+  .side-row .mono {
+    font-size: 12px;
+  }
+
+  .side-row--all {
+    background: var(--white);
     color: var(--navy);
     font-weight: 600;
-    background: rgba(251, 239, 232, 0.8);
+    box-shadow: 0 1px 2px rgba(19, 32, 46, 0.06), 0 0 0 1px var(--line);
+  }
+
+  .side-row.is-lens {
+    background: var(--rust-tint);
+    color: var(--navy);
+    font-weight: 600;
     box-shadow: inset 3px 0 0 var(--rust);
   }
 
-  .side-row--active {
-    background: var(--white);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    font-weight: 600;
-    color: var(--navy);
+  .side-bar {
+    grid-column: 1 / -1;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(19, 32, 46, 0.07);
+    overflow: hidden;
   }
 
-  .side-note {
+  .side-bar i {
+    display: block;
+    height: 100%;
+    width: calc(var(--share) * 100%);
+    border-radius: inherit;
+    background: var(--pebble);
+    transform-origin: left;
+    transition: background 400ms ease;
+  }
+
+  .side-row.is-lens .side-bar i {
+    background: linear-gradient(90deg, #E0733F, var(--rust));
+  }
+
+  .side-cover {
     margin-top: auto;
-    padding: 14px 12px 0;
-    border-top: 1px solid rgba(19, 32, 46, 0.07);
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .side-cover p:not(.side-label) {
+    margin: 0;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     font-size: 13px;
-    line-height: 1.5;
     color: var(--steel);
   }
 
+  .side-cover svg {
+    flex: none;
+    color: var(--navy);
+  }
+
+  .side-cover b {
+    color: var(--navy);
+  }
+
+  /* Main panel */
   .report-main {
-    flex: 999 1 520px;
+    flex: 1;
     min-width: 0;
-    padding: 26px 28px;
     display: flex;
     flex-direction: column;
     gap: 18px;
+    padding: 24px 26px 26px;
   }
 
   .report-head {
@@ -788,7 +966,7 @@ const caseTeasers = [
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: flex-end;
-    gap: 12px;
+    gap: 14px 24px;
   }
 
   .report-h {
@@ -799,55 +977,152 @@ const caseTeasers = [
   }
 
   .report-sub {
-    margin: 4px 0 0;
-    font-size: 14px;
+    margin: 2px 0 0;
+    font-size: 13px;
     color: var(--steel);
   }
 
-  .sev-counts {
+  .sev-summary {
     display: flex;
+    flex-direction: column;
     gap: 8px;
-    font-size: 13px;
-    font-weight: 600;
+    width: min(100%, 300px);
   }
 
-  .sev {
-    border-radius: 8px;
-    padding: 6px 10px;
+  .sev-bar {
+    display: flex;
+    gap: 3px;
+    height: 8px;
   }
 
-  .sev--critical { background: var(--navy); color: var(--white); }
-  .sev--major { background: var(--steel); color: var(--white); }
-  .sev--minor { background: var(--stone); color: var(--navy); }
+  .sev-seg {
+    flex: var(--n) 1 0;
+    border-radius: 4px;
+    transform-origin: left;
+  }
 
+  .sev-seg--critical { background: var(--navy); }
+  .sev-seg--major { background: var(--steel); }
+  .sev-seg--minor { background: var(--stone); }
+
+  .sev-legend {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--steel);
+  }
+
+  .sev-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .sev-legend b {
+    color: var(--navy);
+    font-weight: 700;
+  }
+
+  .sev-key {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+  }
+
+  .sev-key--critical { background: var(--navy); }
+  .sev-key--major { background: var(--steel); }
+  .sev-key--minor { background: var(--stone); box-shadow: inset 0 0 0 1px rgba(19, 32, 46, 0.12); }
+
+  /* Findings list */
   .findings {
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    overflow: hidden;
+    gap: 4px;
   }
 
   .finding {
     position: relative;
     display: grid;
-    grid-template-columns: 16px 92px minmax(0, 1fr) 120px;
+    grid-template-columns: 74px 74px minmax(0, 1fr) auto;
     gap: 14px;
     align-items: center;
-    padding: 15px 18px;
-    border-top: 1px solid rgba(19, 32, 46, 0.07);
+    padding: 12px 14px;
+    border-radius: 12px;
     font-size: 15px;
-    transition: background 400ms ease;
+    overflow: hidden;
+    transition: background 400ms ease, box-shadow 400ms ease;
   }
 
-  .finding:first-child { border-top: 0; }
+  .finding:not(.is-sel) + .finding:not(.is-sel)::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 14px;
+    right: 14px;
+    height: 1px;
+    background: rgba(19, 32, 46, 0.06);
+  }
 
-  .finding.is-sel { background: var(--rust-tint); }
+  .finding.is-sel {
+    background: linear-gradient(90deg, var(--rust-tint), #FDF6F2);
+    box-shadow: inset 3px 0 0 var(--rust), 0 0 0 1px rgba(194, 81, 31, 0.14);
+  }
+
+  .sev-pill {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 9px 3px 7px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .sev-pill::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.7;
+  }
+
+  .sev-pill--critical { background: var(--navy); color: var(--white); }
+  .sev-pill--major { background: var(--steel); color: var(--white); }
+  .sev-pill--minor { background: var(--stone); color: var(--navy); }
+
+  .finding-id {
+    font-size: 13px;
+    color: var(--steel);
+  }
+
+  .finding-title {
+    font-weight: 600;
+    letter-spacing: -0.005em;
+  }
+
+  .finding-lens {
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    background: var(--white);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--steel);
+    white-space: nowrap;
+  }
+
+  .finding.is-sel .finding-lens {
+    border-color: rgba(194, 81, 31, 0.3);
+    color: var(--rust-text);
+  }
 
   /* Fills while a finding is selected, then the report moves to the next one */
   .finding-timer {
     position: absolute;
-    left: 0;
+    left: 3px;
     right: 0;
     bottom: 0;
     height: 2px;
@@ -862,37 +1137,24 @@ const caseTeasers = [
     to { transform: scaleX(1); }
   }
 
-  .finding-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: var(--rust);
+  /* Inspector: the evidence and the fix for the selected finding */
+  .finding-details {
+    display: grid;
+    margin-top: auto;
   }
-
-  .finding-dot--muted { background: var(--pebble); }
-
-  .finding-id {
-    font-size: 13px;
-    color: var(--steel);
-  }
-
-  .finding-title { font-weight: 600; }
-
-  .finding-lens {
-    font-size: 13px;
-    color: var(--steel);
-  }
-
-  .finding-details { display: grid; }
 
   .finding-detail {
     grid-area: 1 / 1;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    grid-template-columns: 200px minmax(0, 1fr) minmax(0, 1fr);
     gap: 14px;
+    padding: 14px;
+    border-radius: 16px;
+    background: var(--ground);
+    border: 1px solid var(--line);
     opacity: 0;
     transform: translateY(8px);
-    transition: opacity 400ms ease, transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: opacity 400ms ease, transform 500ms var(--ease);
     pointer-events: none;
   }
 
@@ -902,34 +1164,211 @@ const caseTeasers = [
     pointer-events: auto;
   }
 
-  .finding-detail > div {
-    background: var(--ground);
-    border-radius: 12px;
-    padding: 16px 18px;
-  }
-
   .finding-detail p {
     margin: 0;
     font-size: 14px;
     line-height: 1.55;
   }
 
-  .finding-detail p:first-child {
-    margin-bottom: 6px;
-    font-size: 13px;
+  .ev-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px !important;
+    font-size: 12px !important;
     font-weight: 700;
     color: var(--steel);
   }
 
+  .ev-copy {
+    padding: 4px 2px;
+  }
+
+  .ev-fix {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--white);
+    box-shadow: 0 1px 2px rgba(19, 32, 46, 0.05), 0 0 0 1px var(--line);
+  }
+
+  .ev-status {
+    margin-top: auto;
+    padding-top: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--rust-text);
+  }
+
+  /* Evidence preview: a recording, or the log lines behind the finding */
+  .ev-media {
+    position: relative;
+    min-height: 120px;
+    border-radius: 12px;
+    overflow: hidden;
+    color: var(--white);
+    background:
+      radial-gradient(120% 90% at 85% 0%, rgba(194, 81, 31, 0.55), transparent 60%),
+      radial-gradient(90% 80% at 0% 100%, rgba(60, 74, 90, 0.9), transparent 70%),
+      linear-gradient(160deg, #1D2D3F, var(--navy));
+  }
+
+  .ev-rec {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.12);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .ev-rec::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #FF6B4A;
+  }
+
+  .ev-play {
+    position: absolute;
+    top: 42%;
+    left: 50%;
+    width: 38px;
+    height: 38px;
+    margin: -19px 0 0 -19px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(6px);
+  }
+
+  .ev-play::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -7px 0 0 -4px;
+    border-left: 11px solid var(--white);
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+  }
+
+  .ev-caption {
+    position: absolute;
+    left: 10px;
+    bottom: 28px;
+    font-size: 11px;
+    color: var(--mist);
+  }
+
+  .ev-track {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    color: var(--mist);
+  }
+
+  .ev-scrub {
+    flex: 1;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.22);
+    overflow: hidden;
+  }
+
+  .ev-scrub i {
+    display: block;
+    height: 100%;
+    width: 100%;
+    background: var(--white);
+    transform: scaleX(0.08);
+    transform-origin: left;
+  }
+
+  .report.is-cycling .finding-detail.is-sel .ev-scrub i { animation: ev-scrub 4200ms linear forwards; }
+
+  @keyframes ev-scrub {
+    from { transform: scaleX(0.08); }
+    to { transform: scaleX(1); }
+  }
+
+  .ev-media--log {
+    padding: 12px;
+    display: flex;
+    align-items: center;
+  }
+
+  .ev-log {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 11px;
+  }
+
+  .ev-log li {
+    display: flex;
+    gap: 8px;
+    padding: 5px 7px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--mist);
+    transition: opacity 400ms ease, transform 500ms var(--ease);
+  }
+
+  .ev-log li .mono {
+    flex: none;
+    color: var(--fog);
+    white-space: nowrap;
+  }
+
+  .ev-log li.is-bad {
+    background: rgba(194, 81, 31, 0.32);
+    color: var(--white);
+    box-shadow: inset 2px 0 0 #FF8A5C;
+  }
+
+  .finding-detail:not(.is-sel) .ev-log li {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+
+  .finding-detail.is-sel .ev-log li:nth-child(2) { transition-delay: 350ms; }
+  .finding-detail.is-sel .ev-log li:nth-child(3) { transition-delay: 900ms; }
+
   /* The report lifts in as the page opens */
   @media (prefers-reduced-motion: no-preference) {
-    .report { animation: report-in 1200ms cubic-bezier(0.22, 1, 0.36, 1) 250ms both; }
+    .report { animation: report-in 1200ms var(--ease) 250ms both; }
 
-    .finding { animation: report-row 600ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .finding { animation: report-row 600ms var(--ease) both; }
     .finding:nth-child(1) { animation-delay: 800ms; }
     .finding:nth-child(2) { animation-delay: 890ms; }
     .finding:nth-child(3) { animation-delay: 980ms; }
     .finding:nth-child(4) { animation-delay: 1070ms; }
+
+    .sev-seg { animation: grow-x 900ms var(--ease) both; }
+    .sev-seg--critical { animation-delay: 900ms; }
+    .sev-seg--major { animation-delay: 1000ms; }
+    .sev-seg--minor { animation-delay: 1100ms; }
+
+    .side-bar i { animation: grow-x 900ms var(--ease) 1000ms both; }
   }
 
   @keyframes report-in {
@@ -940,22 +1379,35 @@ const caseTeasers = [
     from { opacity: 0; transform: translateY(10px); }
   }
 
+  @keyframes grow-x {
+    from { transform: scaleX(0); }
+  }
+
+  @media (max-width: 960px) {
+    .finding-detail { grid-template-columns: 180px minmax(0, 1fr); }
+    .ev-fix { grid-column: 1 / -1; }
+  }
+
   @media (max-width: 640px) {
-    .report { margin-top: 48px; padding: 6px; border-radius: 18px; }
+    .report { margin-top: 48px; padding: 6px; border-radius: 20px; }
     .report-bar { padding: 6px 8px 10px; gap: 10px; }
     .report-dots span { width: 9px; height: 9px; }
-    .report-title { min-width: 0; }
-    .report-title span { min-width: 0; padding: 4px 12px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .report-spacer { display: none; }
-    .report-body { min-height: 0; border-radius: 12px; }
+    .report-crumbs { justify-content: flex-start; font-size: 12px; overflow: hidden; }
+    .report-crumbs span:first-child,
+    .report-crumbs i:first-of-type { display: none; }
+    .report-body { min-height: 0; border-radius: 14px; }
     .report-side { display: none; }
-    .report-main { padding: 20px 16px; }
-    .finding { grid-template-columns: 12px auto minmax(0, 1fr); column-gap: 10px; row-gap: 4px; padding: 13px 14px; }
-    .finding-title { grid-column: 2 / -1; grid-row: 1; }
-    .finding-id { grid-column: 2; grid-row: 2; }
-    .finding-lens { grid-column: 3; grid-row: 2; }
-    .finding-dot { grid-row: 1; align-self: start; margin-top: 6px; }
-    .finding-detail > div { padding: 14px 16px; }
+    .report-main { padding: 18px 12px 12px; gap: 14px; }
+    .report-head { align-items: flex-start; }
+    .sev-summary { width: 100%; }
+    .finding { grid-template-columns: auto minmax(0, 1fr) auto; column-gap: 10px; row-gap: 6px; padding: 12px; }
+    .sev-pill { grid-column: 1; grid-row: 1; }
+    .finding-id { grid-column: 2; grid-row: 1; }
+    .finding-lens { grid-column: 3; grid-row: 1; }
+    .finding-title { grid-column: 1 / -1; grid-row: 2; font-size: 14px; }
+    .finding-detail { grid-template-columns: minmax(0, 1fr); padding: 10px; gap: 10px; }
+    .ev-media { min-height: 112px; }
+    .ev-fix { grid-column: auto; }
   }
 
   /* Sectors */
@@ -1770,13 +2222,6 @@ const caseTeasers = [
 
     .hero-actions .btn {
       text-align: center;
-    }
-
-    /* One tidy column of ticks, centred as a block but aligned on the left */
-    .proof {
-      display: grid;
-      gap: 8px;
-      text-align: left;
     }
 
     .sectors {
