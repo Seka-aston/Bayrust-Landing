@@ -99,6 +99,22 @@ const founderCredentials = [
   'BSc (Hons) Entrepreneurial Leadership, First Class, African Leadership University',
 ];
 
+// The promises under the hero report: people do the inspecting, not software.
+const pillars = [
+  {
+    title: 'Inspected by a person',
+    body: 'Every finding is found, reproduced and written up by an experienced product designer. Tools help; people judge.',
+  },
+  {
+    title: 'On the phones your users carry',
+    body: 'Low-cost Androids, older iPhones, shared devices and slow, dropping networks, all tested by hand.',
+  },
+  {
+    title: 'Independent and objective',
+    body: 'We don’t build software or sell fixes, so the report says what’s true, with the evidence to back it.',
+  },
+];
+
 const sectors = ['Banks', 'Fintechs', 'Public digital services', 'NGOs and programs', 'Software agencies'];
 
 const reasons = [
@@ -152,17 +168,10 @@ const caseTeasers = [
         <p class="report-crumbs">
           <span>Audits</span><i aria-hidden="true">/</i><span>Mobile banking app</span><i aria-hidden="true">/</i><b>Report</b>
         </p>
-        <span class="report-status"><span aria-hidden="true"></span>Final</span>
+        <span class="report-status"><span aria-hidden="true"></span>Signed off</span>
       </div>
       <div class="report-body">
         <aside class="report-side">
-          <div class="side-product">
-            <span class="side-app" aria-hidden="true"><i></i><i></i></span>
-            <div>
-              <p class="side-name">Mobile banking app</p>
-              <p class="side-meta">Android · Web · v4.2</p>
-            </div>
-          </div>
           <p class="side-label">Lenses</p>
           <div class="side-row side-row--all"><span>All findings</span><span class="mono" data-count="20">20</span></div>
           {
@@ -178,22 +187,6 @@ const caseTeasers = [
               </div>
             ))
           }
-          <div class="side-cover">
-            <p class="side-label">Coverage</p>
-            <p>
-              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-                <rect x="4" y="1.5" width="8" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.4" />
-                <path d="M7 12.2h2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
-              </svg>
-              <span><b data-count="12">12</b> devices</span>
-            </p>
-            <p>
-              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-                <path d="M3 13v-2M6.3 13V8.5M9.6 13V6M13 13V3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-              </svg>
-              <span><b data-count="3">3</b> network profiles</span>
-            </p>
-          </div>
         </aside>
         <div class="report-main">
           <div class="report-head">
@@ -277,7 +270,56 @@ const caseTeasers = [
           </div>
         </div>
       </div>
+      <figure class="auditor">
+        <div class="auditor-head">
+          <div class="auditor-photo">
+            <Image src={founderPhoto} alt="" widths={[80, 160]} sizes="80px" loading="eager" />
+            <span class="auditor-seal" aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 20 20">
+                <path d="M5 10.4l3.2 3.2L15.2 6.6" fill="none" stroke="#FFFFFF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+          </div>
+          <figcaption>
+            <span class="auditor-label">Audited by</span>
+            <span class="auditor-name">Aston Guevara Seka</span>
+            <span class="auditor-role">Lead auditor, Bayrust</span>
+          </figcaption>
+        </div>
+        <ul class="auditor-facts">
+          <li>
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M3 8.4l3 3L13 4.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span><b>20 of 20</b> findings reproduced by hand</span>
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+              <rect x="4" y="1.5" width="8" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.4" />
+              <path d="M7 12.2h2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+            </svg>
+            <span><b>12</b> real phones, <b>3</b> networks</span>
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M2.5 13.5h11M4 11l6.8-6.8a1.6 1.6 0 0 1 2.3 2.3L6.3 13.3H4z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" />
+            </svg>
+            <span>Walked through with your team</span>
+          </li>
+        </ul>
+      </figure>
     </div>
+
+    <ul class="pillars">
+      {
+        pillars.map((p) => (
+          <li>
+            <h2>{p.title}</h2>
+            <p>{p.body}</p>
+          </li>
+        ))
+      }
+    </ul>
   </section>
 
   <!-- Sectors -->
@@ -795,7 +837,7 @@ const caseTeasers = [
 
   .report-body {
     display: flex;
-    min-height: 520px;
+    min-height: 544px;
     overflow: hidden;
     border-radius: 16px;
     border: 1px solid rgba(19, 32, 46, 0.07);
@@ -811,54 +853,6 @@ const caseTeasers = [
     padding: 18px 14px;
     background: linear-gradient(180deg, var(--ground), #F6F3EE);
     border-right: 1px solid rgba(19, 32, 46, 0.07);
-  }
-
-  .side-product {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 8px 8px 16px;
-    margin-bottom: 8px;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .side-product p { margin: 0; }
-
-  .side-app {
-    flex: none;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    background: linear-gradient(145deg, #2A3B4F, var(--navy));
-    box-shadow: 0 6px 14px -6px rgba(19, 32, 46, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 4px;
-    padding: 0 9px;
-  }
-
-  .side-app i {
-    height: 3px;
-    border-radius: 2px;
-    background: rgba(255, 255, 255, 0.85);
-  }
-
-  .side-app i + i {
-    width: 60%;
-    background: var(--rust);
-  }
-
-  .side-name {
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-  }
-
-  .side-meta {
-    margin-top: 2px !important;
-    font-size: 12px;
-    color: var(--steel);
   }
 
   .side-label {
@@ -923,32 +917,150 @@ const caseTeasers = [
     background: linear-gradient(90deg, #E0733F, var(--rust));
   }
 
-  .side-cover {
-    margin-top: auto;
-    padding-top: 14px;
-    border-top: 1px solid var(--line);
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  /* The auditor's byline: a named person signs off the report */
+  .auditor {
+    position: absolute;
+    z-index: 2;
+    left: -44px;
+    bottom: -40px;
+    width: 316px;
+    margin: 0;
+    padding: 20px;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(19, 32, 46, 0.08);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.9) inset,
+      0 2px 6px rgba(19, 32, 46, 0.06),
+      0 28px 60px -16px rgba(19, 32, 46, 0.28);
   }
 
-  .side-cover p:not(.side-label) {
-    margin: 0;
-    padding: 0 10px;
+  .auditor-head {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 13px;
+    gap: 14px;
+  }
+
+  .auditor-photo {
+    position: relative;
+    flex: none;
+    width: 68px;
+    height: 68px;
+    padding: 3px;
+    border-radius: 50%;
+    background: conic-gradient(from 210deg, var(--rust), #E8935F, var(--rust-soft), var(--rust));
+  }
+
+  .auditor-photo :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px solid var(--white);
+    object-fit: cover;
+    object-position: 50% 8%;
+    background: var(--paper);
+  }
+
+  .auditor-seal {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--rust);
+    border: 2px solid var(--white);
+  }
+
+  .auditor figcaption {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .auditor-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--rust-text);
+  }
+
+  .auditor-name {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    color: var(--navy);
+  }
+
+  .auditor-role {
+    font-size: 14px;
     color: var(--steel);
   }
 
-  .side-cover svg {
+  .auditor-facts {
+    list-style: none;
+    margin: 16px 0 0;
+    padding: 14px 0 0;
+    border-top: 1px dashed var(--line-strong);
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .auditor-facts li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13.5px;
+    color: var(--steel);
+  }
+
+  .auditor-facts svg {
     flex: none;
+    padding: 5px;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: var(--rust-tint);
+    color: var(--rust-text);
+  }
+
+  .auditor-facts b {
     color: var(--navy);
   }
 
-  .side-cover b {
-    color: var(--navy);
+  /* Hero promises under the report */
+  .pillars {
+    list-style: none;
+    max-width: var(--content);
+    margin: 88px auto 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 40px;
+    text-align: center;
+  }
+
+  .pillars h2 {
+    margin: 0 0 8px;
+    font-size: 21px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .pillars p {
+    margin: 0 auto;
+    max-width: 22em;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--steel);
   }
 
   /* Main panel */
@@ -1369,6 +1481,13 @@ const caseTeasers = [
     .sev-seg--minor { animation-delay: 1100ms; }
 
     .side-bar i { animation: grow-x 900ms var(--ease) 1000ms both; }
+
+    .auditor { animation: auditor-in 900ms var(--ease) 1500ms both; }
+    .auditor-seal { animation: seal-in 500ms cubic-bezier(0.34, 1.56, 0.64, 1) 2200ms both; }
+    .auditor-facts li { animation: report-row 600ms var(--ease) both; }
+    .auditor-facts li:nth-child(1) { animation-delay: 2000ms; }
+    .auditor-facts li:nth-child(2) { animation-delay: 2100ms; }
+    .auditor-facts li:nth-child(3) { animation-delay: 2200ms; }
   }
 
   @keyframes report-in {
@@ -1379,11 +1498,43 @@ const caseTeasers = [
     from { opacity: 0; transform: translateY(10px); }
   }
 
+  @keyframes auditor-in {
+    from { opacity: 0; transform: translate(-16px, 24px) scale(0.94); }
+  }
+
+  @keyframes seal-in {
+    from { opacity: 0; transform: scale(0.3); }
+  }
+
   @keyframes grow-x {
     from { transform: scaleX(0); }
   }
 
+  /* Narrower screens: the byline becomes a sign-off strip across the window's bottom edge */
+  @media (max-width: 1300px) {
+    .auditor {
+      position: relative;
+      left: auto;
+      bottom: auto;
+      width: min(760px, calc(100% - 48px));
+      margin: -28px auto -64px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .auditor-facts {
+      margin: 0;
+      padding: 0 0 0 24px;
+      border-top: 0;
+      border-left: 1px dashed var(--line-strong);
+    }
+
+    .pillars { margin-top: 136px; }
+  }
+
   @media (max-width: 960px) {
+    .pillars { grid-template-columns: minmax(0, 1fr); gap: 28px; margin-top: 128px; }
     .finding-detail { grid-template-columns: 180px minmax(0, 1fr); }
     .ev-fix { grid-column: 1 / -1; }
   }
@@ -1408,6 +1559,11 @@ const caseTeasers = [
     .finding-detail { grid-template-columns: minmax(0, 1fr); padding: 10px; gap: 10px; }
     .ev-media { min-height: 112px; }
     .ev-fix { grid-column: auto; }
+    .auditor { width: auto; margin: -20px 10px -48px; padding: 18px; display: block; }
+    .auditor-facts { margin-top: 16px; padding: 14px 0 0; border-left: 0; border-top: 1px dashed var(--line-strong); }
+    .pillars { margin-top: 96px; gap: 24px; }
+    .pillars h2 { font-size: 19px; }
+    .pillars p { font-size: 15px; }
   }
 
   /* Sectors */
