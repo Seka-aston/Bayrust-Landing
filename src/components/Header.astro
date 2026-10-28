@@ -27,7 +27,7 @@ const { current } = Astro.props;
       </nav>
       <div class="actions">
         <a href="/report" class="sample">See a sample report</a>
-        <a href="#contact" class="request">Book a scoping call</a>
+        <a href={site.calendly} target="_blank" rel="noopener" class="request">Book a scoping call</a>
       </div>
     </div>
     <button type="button" class="toggle" aria-expanded="false" aria-controls="site-menu" data-toggle>
