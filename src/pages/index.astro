@@ -9,69 +9,6 @@ import { lenses } from '../data/lenses';
 import { faqs } from '../data/faqs';
 import { site } from '../data/site';
 
-const reportLenses = [
-  { name: 'Usability', count: 4 },
-  { name: 'Accessibility', count: 6 },
-  { name: 'System logic', count: 3 },
-  { name: 'User habits', count: 2 },
-  { name: 'Operational', count: 5 },
-];
-
-// The hero report cycles through these; the first is the one shown when motion is reduced.
-// `media` drives the small evidence preview: a recording with its length, or the log lines behind the finding.
-const reportFindings = [
-  {
-    id: 'AUD-009',
-    title: 'Transfer form can’t be completed with a screen reader',
-    lens: 'Accessibility',
-    severity: 'Critical',
-    evidence: 'Screen-reader recording: the amount field has no label, so the form can’t be submitted.',
-    fix: 'Add a visible label tied to the field, and announce validation errors as they appear.',
-    media: { kind: 'recording', length: '0:42', caption: 'TalkBack · Android 12' },
-  },
-  {
-    id: 'AUD-014',
-    title: 'Payment marked successful before the callback returns',
-    lens: 'System logic',
-    severity: 'Major',
-    evidence: 'Network log: the success screen appears 1.8\u00a0s before the payment callback returns a failure.',
-    fix: 'Show a pending state until the callback confirms the payment.',
-    media: {
-      kind: 'log',
-      lines: [
-        ['0.4 s', 'Payment request sent'],
-        ['0.6 s', 'Success screen shown'],
-        ['2.4 s', 'Callback: payment failed'],
-      ],
-    },
-  },
-  {
-    id: 'AUD-017',
-    title: 'Draft transfer lost when the network drops',
-    lens: 'Operational',
-    severity: 'Major',
-    evidence: 'Recording on a throttled 2G profile: the connection drops on submit and every field is cleared.',
-    fix: 'Keep the draft on the device and retry when the connection returns.',
-    media: { kind: 'recording', length: '0:14', caption: '2G profile · Android 10' },
-  },
-  {
-    id: 'AUD-020',
-    title: 'Transfer fee shown only after the PIN step',
-    lens: 'Usability',
-    severity: 'Minor',
-    evidence: 'Session recordings: customers pause for about 6\u00a0s when the fee first appears after the PIN.',
-    fix: 'Show the fee on the amount screen, before the PIN is asked for.',
-    media: { kind: 'recording', length: '1:06', caption: 'Session 14 · Send money' },
-  },
-];
-
-const severityTotals = [
-  { name: 'Critical', count: 2 },
-  { name: 'Major', count: 7 },
-  { name: 'Minor', count: 11 },
-];
-const mostPerLens = Math.max(...reportLenses.map((l) => l.count));
-
 // When teams call us: the four moments an outside inspection is worth it.
 const moments = [
   {
@@ -97,22 +34,6 @@ const founderCredentials = [
   'Former lead product designer of a vehicle telematics platform',
   'Product designer since 2018, across food tech, software and education',
   'BSc (Hons) Entrepreneurial Leadership, First Class, African Leadership University',
-];
-
-// The promises under the hero report: people do the inspecting, not software.
-const pillars = [
-  {
-    title: 'Inspected by a person',
-    body: 'Every finding is found, reproduced and written up by an experienced product designer. Tools help; people judge.',
-  },
-  {
-    title: 'On the phones your users carry',
-    body: 'Low-cost Androids, older iPhones, shared devices and slow, dropping networks, all tested by hand.',
-  },
-  {
-    title: 'Independent and objective',
-    body: 'We don’t build software or sell fixes, so the report says what’s true, with the evidence to back it.',
-  },
 ];
 
 const sectors = ['Banks', 'Fintechs', 'Public digital services', 'NGOs and programs', 'Software agencies'];
@@ -144,182 +65,23 @@ const caseTeasers = [
 ---
 
 <Layout title="Home">
-  <!-- Hero -->
+  <!-- Hero banner -->
   <section class="hero">
-    <div class="hero-stripes" aria-hidden="true"></div>
-    <div class="hero-glow" aria-hidden="true"></div>
-    <div class="hero-copy">
-      <h1>Find the rust<br /><span class="accent">before your users do.</span></h1>
-      <p>
-        Independent audits for apps, websites and platforms. We test what your users experience and what your system
-        actually does, on the phones and networks they really use. Every problem comes back with proof, a severity and a
-        specific fix.
-      </p>
-      <div class="hero-actions">
-        <a href="#contact" class="btn btn--primary hero-primary">Book a free scoping call</a>
-        <a href="/report" class="btn btn--secondary">See a sample report</a>
-      </div>
-    </div>
-
-    <!-- Sample report window -->
-    <div class="report" data-report>
-      <div class="report-bar">
-        <div class="report-dots" aria-hidden="true"><span></span><span></span><span></span></div>
-        <p class="report-crumbs">
-          <span>Audits</span><i aria-hidden="true">/</i><span>Mobile banking app</span><i aria-hidden="true">/</i><b>Report</b>
+    <div class="banner">
+      <div class="banner-copy">
+        <h1>Find the rust<br /><span>before your users do.</span></h1>
+        <p>
+          Independent audits for apps, websites and platforms. We test what your users experience and what your system
+          actually does, on the phones and networks they really use. Every problem comes back with proof, a severity and a
+          specific fix.
         </p>
-        <span class="report-status"><span aria-hidden="true"></span>Signed off</span>
-      </div>
-      <div class="report-body">
-        <aside class="report-side">
-          <p class="side-label">Lenses</p>
-          <div class="side-row side-row--all"><span>All findings</span><span class="mono" data-count="20">20</span></div>
-          {
-            reportLenses.map((l) => (
-              <div
-                class:list={['side-row', { 'is-lens': l.name === reportFindings[0].lens }]}
-                data-lens={l.name}
-                style={`--share: ${l.count / mostPerLens}`}
-              >
-                <span>{l.name}</span>
-                <span class="mono" data-count={l.count}>{l.count}</span>
-                <span class="side-bar" aria-hidden="true"><i /></span>
-              </div>
-            ))
-          }
-        </aside>
-        <div class="report-main">
-          <div class="report-head">
-            <div>
-              <p class="report-h">Findings</p>
-              <p class="report-sub">Sorted by severity, highest first</p>
-            </div>
-            <div class="sev-summary">
-              <div class="sev-bar" aria-hidden="true">
-                {severityTotals.map((t) => <i class={`sev-seg sev-seg--${t.name.toLowerCase()}`} style={`--n: ${t.count}`} />)}
-              </div>
-              <div class="sev-legend">
-                {
-                  severityTotals.map((t) => (
-                    <span>
-                      <i class={`sev-key sev-key--${t.name.toLowerCase()}`} aria-hidden="true" />
-                      <b data-count={t.count}>{t.count}</b> {t.name}
-                    </span>
-                  ))
-                }
-              </div>
-            </div>
-          </div>
-          <div class="findings">
-            {
-              reportFindings.map((f, i) => (
-                <div class:list={['finding', { 'is-sel': i === 0 }]} data-finding={i}>
-                  <span class={`sev-pill sev-pill--${f.severity.toLowerCase()}`}>{f.severity}</span>
-                  <span class="mono finding-id">{f.id}</span>
-                  <span class="finding-title">{f.title}</span>
-                  <span class="finding-lens">{f.lens}</span>
-                  <span class="finding-timer" aria-hidden="true" />
-                </div>
-              ))
-            }
-          </div>
-          <div class="finding-details">
-            {
-              reportFindings.map((f, i) => (
-                <div class:list={['finding-detail', { 'is-sel': i === 0 }]} data-detail={i} aria-hidden={i === 0 ? undefined : 'true'}>
-                  <div class:list={['ev-media', `ev-media--${f.media.kind}`]} aria-hidden="true">
-                    {f.media.kind === 'recording' ? (
-                      <>
-                        <span class="ev-rec mono">Rec</span>
-                        <span class="ev-play" />
-                        <span class="ev-caption">{f.media.caption}</span>
-                        <span class="ev-track">
-                          <span class="ev-scrub"><i /></span>
-                          <span class="mono">{f.media.length}</span>
-                        </span>
-                      </>
-                    ) : (
-                      <ol class="ev-log">
-                        {f.media.lines?.map(([time, text], n) => (
-                          <li class:list={{ 'is-bad': n === f.media.lines!.length - 1 }}>
-                            <span class="mono">{time}</span>
-                            {text}
-                          </li>
-                        ))}
-                      </ol>
-                    )}
-                  </div>
-                  <div class="ev-copy">
-                    <p class="ev-label">Evidence</p>
-                    <p>{f.evidence}</p>
-                  </div>
-                  <div class="ev-fix">
-                    <p class="ev-label">
-                      <svg width="14" height="14" viewBox="0 0 20 20" aria-hidden="true">
-                        <circle cx="10" cy="10" r="10" fill="#C2511F" />
-                        <path d="M6 10.4l2.6 2.6L14.2 7.4" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-                      </svg>
-                      Recommended fix
-                    </p>
-                    <p>{f.fix}</p>
-                    <span class="ev-status">Re-check pending</span>
-                  </div>
-                </div>
-              ))
-            }
-          </div>
+        <div class="banner-actions">
+          <a href="#contact" class="btn banner-primary">Book a free scoping call</a>
+          <a href="/report" class="btn btn--ghost">See a sample report</a>
         </div>
       </div>
-      <figure class="auditor">
-        <div class="auditor-head">
-          <div class="auditor-photo">
-            <Image src={founderPhoto} alt="" widths={[80, 160]} sizes="80px" loading="eager" />
-            <span class="auditor-seal" aria-hidden="true">
-              <svg width="12" height="12" viewBox="0 0 20 20">
-                <path d="M5 10.4l3.2 3.2L15.2 6.6" fill="none" stroke="#FFFFFF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-            </span>
-          </div>
-          <figcaption>
-            <span class="auditor-label">Audited by</span>
-            <span class="auditor-name">Aston Guevara Seka</span>
-            <span class="auditor-role">Lead auditor, Bayrust</span>
-          </figcaption>
-        </div>
-        <ul class="auditor-facts">
-          <li>
-            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-              <path d="M3 8.4l3 3L13 4.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            <span><b>20 of 20</b> findings reproduced by hand</span>
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-              <rect x="4" y="1.5" width="8" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.4" />
-              <path d="M7 12.2h2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
-            </svg>
-            <span><b>12</b> real phones, <b>3</b> networks</span>
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-              <path d="M2.5 13.5h11M4 11l6.8-6.8a1.6 1.6 0 0 1 2.3 2.3L6.3 13.3H4z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" />
-            </svg>
-            <span>Walked through with your team</span>
-          </li>
-        </ul>
-      </figure>
+      <div class="banner-art" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
     </div>
-
-    <ul class="pillars">
-      {
-        pillars.map((p) => (
-          <li>
-            <h2>{p.title}</h2>
-            <p>{p.body}</p>
-          </li>
-        ))
-      }
-    </ul>
   </section>
 
   <!-- Sectors -->
@@ -560,45 +322,7 @@ const caseTeasers = [
 </Layout>
 
 <script>
-  import { countUp, playLoop } from '../scripts/loop';
-
-  // Hero report: counts up as it lifts in, then walks through the findings while it is on screen.
-  const report = document.querySelector<HTMLElement>('[data-report]');
-  if (report && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const rows = [...report.querySelectorAll<HTMLElement>('[data-finding]')];
-    const details = [...report.querySelectorAll<HTMLElement>('[data-detail]')];
-    const lensRows = [...report.querySelectorAll<HTMLElement>('[data-lens]')];
-    const lensOf = rows.map((row) => row.querySelector('.finding-lens')!.textContent);
-    let current = 0;
-    let timer = 0;
-    let visible = false;
-    let hovered = false;
-
-    const show = (index: number) => {
-      current = index;
-      rows.forEach((row, i) => row.classList.toggle('is-sel', i === index));
-      details.forEach((detail, i) => {
-        detail.classList.toggle('is-sel', i === index);
-        if (i === index) detail.removeAttribute('aria-hidden');
-        else detail.setAttribute('aria-hidden', 'true');
-      });
-      lensRows.forEach((row) => row.classList.toggle('is-lens', row.dataset.lens === lensOf[index]));
-    };
-
-    const run = () => {
-      clearTimeout(timer);
-      report.classList.toggle('is-cycling', visible && !hovered);
-      if (visible && !hovered) timer = window.setTimeout(() => (show((current + 1) % rows.length), run()), 4200);
-    };
-
-    report.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => {
-      el.textContent = '0';
-      setTimeout(() => countUp(el, Number(el.dataset.count), 1200, 0), 700);
-    });
-    new IntersectionObserver(([entry]) => ((visible = entry.isIntersecting), run()), { threshold: 0.3 }).observe(report);
-    report.addEventListener('pointerenter', () => ((hovered = true), run()));
-    report.addEventListener('pointerleave', () => ((hovered = false), run()));
-  }
+  import { playLoop } from '../scripts/loop';
 
   // Why Bayrust: finding tags drop in, get stamped field by field, then are filed into the stack.
   const tagFindings = [
@@ -683,887 +407,122 @@ const caseTeasers = [
 </script>
 
 <style>
-  /* Hero */
+  /* Hero banner */
   .hero {
+    padding: 40px var(--gutter) 0;
+  }
+
+  .banner {
     position: relative;
-    padding: 88px var(--gutter) 0;
-  }
-
-  .hero-stripes {
-    position: absolute;
-    inset: -80px 0 auto 0;
-    height: 760px;
-    background: repeating-linear-gradient(
-      90deg,
-      rgba(194, 81, 31, 0) 0px,
-      rgba(194, 81, 31, 0) 70px,
-      rgba(194, 81, 31, 0.1) 70px,
-      rgba(194, 81, 31, 0.02) 112px
-    );
-    -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.35) 55%, transparent 100%);
-    mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.35) 55%, transparent 100%);
-  }
-
-  .hero-glow {
-    position: absolute;
-    left: 50%;
-    top: -40px;
-    width: 900px;
-    max-width: 100%;
-    height: 600px;
-    transform: translateX(-50%);
-    background: radial-gradient(closest-side, var(--ground) 55%, rgba(250, 249, 247, 0));
-  }
-
-  .hero-copy {
-    position: relative;
-    max-width: 880px;
+    max-width: var(--content);
+    min-height: 540px;
     margin: 0 auto;
+    overflow: hidden;
+    border-radius: 30px;
+    background: var(--navy);
+    display: flex;
+    align-items: center;
+  }
+
+  .banner-copy {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+    padding: 80px 32px 80px 72px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 26px;
+    gap: 24px;
   }
 
   h1 {
     margin: 0;
-    font-size: clamp(48px, 6.6vw, 88px);
-    line-height: 1.02;
+    font-size: clamp(44px, 4.6vw, 62px);
+    line-height: 1.04;
     font-weight: 700;
     letter-spacing: -0.04em;
+    color: var(--white);
   }
 
-  .hero-copy > p {
+  h1 span {
+    color: #E0733F;
+  }
+
+  .banner-copy > p {
     margin: 0;
-    max-width: 40em;
-    font-size: 19px;
-    line-height: 1.65;
-    color: var(--steel);
+    max-width: 34em;
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--mist);
   }
 
-  .hero-actions {
+  .banner-actions {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
     gap: 12px;
+    margin-top: 16px;
   }
 
-  .hero-primary {
-    box-shadow: 0 8px 20px rgba(194, 81, 31, 0.3);
-  }
-
-  /* Sample report: a live audit workspace */
-  .report {
-    --ease: cubic-bezier(0.22, 1, 0.36, 1);
-    position: relative;
-    max-width: var(--content);
-    margin: 72px auto 0;
-    background: rgba(255, 255, 255, 0.78);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(19, 32, 46, 0.08);
-    border-radius: 24px;
-    box-shadow:
-      0 1px 0 rgba(255, 255, 255, 0.9) inset,
-      0 2px 4px rgba(19, 32, 46, 0.04),
-      0 24px 48px -12px rgba(19, 32, 46, 0.12),
-      0 60px 120px -40px rgba(194, 81, 31, 0.18);
-    padding: 8px;
-  }
-
-  /* Window bar */
-  .report-bar {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 6px 10px 12px 12px;
-  }
-
-  .report-dots {
-    display: flex;
-    gap: 7px;
-  }
-
-  .report-dots span {
-    width: 11px;
-    height: 11px;
-    border-radius: 50%;
-    background: #E3E1DC;
-  }
-
-  .report-crumbs {
-    flex: 1;
-    min-width: 0;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    font-size: 13px;
-    color: var(--steel);
-    white-space: nowrap;
-  }
-
-  .report-crumbs i {
-    font-style: normal;
-    color: var(--pebble);
-  }
-
-  .report-crumbs b {
-    font-weight: 600;
+  .banner-primary {
     color: var(--navy);
-  }
-
-  .report-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px 4px 8px;
-    border-radius: 999px;
-    background: var(--white);
-    border: 1px solid var(--line);
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--navy);
-  }
-
-  .report-status span {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--rust);
-    box-shadow: 0 0 0 3px rgba(194, 81, 31, 0.16);
-  }
-
-  .report-body {
-    display: flex;
-    min-height: 544px;
-    overflow: hidden;
-    border-radius: 16px;
-    border: 1px solid rgba(19, 32, 46, 0.07);
     background: var(--white);
   }
 
-  /* Sidebar */
-  .report-side {
-    flex: 0 0 248px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: 18px 14px;
-    background: linear-gradient(180deg, var(--ground), #F6F3EE);
-    border-right: 1px solid rgba(19, 32, 46, 0.07);
-  }
-
-  .side-label {
-    margin: 8px 10px 4px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #7A8592;
-  }
-
-  .side-row {
-    position: relative;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    row-gap: 7px;
-    padding: 9px 10px;
-    border-radius: 10px;
-    font-size: 14px;
-    color: var(--steel);
-    transition: background 400ms ease, color 400ms ease, box-shadow 400ms ease;
-  }
-
-  .side-row .mono {
-    font-size: 12px;
-  }
-
-  .side-row--all {
-    background: var(--white);
+  .banner-primary:hover {
     color: var(--navy);
-    font-weight: 600;
-    box-shadow: 0 1px 2px rgba(19, 32, 46, 0.06), 0 0 0 1px var(--line);
-  }
-
-  .side-row.is-lens {
-    background: var(--rust-tint);
-    color: var(--navy);
-    font-weight: 600;
-    box-shadow: inset 3px 0 0 var(--rust);
-  }
-
-  .side-bar {
-    grid-column: 1 / -1;
-    height: 3px;
-    border-radius: 2px;
-    background: rgba(19, 32, 46, 0.07);
-    overflow: hidden;
-  }
-
-  .side-bar i {
-    display: block;
-    height: 100%;
-    width: calc(var(--share) * 100%);
-    border-radius: inherit;
-    background: var(--pebble);
-    transform-origin: left;
-    transition: background 400ms ease;
-  }
-
-  .side-row.is-lens .side-bar i {
-    background: linear-gradient(90deg, #E0733F, var(--rust));
-  }
-
-  /* The auditor's byline: a named person signs off the report */
-  .auditor {
-    position: absolute;
-    z-index: 2;
-    left: -44px;
-    bottom: -40px;
-    width: 316px;
-    margin: 0;
-    padding: 20px;
-    border-radius: 22px;
-    background: rgba(255, 255, 255, 0.94);
-    backdrop-filter: blur(18px);
-    border: 1px solid rgba(19, 32, 46, 0.08);
-    box-shadow:
-      0 1px 0 rgba(255, 255, 255, 0.9) inset,
-      0 2px 6px rgba(19, 32, 46, 0.06),
-      0 28px 60px -16px rgba(19, 32, 46, 0.28);
-  }
-
-  .auditor-head {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-
-  .auditor-photo {
-    position: relative;
-    flex: none;
-    width: 68px;
-    height: 68px;
-    padding: 3px;
-    border-radius: 50%;
-    background: conic-gradient(from 210deg, var(--rust), #E8935F, var(--rust-soft), var(--rust));
-  }
-
-  .auditor-photo :global(img) {
-    display: block;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    border: 2px solid var(--white);
-    object-fit: cover;
-    object-position: 50% 8%;
     background: var(--paper);
   }
 
-  .auditor-seal {
+  /* Four rising arches, flush with the bottom edge */
+  .banner-art {
     position: absolute;
-    right: -2px;
-    bottom: -2px;
-    display: grid;
-    place-items: center;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: var(--rust);
-    border: 2px solid var(--white);
-  }
-
-  .auditor figcaption {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-  }
-
-  .auditor-label {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--rust-text);
-  }
-
-  .auditor-name {
-    font-size: 18px;
-    font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: -0.015em;
-    color: var(--navy);
-  }
-
-  .auditor-role {
-    font-size: 14px;
-    color: var(--steel);
-  }
-
-  .auditor-facts {
-    list-style: none;
-    margin: 16px 0 0;
-    padding: 14px 0 0;
-    border-top: 1px dashed var(--line-strong);
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-  }
-
-  .auditor-facts li {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 13.5px;
-    color: var(--steel);
-  }
-
-  .auditor-facts svg {
-    flex: none;
-    padding: 5px;
-    width: 26px;
-    height: 26px;
-    border-radius: 8px;
-    background: var(--rust-tint);
-    color: var(--rust-text);
-  }
-
-  .auditor-facts b {
-    color: var(--navy);
-  }
-
-  /* Hero promises under the report */
-  .pillars {
-    list-style: none;
-    max-width: var(--content);
-    margin: 88px auto 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 40px;
-    text-align: center;
-  }
-
-  .pillars h2 {
-    margin: 0 0 8px;
-    font-size: 21px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-  }
-
-  .pillars p {
-    margin: 0 auto;
-    max-width: 22em;
-    font-size: 16px;
-    line-height: 1.6;
-    color: var(--steel);
-  }
-
-  /* Main panel */
-  .report-main {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    padding: 24px 26px 26px;
-  }
-
-  .report-head {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 14px 24px;
-  }
-
-  .report-h {
-    margin: 0;
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-  }
-
-  .report-sub {
-    margin: 2px 0 0;
-    font-size: 13px;
-    color: var(--steel);
-  }
-
-  .sev-summary {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    width: min(100%, 300px);
-  }
-
-  .sev-bar {
-    display: flex;
-    gap: 3px;
-    height: 8px;
-  }
-
-  .sev-seg {
-    flex: var(--n) 1 0;
-    border-radius: 4px;
-    transform-origin: left;
-  }
-
-  .sev-seg--critical { background: var(--navy); }
-  .sev-seg--major { background: var(--steel); }
-  .sev-seg--minor { background: var(--stone); }
-
-  .sev-legend {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    font-size: 12px;
-    color: var(--steel);
-  }
-
-  .sev-legend span {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .sev-legend b {
-    color: var(--navy);
-    font-weight: 700;
-  }
-
-  .sev-key {
-    width: 8px;
-    height: 8px;
-    border-radius: 2px;
-  }
-
-  .sev-key--critical { background: var(--navy); }
-  .sev-key--major { background: var(--steel); }
-  .sev-key--minor { background: var(--stone); box-shadow: inset 0 0 0 1px rgba(19, 32, 46, 0.12); }
-
-  /* Findings list */
-  .findings {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .finding {
-    position: relative;
-    display: grid;
-    grid-template-columns: 74px 74px minmax(0, 1fr) auto;
-    gap: 14px;
-    align-items: center;
-    padding: 12px 14px;
-    border-radius: 12px;
-    font-size: 15px;
-    overflow: hidden;
-    transition: background 400ms ease, box-shadow 400ms ease;
-  }
-
-  .finding:not(.is-sel) + .finding:not(.is-sel)::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: 14px;
-    right: 14px;
-    height: 1px;
-    background: rgba(19, 32, 46, 0.06);
-  }
-
-  .finding.is-sel {
-    background: linear-gradient(90deg, var(--rust-tint), #FDF6F2);
-    box-shadow: inset 3px 0 0 var(--rust), 0 0 0 1px rgba(194, 81, 31, 0.14);
-  }
-
-  .sev-pill {
-    justify-self: start;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 3px 9px 3px 7px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 600;
-  }
-
-  .sev-pill::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: currentColor;
-    opacity: 0.7;
-  }
-
-  .sev-pill--critical { background: var(--navy); color: var(--white); }
-  .sev-pill--major { background: var(--steel); color: var(--white); }
-  .sev-pill--minor { background: var(--stone); color: var(--navy); }
-
-  .finding-id {
-    font-size: 13px;
-    color: var(--steel);
-  }
-
-  .finding-title {
-    font-weight: 600;
-    letter-spacing: -0.005em;
-  }
-
-  .finding-lens {
-    padding: 3px 10px;
-    border-radius: 999px;
-    border: 1px solid var(--line-strong);
-    background: var(--white);
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--steel);
-    white-space: nowrap;
-  }
-
-  .finding.is-sel .finding-lens {
-    border-color: rgba(194, 81, 31, 0.3);
-    color: var(--rust-text);
-  }
-
-  /* Fills while a finding is selected, then the report moves to the next one */
-  .finding-timer {
-    position: absolute;
-    left: 3px;
-    right: 0;
+    right: clamp(40px, 5vw, 72px);
     bottom: 0;
-    height: 2px;
-    background: var(--rust);
-    transform: scaleX(0);
-    transform-origin: left;
-  }
-
-  .report.is-cycling .finding.is-sel .finding-timer { animation: report-timer 4200ms linear forwards; }
-
-  @keyframes report-timer {
-    to { transform: scaleX(1); }
-  }
-
-  /* Inspector: the evidence and the fix for the selected finding */
-  .finding-details {
-    display: grid;
-    margin-top: auto;
-  }
-
-  .finding-detail {
-    grid-area: 1 / 1;
-    display: grid;
-    grid-template-columns: 200px minmax(0, 1fr) minmax(0, 1fr);
-    gap: 14px;
-    padding: 14px;
-    border-radius: 16px;
-    background: var(--ground);
-    border: 1px solid var(--line);
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 400ms ease, transform 500ms var(--ease);
-    pointer-events: none;
-  }
-
-  .finding-detail.is-sel {
-    opacity: 1;
-    transform: none;
-    pointer-events: auto;
-  }
-
-  .finding-detail p {
-    margin: 0;
-    font-size: 14px;
-    line-height: 1.55;
-  }
-
-  .ev-label {
     display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 6px !important;
-    font-size: 12px !important;
-    font-weight: 700;
-    color: var(--steel);
+    align-items: flex-end;
+    --w: clamp(60px, 7.4vw, 96px);
   }
 
-  .ev-copy {
-    padding: 4px 2px;
+  .banner-art i {
+    width: var(--w);
+    border-radius: 999px 999px 0 0;
+    transform-origin: bottom;
   }
 
-  .ev-fix {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 12px 14px;
-    border-radius: 12px;
-    background: var(--white);
-    box-shadow: 0 1px 2px rgba(19, 32, 46, 0.05), 0 0 0 1px var(--line);
-  }
+  .banner-art i:nth-child(1) { height: calc(var(--w) * 1.6); background: #4A5B6E; }
+  .banner-art i:nth-child(2) { height: calc(var(--w) * 2.4); background: var(--rust-soft); }
+  .banner-art i:nth-child(3) { height: calc(var(--w) * 3.1); background: #E0733F; }
+  .banner-art i:nth-child(4) { height: calc(var(--w) * 4); background: var(--rust); }
 
-  .ev-status {
-    margin-top: auto;
-    padding-top: 10px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--rust-text);
-  }
-
-  /* Evidence preview: a recording, or the log lines behind the finding */
-  .ev-media {
-    position: relative;
-    min-height: 120px;
-    border-radius: 12px;
-    overflow: hidden;
-    color: var(--white);
-    background:
-      radial-gradient(120% 90% at 85% 0%, rgba(194, 81, 31, 0.55), transparent 60%),
-      radial-gradient(90% 80% at 0% 100%, rgba(60, 74, 90, 0.9), transparent 70%),
-      linear-gradient(160deg, #1D2D3F, var(--navy));
-  }
-
-  .ev-rec {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 2px 7px;
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.12);
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-
-  .ev-rec::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #FF6B4A;
-  }
-
-  .ev-play {
-    position: absolute;
-    top: 42%;
-    left: 50%;
-    width: 38px;
-    height: 38px;
-    margin: -19px 0 0 -19px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.16);
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    backdrop-filter: blur(6px);
-  }
-
-  .ev-play::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin: -7px 0 0 -4px;
-    border-left: 11px solid var(--white);
-    border-top: 7px solid transparent;
-    border-bottom: 7px solid transparent;
-  }
-
-  .ev-caption {
-    position: absolute;
-    left: 10px;
-    bottom: 28px;
-    font-size: 11px;
-    color: var(--mist);
-  }
-
-  .ev-track {
-    position: absolute;
-    left: 10px;
-    right: 10px;
-    bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 10px;
-    color: var(--mist);
-  }
-
-  .ev-scrub {
-    flex: 1;
-    height: 3px;
-    border-radius: 2px;
-    background: rgba(255, 255, 255, 0.22);
-    overflow: hidden;
-  }
-
-  .ev-scrub i {
-    display: block;
-    height: 100%;
-    width: 100%;
-    background: var(--white);
-    transform: scaleX(0.08);
-    transform-origin: left;
-  }
-
-  .report.is-cycling .finding-detail.is-sel .ev-scrub i { animation: ev-scrub 4200ms linear forwards; }
-
-  @keyframes ev-scrub {
-    from { transform: scaleX(0.08); }
-    to { transform: scaleX(1); }
-  }
-
-  .ev-media--log {
-    padding: 12px;
-    display: flex;
-    align-items: center;
-  }
-
-  .ev-log {
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    font-size: 11px;
-  }
-
-  .ev-log li {
-    display: flex;
-    gap: 8px;
-    padding: 5px 7px;
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.07);
-    color: var(--mist);
-    transition: opacity 400ms ease, transform 500ms var(--ease);
-  }
-
-  .ev-log li .mono {
-    flex: none;
-    color: var(--fog);
-    white-space: nowrap;
-  }
-
-  .ev-log li.is-bad {
-    background: rgba(194, 81, 31, 0.32);
-    color: var(--white);
-    box-shadow: inset 2px 0 0 #FF8A5C;
-  }
-
-  .finding-detail:not(.is-sel) .ev-log li {
-    opacity: 0;
-    transform: translateX(-8px);
-  }
-
-  .finding-detail.is-sel .ev-log li:nth-child(2) { transition-delay: 350ms; }
-  .finding-detail.is-sel .ev-log li:nth-child(3) { transition-delay: 900ms; }
-
-  /* The report lifts in as the page opens */
   @media (prefers-reduced-motion: no-preference) {
-    .report { animation: report-in 1200ms var(--ease) 250ms both; }
-
-    .finding { animation: report-row 600ms var(--ease) both; }
-    .finding:nth-child(1) { animation-delay: 800ms; }
-    .finding:nth-child(2) { animation-delay: 890ms; }
-    .finding:nth-child(3) { animation-delay: 980ms; }
-    .finding:nth-child(4) { animation-delay: 1070ms; }
-
-    .sev-seg { animation: grow-x 900ms var(--ease) both; }
-    .sev-seg--critical { animation-delay: 900ms; }
-    .sev-seg--major { animation-delay: 1000ms; }
-    .sev-seg--minor { animation-delay: 1100ms; }
-
-    .side-bar i { animation: grow-x 900ms var(--ease) 1000ms both; }
-
-    .auditor { animation: auditor-in 900ms var(--ease) 1500ms both; }
-    .auditor-seal { animation: seal-in 500ms cubic-bezier(0.34, 1.56, 0.64, 1) 2200ms both; }
-    .auditor-facts li { animation: report-row 600ms var(--ease) both; }
-    .auditor-facts li:nth-child(1) { animation-delay: 2000ms; }
-    .auditor-facts li:nth-child(2) { animation-delay: 2100ms; }
-    .auditor-facts li:nth-child(3) { animation-delay: 2200ms; }
+    .banner-art i { animation: arch-rise 1100ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .banner-art i:nth-child(1) { animation-delay: 150ms; }
+    .banner-art i:nth-child(2) { animation-delay: 250ms; }
+    .banner-art i:nth-child(3) { animation-delay: 350ms; }
+    .banner-art i:nth-child(4) { animation-delay: 450ms; }
   }
 
-  @keyframes report-in {
-    from { opacity: 0; transform: perspective(1800px) rotateX(14deg) translateY(48px) scale(0.96); }
+  @keyframes arch-rise {
+    from { transform: scaleY(0); }
   }
 
-  @keyframes report-row {
-    from { opacity: 0; transform: translateY(10px); }
-  }
-
-  @keyframes auditor-in {
-    from { opacity: 0; transform: translate(-16px, 24px) scale(0.94); }
-  }
-
-  @keyframes seal-in {
-    from { opacity: 0; transform: scale(0.3); }
-  }
-
-  @keyframes grow-x {
-    from { transform: scaleX(0); }
-  }
-
-  /* Narrower screens: the byline becomes a sign-off strip across the window's bottom edge */
-  @media (max-width: 1300px) {
-    .auditor {
-      position: relative;
-      left: auto;
-      bottom: auto;
-      width: min(760px, calc(100% - 48px));
-      margin: -28px auto -64px;
-      display: flex;
-      align-items: center;
-      gap: 24px;
+  /* Tablets and phones: the arches sit under the copy */
+  @media (max-width: 860px) {
+    .banner {
+      flex-direction: column;
+      align-items: stretch;
     }
 
-    .auditor-facts {
-      margin: 0;
-      padding: 0 0 0 24px;
-      border-top: 0;
-      border-left: 1px dashed var(--line-strong);
+    .banner-copy {
+      max-width: none;
+      padding: 64px 48px 48px;
     }
 
-    .pillars { margin-top: 136px; }
-  }
-
-  @media (max-width: 960px) {
-    .pillars { grid-template-columns: minmax(0, 1fr); gap: 28px; margin-top: 128px; }
-    .finding-detail { grid-template-columns: 180px minmax(0, 1fr); }
-    .ev-fix { grid-column: 1 / -1; }
-  }
-
-  @media (max-width: 640px) {
-    .report { margin-top: 48px; padding: 6px; border-radius: 20px; }
-    .report-bar { padding: 6px 8px 10px; gap: 10px; }
-    .report-dots span { width: 9px; height: 9px; }
-    .report-crumbs { justify-content: flex-start; font-size: 12px; overflow: hidden; }
-    .report-crumbs span:first-child,
-    .report-crumbs i:first-of-type { display: none; }
-    .report-body { min-height: 0; border-radius: 14px; }
-    .report-side { display: none; }
-    .report-main { padding: 18px 12px 12px; gap: 14px; }
-    .report-head { align-items: flex-start; }
-    .sev-summary { width: 100%; }
-    .finding { grid-template-columns: auto minmax(0, 1fr) auto; column-gap: 10px; row-gap: 6px; padding: 12px; }
-    .sev-pill { grid-column: 1; grid-row: 1; }
-    .finding-id { grid-column: 2; grid-row: 1; }
-    .finding-lens { grid-column: 3; grid-row: 1; }
-    .finding-title { grid-column: 1 / -1; grid-row: 2; font-size: 14px; }
-    .finding-detail { grid-template-columns: minmax(0, 1fr); padding: 10px; gap: 10px; }
-    .ev-media { min-height: 112px; }
-    .ev-fix { grid-column: auto; }
-    .auditor { width: auto; margin: -20px 10px -48px; padding: 18px; display: block; }
-    .auditor-facts { margin-top: 16px; padding: 14px 0 0; border-left: 0; border-top: 1px dashed var(--line-strong); }
-    .pillars { margin-top: 96px; gap: 24px; }
-    .pillars h2 { font-size: 19px; }
-    .pillars p { font-size: 15px; }
+    .banner-art {
+      position: static;
+      align-self: flex-end;
+      margin: -8px 48px 0 0;
+      --w: 80px;
+    }
   }
 
   /* Sectors */
@@ -2353,32 +1312,45 @@ const caseTeasers = [
   /* Phones: one column, tighter spacing, and sideways rails instead of tall stacks */
   @media (max-width: 640px) {
     .hero {
-      padding-top: 40px;
+      padding-top: 24px;
     }
 
-    .hero-copy {
-      gap: 20px;
+    .banner {
+      border-radius: 24px;
+    }
+
+    .banner-copy {
+      padding: 44px 22px 36px;
+      gap: 18px;
     }
 
     h1 {
-      font-size: 44px;
-      line-height: 1.04;
+      font-size: 40px;
     }
 
-    .hero-copy > p {
+    .banner-copy > p {
       font-size: 17px;
-      line-height: 1.6;
     }
 
-    .hero-actions {
-      align-self: stretch;
+    .banner-actions {
       flex-direction: column;
-      gap: 10px;
+      margin-top: 8px;
     }
 
-    .hero-actions .btn {
+    .banner-actions .btn {
       text-align: center;
     }
+
+    .banner-art {
+      align-self: stretch;
+      margin: 0 22px;
+      --w: 25%;
+    }
+
+    .banner-art i:nth-child(1) { height: 70px; }
+    .banner-art i:nth-child(2) { height: 105px; }
+    .banner-art i:nth-child(3) { height: 136px; }
+    .banner-art i:nth-child(4) { height: 175px; }
 
     .sectors {
       padding: 56px var(--gutter) 8px;
