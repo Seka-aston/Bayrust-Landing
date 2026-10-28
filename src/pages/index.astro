@@ -29,13 +29,6 @@ const moments = [
   },
 ];
 
-const founderCredentials = [
-  'Senior UX designer at a Nordic EdTech company, working on its design system and reviewing the quality of what teams ship',
-  'Former lead product designer of a vehicle telematics platform',
-  'Product designer since 2018, across food tech, software and education',
-  'BSc (Hons) Entrepreneurial Leadership, First Class, African Leadership University',
-];
-
 const sectors = ['Banks', 'Fintechs', 'Public digital services', 'NGOs and programs', 'Software agencies'];
 
 const reasons = [
@@ -239,8 +232,6 @@ const caseTeasers = [
           <p>“Rwanda’s software ecosystem doesn’t lack talent. It lacks a standard to hold its work to. That’s what Bayrust is here to bring.”</p>
           <footer>Aston Guevara Seka, founder</footer>
         </blockquote>
-        <h3>What Aston brings to every audit</h3>
-        <CheckList items={founderCredentials} />
         <a href={site.founderLinkedin} class="who-link" rel="me">Aston on LinkedIn</a>
       </div>
     </div>
@@ -1048,16 +1039,6 @@ const caseTeasers = [
     margin-top: 10px;
     font-size: 14px;
     color: var(--steel);
-  }
-
-  .who-copy h3 {
-    margin: 8px 0 0;
-    font-size: 17px;
-    font-weight: 700;
-  }
-
-  .who-copy :global(.checks) {
-    margin: 0;
   }
 
   .who-link {
