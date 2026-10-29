@@ -327,6 +327,26 @@ const caseTeasers = [
       </div>
     </div>
   </section>
+
+  <!-- Newsletter -->
+  <section aria-labelledby="news-h" class="section">
+    <div class="container news">
+      <div class="news-copy">
+        <p class="news-label">Newsletter</p>
+        <h2 id="news-h">Get The Rust Report</h2>
+        <p>
+          One finding, one tip, one update, once a month. Practical lessons on software quality from the audits we run. Two
+          minutes to read, and you can unsubscribe anytime.
+        </p>
+      </div>
+      <div class="news-action">
+        <a href={site.newsletter} target="_blank" rel="noopener" class="btn btn--primary"
+          >Subscribe<span class="visually-hidden"> to The Rust Report (opens in a new tab)</span></a
+        >
+        <p>No spam. We’ll only email you about The Rust Report.</p>
+      </div>
+    </div>
+  </section>
 </Layout>
 
 <script>
@@ -1348,6 +1368,65 @@ const caseTeasers = [
     color: var(--steel);
   }
 
+  /* Newsletter: a paper panel with the copy on the left and the sign-up link on the right */
+  .news {
+    background: var(--paper);
+    border-radius: 30px;
+    padding: 56px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px 56px;
+  }
+
+  .news-copy {
+    flex: 1 1 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .news-label {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--rust-text);
+  }
+
+  .news h2 {
+    margin: 0;
+    font-size: clamp(30px, 3.4vw, 42px);
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  .news-copy > p:last-child {
+    margin: 0;
+    max-width: 36em;
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--steel);
+  }
+
+  .news-action {
+    flex: 0 1 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .news-action p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--steel);
+  }
+
   /* Phones: one column, tighter spacing, and sideways rails instead of tall stacks */
   @media (max-width: 640px) {
     .hero {
@@ -1470,6 +1549,20 @@ const caseTeasers = [
 
     .case-image {
       height: 170px;
+    }
+
+    .news {
+      padding: 36px 24px;
+      border-radius: 24px;
+    }
+
+    .news-action {
+      flex-basis: 100%;
+      align-items: stretch;
+    }
+
+    .news-action .btn {
+      text-align: center;
     }
   }
 </style>

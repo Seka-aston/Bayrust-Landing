@@ -8,6 +8,7 @@ export const site = {
   email: 'audits@bayrust.com',
   founderEmail: 'aston@bayrust.com',
   linkedin: '[LINKEDIN]',
+  newsletter: 'https://zc.vg/2sCL3',
   calendly: 'https://calendly.com/audit-bayrust',
   founderLinkedin: 'https://www.linkedin.com/in/aston-guevara/',
   responseTime: '[RESPONSE TIME]',
