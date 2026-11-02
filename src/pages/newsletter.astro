@@ -1,0 +1,431 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { site } from '../data/site';
+
+// Zoho Campaigns sign-up form. Sign-ups go straight to Zoho; this site never stores them.
+// These values come from the live Zoho form (https://zc.vg/2sCL3) and must match it exactly.
+const zoho = {
+  host: 'https://zgnp-zngp.maillist-manage.com',
+  action: 'https://zgnp-zngp.maillist-manage.com/weboptin.zc',
+  hidden: {
+    submitType: 'optinCustomView',
+    emailReportId: '',
+    formType: 'QuickForm',
+    zx: '1384a67c5',
+    zcvers: '3.0',
+    oldListIds: '',
+    mode: 'OptinCreateView',
+    zcld: '1182fb647ba4a876b',
+    zctd: '',
+    zc_trackCode: 'ZCFORMVIEW',
+    zc_formIx: '3z6119324455bb92bcef7a59c27af04830811914bf6f12dd42664be95bc862f7d5',
+  },
+};
+---
+
+<Layout
+  title="The Rust Report"
+  description="Get The Rust Report: one finding, one tip and one update on software quality, once a month, from the audits Bayrust runs."
+>
+  <section aria-labelledby="news-h" class="wrap">
+    <div class="panel">
+      <div class="copy">
+        <p class="label">Newsletter</p>
+        <h1 id="news-h">Get The Rust Report</h1>
+        <p>
+          One finding, one tip, one update, once a month. Practical lessons on software quality from the audits we run. Two
+          minutes to read, and you can unsubscribe anytime.
+        </p>
+      </div>
+
+      <div class="card">
+        <form action={zoho.action} method="POST" novalidate data-newsletter data-zoho-host={zoho.host}>
+          {Object.entries(zoho.hidden).map(([name, value]) => <input type="hidden" name={name} value={value} />)}
+
+          <div class="field">
+            <label for="nl-email">Email</label>
+            <input
+              id="nl-email"
+              name="CONTACT_EMAIL"
+              type="email"
+              autocomplete="email"
+              maxlength="99"
+              required
+              aria-describedby="nl-email-error"
+            />
+            <p id="nl-email-error" class="field-error" hidden></p>
+          </div>
+
+          <div class="field">
+            <label for="nl-name">Name <span>(optional)</span></label>
+            <input id="nl-name" name="LASTNAME" type="text" autocomplete="given-name" maxlength="99" aria-describedby="nl-name-error" />
+            <p id="nl-name-error" class="field-error" hidden></p>
+          </div>
+
+          <button type="submit" class="btn btn--primary">Subscribe</button>
+          <p class="note">No spam. We’ll only email you about The Rust Report.</p>
+          <p class="form-error" role="alert" hidden>
+            Something went wrong, so you haven’t been subscribed yet. Please try again, or{' '}
+            <a href={site.newsletterBackup}>use our backup sign-up page</a>.
+          </p>
+        </form>
+
+        <div class="done" tabindex="-1" hidden data-done>
+          <svg width="44" height="44" viewBox="0 0 20 20" aria-hidden="true">
+            <circle cx="10" cy="10" r="10" fill="#C2511F" />
+            <path d="M6 10.4l2.6 2.6L14.2 7.4" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <h2>You’re on the list</h2>
+          <p>Thanks for subscribing. If a confirmation email arrives, open it and confirm, and the first issue will be on its way.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  // Send the sign-up to Zoho in the background and show the result on this page.
+  // This copies what Zoho's own hosted form does: Zoho refuses sign-ups that lack its anti-spam fields
+  // (added by its dig.js) and marks them as spam without its form-view tracking values.
+  const form = document.querySelector<HTMLFormElement>('[data-newsletter]');
+  const done = document.querySelector<HTMLElement>('[data-done]');
+
+  type ZohoWindow = Window & {
+    sap?: (form: HTMLFormElement) => void;
+    zcParamsCallback?: (data: { custIx?: string }) => void;
+    zcSFReferrerCallback?: (data: { zc_ref?: string; cntrIx?: string }) => void;
+  };
+
+  const loadScript = (src: string) =>
+    new Promise<void>((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error(`Could not load ${src}`));
+      document.head.append(script);
+    });
+
+  if (form && done) {
+    const zohoWindow = window as ZohoWindow;
+    const host = form.dataset.zohoHost!;
+    const formIx = form.querySelector<HTMLInputElement>('[name="zc_formIx"]')!.value;
+    const zx = form.querySelector<HTMLInputElement>('[name="zx"]')!.value;
+    const tracking: Record<string, string> = {};
+
+    // Zoho's anti-spam fields: a hidden trap field, the page-load time and a device id.
+    const antiSpam = loadScript(`${host}/js/dig.js`).then(() => zohoWindow.sap?.(form));
+
+    // Zoho's form-view tracking answers by calling these two functions.
+    zohoWindow.zcParamsCallback = (data) => {
+      if (data.custIx) tracking.custIx = data.custIx;
+    };
+    zohoWindow.zcSFReferrerCallback = (data) => {
+      if (data.zc_ref) tracking.tpIx = data.zc_ref;
+      if (data.cntrIx) tracking.cntrIx = data.cntrIx;
+    };
+    const view = new URLSearchParams({
+      category: 'update',
+      action: 'view',
+      trackingCode: 'ZCFORMVIEW',
+      viewFrom: 'URL_ACTION',
+      zx,
+      signupFormIx: formIx,
+      zcvers: '3.0',
+      source: location.href,
+    });
+    loadScript(`${host}/ua/TrailEvent?${view}`).catch(() => {});
+
+    // Zoho answers a sign-up with JSON hidden in HTML, between ##ZCJSONSTART## and ##ZCJSON##.
+    // Anything else, such as its "Problem in optin" page, means the sign-up was refused.
+    const accepted = (text: string) => {
+      const start = text.indexOf('##ZCJSONSTART##');
+      const end = text.indexOf('##ZCJSON##', start);
+      if (start > -1 && end > -1) {
+        const json = text.slice(start + 15, end).replaceAll('&#34;', '"').replaceAll('&quot;', '"');
+        const result = JSON.parse(json);
+        return result.RESPONSETYPE === 'ZC_TYPE_2_JSON' && result.ZC_NEWOPTINRESPONSE === 0;
+      }
+      if (text.includes('ZC_TYPEJSON')) return [1, 2].includes(JSON.parse(text).newOptinResponse);
+      return false;
+    };
+
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    const formError = form.querySelector<HTMLElement>('.form-error')!;
+    const email = form.querySelector<HTMLInputElement>('[name="CONTACT_EMAIL"]')!;
+    const name = form.querySelector<HTMLInputElement>('[name="LASTNAME"]')!;
+
+    const setError = (input: HTMLInputElement, message: string) => {
+      const note = document.getElementById(`${input.id}-error`)!;
+      note.textContent = message;
+      note.hidden = !message;
+      input.setAttribute('aria-invalid', String(Boolean(message)));
+    };
+
+    // Zoho rejects angle brackets, so catch them here with a clear message.
+    const validate = () => {
+      const value = email.value.trim();
+      let emailMessage = '';
+      if (!value) emailMessage = 'Enter your email address.';
+      else if (!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(value)) emailMessage = 'Enter an email address like name@example.com.';
+      setError(email, emailMessage);
+      setError(name, /[<>]/.test(name.value) ? 'Remove the < and > characters from your name.' : '');
+      const first = [email, name].find((input) => input.getAttribute('aria-invalid') === 'true');
+      first?.focus();
+      return !first;
+    };
+
+    const setBusy = (busy: boolean) => {
+      button.disabled = busy;
+      button.setAttribute('aria-busy', String(busy));
+      button.textContent = busy ? 'Subscribing…' : 'Subscribe';
+    };
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      formError.hidden = true;
+      if (!validate()) return;
+
+      email.value = email.value.trim();
+      setBusy(true);
+      try {
+        await antiSpam;
+        const params = new URLSearchParams(new FormData(form) as unknown as Record<string, string>);
+        params.set('SIGNUP_SUBMIT_BUTTON', 'Subscribe');
+        params.set('responseMode', 'inline');
+        params.set('sourceURL', location.href);
+        Object.entries(tracking).forEach(([key, value]) => params.set(key, value));
+
+        const response = await fetch(`${form.action}?${params}`, { credentials: 'include' });
+        if (!response.ok || !accepted(await response.text())) throw new Error('Sign-up not accepted');
+        form.hidden = true;
+        done.hidden = false;
+        done.focus();
+      } catch {
+        formError.hidden = false;
+        setBusy(false);
+      }
+    });
+
+    [email, name].forEach((input) =>
+      input.addEventListener('input', () => {
+        if (input.getAttribute('aria-invalid') === 'true') setError(input, '');
+      }),
+    );
+  }
+</script>
+
+<style>
+  .wrap {
+    padding: 40px var(--gutter) 120px;
+  }
+
+  .panel {
+    max-width: var(--content);
+    margin: 0 auto;
+    background: var(--paper);
+    border-radius: 30px;
+    padding: 72px 64px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 48px 64px;
+  }
+
+  .copy {
+    flex: 1 1 440px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .label {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--rust-text);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(40px, 5vw, 64px);
+    line-height: 1.05;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+  }
+
+  .copy > p:last-child {
+    margin: 0;
+    max-width: 30em;
+    font-size: 19px;
+    line-height: 1.65;
+    color: var(--steel);
+  }
+
+  /* The form card */
+  .card {
+    flex: 1 1 400px;
+    max-width: 460px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    box-shadow: var(--shadow-card);
+    padding: 36px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  label {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  label span {
+    font-weight: 400;
+    color: var(--steel);
+  }
+
+  input {
+    width: 100%;
+    min-height: 50px;
+    padding: 12px 14px;
+    font: inherit;
+    font-size: 16px;
+    color: var(--navy);
+    background: var(--white);
+    border: 1px solid #8A939E;
+    border-radius: 12px;
+  }
+
+  input:hover {
+    border-color: var(--steel);
+  }
+
+  input:focus-visible {
+    outline: 3px solid var(--rust);
+    outline-offset: 2px;
+    border-color: var(--navy);
+  }
+
+  input[aria-invalid='true'] {
+    border-color: var(--rust-text);
+    border-width: 2px;
+  }
+
+  .field-error {
+    margin: 0;
+    padding-left: 22px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--rust-text);
+    background: no-repeat left 1px / 16px
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='8' fill='%23A8441A'/%3E%3Cpath d='M8 4v5M8 11.5v.5' stroke='%23fff' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E");
+  }
+
+  form[hidden],
+  .field-error[hidden],
+  .form-error[hidden] {
+    display: none;
+  }
+
+  form .btn {
+    margin-top: 4px;
+    cursor: pointer;
+  }
+
+  form .btn:disabled {
+    cursor: progress;
+    opacity: 0.8;
+  }
+
+  .note {
+    margin: -6px 0 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--steel);
+  }
+
+  .form-error {
+    margin: 0;
+    padding: 14px 16px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--navy);
+    background: var(--rust-tint);
+    border-left: 3px solid var(--rust);
+    border-radius: 0 10px 10px 0;
+  }
+
+  .form-error a {
+    color: var(--rust-text);
+    font-weight: 700;
+  }
+
+  /* Success */
+  .done {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    outline: none;
+  }
+
+  .done[hidden] {
+    display: none;
+  }
+
+  .done h2 {
+    margin: 4px 0 0;
+    font-size: 28px;
+    line-height: 1.15;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  .done p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--steel);
+  }
+
+  @media (max-width: 640px) {
+    .wrap {
+      padding: 24px var(--gutter) 80px;
+    }
+
+    .panel {
+      padding: 40px 20px 20px;
+      border-radius: 24px;
+      gap: 32px;
+    }
+
+    h1 {
+      font-size: 40px;
+    }
+
+    .copy > p:last-child {
+      font-size: 17px;
+    }
+
+    .card {
+      flex-basis: 100%;
+      max-width: none;
+      padding: 24px 20px;
+      border-radius: 18px;
+    }
+  }
+</style>

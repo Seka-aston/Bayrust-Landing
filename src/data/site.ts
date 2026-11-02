@@ -8,7 +8,8 @@ export const site = {
   email: 'audits@bayrust.com',
   founderEmail: 'aston@bayrust.com',
   linkedin: '[LINKEDIN]',
-  newsletter: 'https://zc.vg/2sCL3',
+  newsletter: '/newsletter',
+  newsletterBackup: 'https://zc.vg/2sCL3', // Zoho's own hosted sign-up page
   calendly: 'https://calendly.com/audit-bayrust',
   founderLinkedin: 'https://www.linkedin.com/in/aston-guevara/',
   responseTime: '[RESPONSE TIME]',
