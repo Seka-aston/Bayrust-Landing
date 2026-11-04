@@ -69,26 +69,16 @@ const zoho = {
             <a href={site.newsletterBackup}>use our backup sign-up page</a>.
           </p>
         </form>
-
-        <div class="done" tabindex="-1" hidden data-done>
-          <svg width="44" height="44" viewBox="0 0 20 20" aria-hidden="true">
-            <circle cx="10" cy="10" r="10" fill="#C2511F" />
-            <path d="M6 10.4l2.6 2.6L14.2 7.4" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-          <h2>You’re on the list</h2>
-          <p>Thanks for subscribing. If a confirmation email arrives, open it and confirm, and the first issue will be on its way.</p>
-        </div>
       </div>
     </div>
   </section>
 </Layout>
 
 <script>
-  // Send the sign-up to Zoho in the background and show the result on this page.
+  // Send the sign-up to Zoho in the background. On success, go to the check-inbox page; on failure, stay here and show the error.
   // This copies what Zoho's own hosted form does: Zoho refuses sign-ups that lack its anti-spam fields
   // (added by its dig.js) and marks them as spam without its form-view tracking values.
   const form = document.querySelector<HTMLFormElement>('[data-newsletter]');
-  const done = document.querySelector<HTMLElement>('[data-done]');
 
   type ZohoWindow = Window & {
     sap?: (form: HTMLFormElement) => void;
@@ -105,7 +95,7 @@ const zoho = {
       document.head.append(script);
     });
 
-  if (form && done) {
+  if (form) {
     const zohoWindow = window as ZohoWindow;
     const host = form.dataset.zohoHost!;
     const formIx = form.querySelector<HTMLInputElement>('[name="zc_formIx"]')!.value;
@@ -197,9 +187,8 @@ const zoho = {
 
         const response = await fetch(`${form.action}?${params}`, { credentials: 'include' });
         if (!response.ok || !accepted(await response.text())) throw new Error('Sign-up not accepted');
-        form.hidden = true;
-        done.hidden = false;
-        done.focus();
+        // Leave the button busy while the next page loads.
+        location.assign('/newsletter/check-inbox');
       } catch {
         formError.hidden = false;
         setBusy(false);
@@ -335,7 +324,6 @@ const zoho = {
       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='8' fill='%23A8441A'/%3E%3Cpath d='M8 4v5M8 11.5v.5' stroke='%23fff' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E");
   }
 
-  form[hidden],
   .field-error[hidden],
   .form-error[hidden] {
     display: none;
@@ -372,34 +360,6 @@ const zoho = {
   .form-error a {
     color: var(--rust-text);
     font-weight: 700;
-  }
-
-  /* Success */
-  .done {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 14px;
-    outline: none;
-  }
-
-  .done[hidden] {
-    display: none;
-  }
-
-  .done h2 {
-    margin: 4px 0 0;
-    font-size: 28px;
-    line-height: 1.15;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-  }
-
-  .done p {
-    margin: 0;
-    font-size: 16px;
-    line-height: 1.6;
-    color: var(--steel);
   }
 
   @media (max-width: 640px) {
