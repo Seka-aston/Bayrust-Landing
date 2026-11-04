@@ -19,6 +19,7 @@ const zoho = {
     zctd: '',
     zc_trackCode: 'ZCFORMVIEW',
     zc_formIx: '3z6119324455bb92bcef7a59c27af04830811914bf6f12dd42664be95bc862f7d5',
+    SIGNUP_SUBMIT_BUTTON: 'Subscribe',
   },
 };
 ---
@@ -75,16 +76,12 @@ const zoho = {
 </Layout>
 
 <script>
-  // Send the sign-up to Zoho in the background. On success, go to the check-inbox page; on failure, stay here and show the error.
-  // This copies what Zoho's own hosted form does: Zoho refuses sign-ups that lack its anti-spam fields
-  // (added by its dig.js) and marks them as spam without its form-view tracking values.
+  // The form posts straight to Zoho as a normal form submission, and Zoho shows the visitor what happened
+  // (its redirect after sign-up is set in Zoho to /newsletter/check-inbox). We only check the fields first
+  // and add Zoho's own anti-spam fields from its dig.js, as Zoho's hosted form does.
   const form = document.querySelector<HTMLFormElement>('[data-newsletter]');
 
-  type ZohoWindow = Window & {
-    sap?: (form: HTMLFormElement) => void;
-    zcParamsCallback?: (data: { custIx?: string }) => void;
-    zcSFReferrerCallback?: (data: { zc_ref?: string; cntrIx?: string }) => void;
-  };
+  type ZohoWindow = Window & { sap?: (form: HTMLFormElement) => void };
 
   const loadScript = (src: string) =>
     new Promise<void>((resolve, reject) => {
@@ -98,46 +95,12 @@ const zoho = {
   if (form) {
     const zohoWindow = window as ZohoWindow;
     const host = form.dataset.zohoHost!;
-    const formIx = form.querySelector<HTMLInputElement>('[name="zc_formIx"]')!.value;
-    const zx = form.querySelector<HTMLInputElement>('[name="zx"]')!.value;
-    const tracking: Record<string, string> = {};
 
     // Zoho's anti-spam fields: a hidden trap field, the page-load time and a device id.
-    const antiSpam = loadScript(`${host}/js/dig.js`).then(() => zohoWindow.sap?.(form));
-
-    // Zoho's form-view tracking answers by calling these two functions.
-    zohoWindow.zcParamsCallback = (data) => {
-      if (data.custIx) tracking.custIx = data.custIx;
-    };
-    zohoWindow.zcSFReferrerCallback = (data) => {
-      if (data.zc_ref) tracking.tpIx = data.zc_ref;
-      if (data.cntrIx) tracking.cntrIx = data.cntrIx;
-    };
-    const view = new URLSearchParams({
-      category: 'update',
-      action: 'view',
-      trackingCode: 'ZCFORMVIEW',
-      viewFrom: 'URL_ACTION',
-      zx,
-      signupFormIx: formIx,
-      zcvers: '3.0',
-      source: location.href,
+    const antiSpam = loadScript(`${host}/js/dig.js`).then(() => {
+      if (!zohoWindow.sap) throw new Error('Zoho anti-spam script missing');
+      zohoWindow.sap(form);
     });
-    loadScript(`${host}/ua/TrailEvent?${view}`).catch(() => {});
-
-    // Zoho answers a sign-up with JSON hidden in HTML, between ##ZCJSONSTART## and ##ZCJSON##.
-    // Anything else, such as its "Problem in optin" page, means the sign-up was refused.
-    const accepted = (text: string) => {
-      const start = text.indexOf('##ZCJSONSTART##');
-      const end = text.indexOf('##ZCJSON##', start);
-      if (start > -1 && end > -1) {
-        const json = text.slice(start + 15, end).replaceAll('&#34;', '"').replaceAll('&quot;', '"');
-        const result = JSON.parse(json);
-        return result.RESPONSETYPE === 'ZC_TYPE_2_JSON' && result.ZC_NEWOPTINRESPONSE === 0;
-      }
-      if (text.includes('ZC_TYPEJSON')) return [1, 2].includes(JSON.parse(text).newOptinResponse);
-      return false;
-    };
 
     const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
     const formError = form.querySelector<HTMLElement>('.form-error')!;
@@ -178,22 +141,19 @@ const zoho = {
       email.value = email.value.trim();
       setBusy(true);
       try {
-        await antiSpam;
-        const params = new URLSearchParams(new FormData(form) as unknown as Record<string, string>);
-        params.set('SIGNUP_SUBMIT_BUTTON', 'Subscribe');
-        params.set('responseMode', 'inline');
-        params.set('sourceURL', location.href);
-        Object.entries(tracking).forEach(([key, value]) => params.set(key, value));
-
-        const response = await fetch(`${form.action}?${params}`, { credentials: 'include' });
-        if (!response.ok || !accepted(await response.text())) throw new Error('Sign-up not accepted');
-        // Leave the button busy while the next page loads.
-        location.assign('/newsletter/check-inbox');
+        // Without Zoho's anti-spam fields the sign-up would be refused, so don't send it at all.
+        await Promise.race([antiSpam, new Promise((_, reject) => setTimeout(() => reject(new Error('Timed out')), 8000))]);
       } catch {
         formError.hidden = false;
         setBusy(false);
+        return;
       }
+      // A normal submission: the browser leaves this page and Zoho takes over.
+      form.submit();
     });
+
+    // Coming back with the browser's Back button, reset the button.
+    window.addEventListener('pageshow', () => setBusy(false));
 
     [email, name].forEach((input) =>
       input.addEventListener('input', () => {
