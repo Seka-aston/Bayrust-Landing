@@ -1,0 +1,140 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { site } from '../../data/site';
+
+// Shown after someone signs up, while Zoho's confirmation email is on its way.
+---
+
+<Layout
+  title="Check your inbox"
+  description="Confirm your subscription to The Rust Report from the email we’ve just sent you."
+  noindex
+>
+  <section aria-labelledby="check-inbox-h" class="wrap">
+    <div class="panel">
+      <svg class="icon" width="56" height="56" viewBox="0 0 20 20" aria-hidden="true">
+        <circle cx="10" cy="10" r="10" fill="#C2511F" />
+        <rect x="5.5" y="6.75" width="9" height="6.5" rx="1" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linejoin="round" />
+        <path d="M6 7.4l4 3 4-3" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      <p class="label">The Rust Report</p>
+      <h1 id="check-inbox-h">Check your inbox</h1>
+      <p class="lede">
+        We’ve just sent you a confirmation email from Aston at Bayrust. Click the button in it and you’re subscribed.
+      </p>
+
+      <div class="tip">
+        <p>
+          Can’t find it? Look in your spam or promotions folder. If it’s there, mark it as “Not spam” and add{' '}
+          <a href={`mailto:${site.founderEmail}`}>{site.founderEmail}</a> to your contacts, so The Rust Report always
+          reaches you.
+        </p>
+      </div>
+
+      <div class="actions">
+        <a href="/" class="btn btn--primary">Back to the homepage</a>
+        <a href="/lenses" class="btn btn--secondary">See how we audit</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .wrap {
+    padding: 40px var(--gutter) 120px;
+  }
+
+  .panel {
+    max-width: 820px;
+    margin: 0 auto;
+    background: var(--paper);
+    border-radius: 30px;
+    padding: 72px 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .icon {
+    margin-bottom: 6px;
+  }
+
+  .label {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--rust-text);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(40px, 5vw, 64px);
+    line-height: 1.05;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+  }
+
+  .lede {
+    margin: 0;
+    max-width: 34em;
+    font-size: 19px;
+    line-height: 1.65;
+    color: var(--steel);
+  }
+
+  .tip {
+    margin-top: 6px;
+    padding: 14px 16px;
+    background: var(--white);
+    border-left: 3px solid var(--rust);
+    border-radius: 0 10px 10px 0;
+  }
+
+  .tip p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--navy);
+  }
+
+  .tip a {
+    color: var(--rust-text);
+    font-weight: 700;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  @media (max-width: 640px) {
+    .wrap {
+      padding: 24px var(--gutter) 80px;
+    }
+
+    .panel {
+      padding: 40px 20px 24px;
+      border-radius: 24px;
+    }
+
+    h1 {
+      font-size: 40px;
+    }
+
+    .lede {
+      font-size: 17px;
+    }
+
+    .actions,
+    .actions .btn {
+      width: 100%;
+      justify-content: center;
+      text-align: center;
+    }
+  }
+</style>
