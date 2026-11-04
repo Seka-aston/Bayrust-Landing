@@ -19,7 +19,6 @@ const zoho = {
     zctd: '',
     zc_trackCode: 'ZCFORMVIEW',
     zc_formIx: '3z6119324455bb92bcef7a59c27af04830811914bf6f12dd42664be95bc862f7d5',
-    SIGNUP_SUBMIT_BUTTON: 'Subscribe',
   },
 };
 ---
@@ -66,7 +65,8 @@ const zoho = {
           <button type="submit" class="btn btn--primary">Subscribe</button>
           <p class="note">No spam. We’ll only email you about The Rust Report.</p>
           <p class="form-error" role="alert" hidden>
-            Something went wrong, so you haven’t been subscribed yet. Please try again, or{' '}
+            We couldn’t complete your sign-up just now. Please try again in a few minutes, or email{' '}
+            <a href="mailto:hello@bayrust.com">hello@bayrust.com</a> and we’ll add you ourselves. You can also{' '}
             <a href={site.newsletterBackup}>use our backup sign-up page</a>.
           </p>
         </form>
@@ -76,12 +76,17 @@ const zoho = {
 </Layout>
 
 <script>
-  // The form posts straight to Zoho as a normal form submission, and Zoho shows the visitor what happened
-  // (its redirect after sign-up is set in Zoho to /newsletter/check-inbox). We only check the fields first
-  // and add Zoho's own anti-spam fields from its dig.js, as Zoho's hosted form does.
+  // Send the sign-up to Zoho in the background. Only when Zoho accepts it and doesn't flag it as spam do we move on
+  // to the page in Zoho's reply (check-inbox); otherwise we stay here and show the error.
+  // This copies what Zoho's own hosted form sends: Zoho refuses sign-ups that lack its anti-spam fields
+  // (added by its dig.js), and we also send its form-view tracking values.
   const form = document.querySelector<HTMLFormElement>('[data-newsletter]');
 
-  type ZohoWindow = Window & { sap?: (form: HTMLFormElement) => void };
+  type ZohoWindow = Window & {
+    sap?: (form: HTMLFormElement) => void;
+    zcParamsCallback?: (data: { custIx?: string }) => void;
+    zcSFReferrerCallback?: (data: { zc_ref?: string; cntrIx?: string }) => void;
+  };
 
   const loadScript = (src: string) =>
     new Promise<void>((resolve, reject) => {
@@ -95,12 +100,62 @@ const zoho = {
   if (form) {
     const zohoWindow = window as ZohoWindow;
     const host = form.dataset.zohoHost!;
+    const formIx = form.querySelector<HTMLInputElement>('[name="zc_formIx"]')!.value;
+    const zx = form.querySelector<HTMLInputElement>('[name="zx"]')!.value;
+    const tracking: Record<string, string> = {};
 
     // Zoho's anti-spam fields: a hidden trap field, the page-load time and a device id.
-    const antiSpam = loadScript(`${host}/js/dig.js`).then(() => {
-      if (!zohoWindow.sap) throw new Error('Zoho anti-spam script missing');
-      zohoWindow.sap(form);
+    const antiSpam = loadScript(`${host}/js/dig.js`).then(() => zohoWindow.sap?.(form));
+
+    // Zoho's form-view tracking answers by calling these two functions.
+    zohoWindow.zcParamsCallback = (data) => {
+      if (data.custIx) tracking.custIx = data.custIx;
+    };
+    zohoWindow.zcSFReferrerCallback = (data) => {
+      if (data.zc_ref) tracking.tpIx = data.zc_ref;
+      if (data.cntrIx) tracking.cntrIx = data.cntrIx;
+    };
+    const view = new URLSearchParams({
+      category: 'update',
+      action: 'view',
+      trackingCode: 'ZCFORMVIEW',
+      viewFrom: 'URL_ACTION',
+      zx,
+      signupFormIx: formIx,
+      zcvers: '3.0',
+      source: location.href,
     });
+    loadScript(`${host}/ua/TrailEvent?${view}`).catch(() => {});
+
+    // Zoho replies with JSON, either on its own (ZC_TYPEJSON) or hidden in HTML between ##ZCJSONSTART## and ##ZCJSON##.
+    // Its "Problem in optin" page, or anything we can't read, counts as a failure.
+    const readReply = (text: string) => {
+      const start = text.indexOf('##ZCJSONSTART##');
+      const end = text.indexOf('##ZCJSON##', start);
+      const json = start > -1 && end > -1 ? text.slice(start + 15, end).replaceAll('&#34;', '"').replaceAll('&quot;', '"') : text;
+      try {
+        return JSON.parse(json);
+      } catch {
+        return null;
+      }
+    };
+
+    // Where to send the visitor after a sign-up Zoho has really accepted, or null if it hasn't.
+    // Zoho flags sign-ups it treats as spam with spmSubmit: true and quietly drops them, so only spmSubmit: false counts.
+    const nextPage = (reply: any): string | null => {
+      if (!reply || reply.spmSubmit !== false) return null;
+      const accepted =
+        reply.responseType === 'ZC_TYPEJSON' || (reply.RESPONSETYPE === 'ZC_TYPE_2_JSON' && reply.ZC_NEWOPTINRESPONSE === 0);
+      if (!accepted) return null;
+      // Follow Zoho's targetUrl only if it points to this site.
+      if (typeof reply.targetUrl === 'string') {
+        try {
+          const target = new URL(reply.targetUrl, location.href);
+          if (target.hostname.replace(/^www\./, '') === location.hostname.replace(/^www\./, '')) return target.href;
+        } catch {}
+      }
+      return '/newsletter/check-inbox';
+    };
 
     const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
     const formError = form.querySelector<HTMLElement>('.form-error')!;
@@ -141,19 +196,23 @@ const zoho = {
       email.value = email.value.trim();
       setBusy(true);
       try {
-        // Without Zoho's anti-spam fields the sign-up would be refused, so don't send it at all.
-        await Promise.race([antiSpam, new Promise((_, reject) => setTimeout(() => reject(new Error('Timed out')), 8000))]);
+        await antiSpam;
+        const params = new URLSearchParams(new FormData(form) as unknown as Record<string, string>);
+        params.set('SIGNUP_SUBMIT_BUTTON', 'Subscribe');
+        params.set('responseMode', 'inline');
+        params.set('sourceURL', location.href);
+        Object.entries(tracking).forEach(([key, value]) => params.set(key, value));
+
+        const response = await fetch(`${form.action}?${params}`, { credentials: 'include' });
+        const next = response.ok ? nextPage(readReply(await response.text())) : null;
+        if (!next) throw new Error('Sign-up not accepted');
+        // Leave the button busy while the next page loads.
+        location.assign(next);
       } catch {
         formError.hidden = false;
         setBusy(false);
-        return;
       }
-      // A normal submission: the browser leaves this page and Zoho takes over.
-      form.submit();
     });
-
-    // Coming back with the browser's Back button, reset the button.
-    window.addEventListener('pageshow', () => setBusy(false));
 
     [email, name].forEach((input) =>
       input.addEventListener('input', () => {
